@@ -49,5 +49,8 @@ Function ```tutte(Emb, face, factor)``` computes x/y coordinates for convex plan
 Browser demo application for drawing fullerenes C20, C30, ..., C70, with quite some browser interaction. See this forum posting for current details:  
 [https://forums.raspberrypi.com/viewtopic.php?p=1991331#p1991331](https://forums.raspberrypi.com/viewtopic.php?p=1991331#p1991331)  
 
+Just learned how to setup Github Pages, and how to add submodule. After few minutes submodule ```planar_graph_playground``` was public, you can play now with the demo aplication!  
+[https://hermann-sw.github.io/planar_graph_playground/](https://hermann-sw.github.io/planar_graph_playground/)  
+
 Peek screenrecorder animated .gif showcasing initial application:  
 ![Initial demo](res/Peek_2022-04-07_04-28.gif)
