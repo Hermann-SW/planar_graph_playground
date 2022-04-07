@@ -147,3 +147,24 @@ function identity(n) {
 exports.invert = function invert(A) {
   return new Mat(A, identity(A.length)).gauss();
 }
+
+/**
+ * create n×m matrix filled with value v
+ */
+exports.fill = function fill(n, m, v) {
+  var zm = new Array(n);
+  if (m==1)
+    zm.fill(v);
+  else
+    for (var j=0; j<n; j++) {
+      zm[j] = fill(m, 1, v);
+    }
+  return zm;
+}
+ 
+/**
+ * create n×m zero matrix
+ */
+exports.zero = function zero(n, m) {
+  return exports.fill(n, m, 0);
+}
