@@ -2,7 +2,7 @@
  * Gauss-Jordan elimination
  */
 
-var linear = (function(){
+var linear = exports = {};
 /**
  * Used internally to solve systems
  * If you want to solve A.x = B,
@@ -147,8 +147,3 @@ function identity(n) {
 exports.invert = function invert(A) {
   return new Mat(A, identity(A.length)).gauss();
 }
-
-return exports;
-})();
-
-if (typeof module.exports === "object") module.exports = linear;
