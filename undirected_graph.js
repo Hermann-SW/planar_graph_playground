@@ -17,9 +17,7 @@ function forall_edges(G, f) {
     var v;
     for (v = 0; v < G.length; v += 1) {
         G[v].forEach(function (w) {
-            if (v < w) {
-                f(v, w);
-            }
+            f(v, w);
         });
     }
 }

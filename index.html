@@ -82,11 +82,13 @@ function doit(G, v, w){
   document.write('<style> .l { stroke:black; stroke-width:2; fill:none; } </style>');
 
   forall_edges(G, function(v, w){
-    cx=l/2+(l/2-r)*coords[0][v];
-    cy=l/2+(l/2-r)*coords[1][v];
-    dx=l/2+(l/2-r)*coords[0][w];
-    dy=l/2+(l/2-r)*coords[1][w];
-    document.write('<line class="l" x1="'+cx+'" y1="'+cy+'" x2="'+dx+'" y2="'+dy+'"></line>');
+    if (v < w) {
+      cx=l/2+(l/2-r)*coords[0][v];
+      cy=l/2+(l/2-r)*coords[1][v];
+      dx=l/2+(l/2-r)*coords[0][w];
+      dy=l/2+(l/2-r)*coords[1][w];
+      document.write('<line class="l" x1="'+cx+'" y1="'+cy+'" x2="'+dx+'" y2="'+dy+'"></line>');
+    }
   })
 
   forall_vertices(G, function(v){
