@@ -55,3 +55,35 @@ function traverse_face(Emb, v, w) {
     }
     return face;
 }
+
+function is_embedding(G) {
+    var e = n_edges(G);
+    var vw2e = linear.zero(n_vertices(G), n_vertices(G));
+    var visited = linear.fill(2 * e, 1, false);
+    var a;
+    var f = 0;
+
+    e = 0;
+    forall_edges(G, function (v, w) {
+        vw2e[v][w] = e;
+        e += 1;
+    });
+
+    forall_edges(G, function (v, w) {
+        e = vw2e[v][w];
+        if (!visited[e]) {
+            while (!visited[e]) {
+                visited[e] = true;
+                a = nextAdjacentEdge(G, v, w);
+                assert.assert(a !== -1);
+
+                v = w;
+                w = a;
+                e = vw2e[v][w];
+            }
+            f += 1;
+        }
+    });
+
+    return n_vertices(G) - n_edges(G) + f === 2;
+}

@@ -15,6 +15,9 @@ if (true) {
 
         var angle = Math.PI;
         var delta = factor * (2 * Math.PI) / face.length;
+
+        assert.assert(is_embedding(Emb));
+
         face.forEach(function (v) {
             x[v] = Math.sin(angle);
             y[v] = Math.cos(angle);
