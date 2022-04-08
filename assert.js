@@ -10,6 +10,7 @@ if (true) {
             found = false;
             new Error().stack.split("\n").forEach(function (l) {
                 if (found) {
+                    alert((message || "Assertion failed") + l);
                     throw (message || "Assertion failed") + l;
                 }
                 found = l.includes("assert.js");
