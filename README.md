@@ -10,7 +10,7 @@ Made it usable for browser JavaScript by changing 1 line and deleting 5 lines on
 
 ## assert.js
 
-Simple ```assert()``` for JavaScript.
+```assert()``` for JavaScript, with file and line number logged in console.
 
 ## undirected_graph.js
 
@@ -43,6 +43,16 @@ Just ```forall_edges(G, f)``` as example ...
 
 Function ```tutte(Emb, face, factor)``` computes x/y coordinates for convex planar straight line drawings of embedding ```Emb```, with array ```face``` vertices on the outer face.  
 ![from Goos Kant PhD](res/Goos_Kant_PhD.snippet.png)
+
+## fullerenes.js
+
+Sample fullerenes C20, C30, ..., C70 adjacency lists.
+
+## htmlsvg.js
+
+Function ```header``` writes select and slider elements of HTML page to ```document```.
+
+Function ``'straight_line_drawing(G, coords, length, r)``` creates SVG output of size length×length, with straight line drawing of graph G with vertex array coords coordinates, and vertex label radius r.
 
 ## index.html
 
