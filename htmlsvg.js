@@ -37,7 +37,10 @@ if (true) {
             cx = length / 2 + (length / 2 - r) * coords[0][v];
             cy = length / 2 + (length / 2 - r) * coords[1][v];
             document.write('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" stroke="black" fill="white"></circle>');
-            document.write('<text onclick="clck(' + v + ')" x="' + cx + '" y="' + (cy + 1) + '" alignment-baseline="middle" text-anchor="middle">' + (v + 1) + '</text>');
+
+            if (r >= 12) {
+                document.write('<text onclick="clck(' + v + ')" x="' + cx + '" y="' + (cy + 1) + '" alignment-baseline="middle" text-anchor="middle">' + (v + 1) + '</text>');
+            }
         });
 
         document.write('</svg>');
@@ -84,7 +87,7 @@ if (true) {
 
         document.write('<div><label for="myRange">factor: </label><input type="range" min="50" max="120" value="' + slider + '" id="myRange" name="myRangeN" onInput="javascript:doi(' + selInd + ')"></div>');
 
-        document.write('<div><label for="myRange2">size: </label><input type="range" min="500" max="5000" value="' + slider2 + '" id="myRange2" onChange="javascript:doi(' + selInd + ')"></div>');
+        document.write('<div><label for="myRange2">size: </label><input type="range" min="500" max="7000" value="' + slider2 + '" id="myRange2" onChange="javascript:doi(' + selInd + ')"></div>');
     };
 
 }
