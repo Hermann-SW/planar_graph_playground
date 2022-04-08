@@ -1,8 +1,12 @@
+"use strict"; // avoid module leak
 /**
  * Gauss-Jordan elimination
  */
 
-var linear = exports = {};
+var exports = {};
+var linear = exports;
+
+if (true) {
 /**
  * Used internally to solve systems
  * If you want to solve A.x = B,
@@ -148,10 +152,7 @@ exports.invert = function invert(A) {
   return new Mat(A, identity(A.length)).gauss();
 }
 
-/**
- * create n×m matrix filled with value v
- */
-exports.fill = function fill(n, m, v) {
+function fill(n, m, v) {
   var zm = new Array(n);
   if (m==1)
     zm.fill(v);
@@ -162,9 +163,16 @@ exports.fill = function fill(n, m, v) {
   return zm;
 }
  
-/**
- * create n×m zero matrix
- */
-exports.zero = function zero(n, m) {
-  return exports.fill(n, m, 0);
+exports.fill = function (n, m, v) {
+  return fill(n, m, v);
 }
+
+/**
+ * create n×m matrix filled with value v
+ */
+
+exports.zero = function (n, m) {
+  return fill(n, m, 0);
+}
+
+} // avoid module leak

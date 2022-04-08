@@ -36,7 +36,9 @@ function n_edges(G) {
 
 function nextAdjacentEdge(G, v, w) {
     var j = G[w].indexOf(v);
-    assert(j !== -1);
+    if (j === -1) {
+        return -1;
+    }
     return G[w][(j + 1) % 3];
 }
 
@@ -47,6 +49,9 @@ function traverse_face(Emb, v, w) {
     while (w !== o) {
         face.push(w);
         a = nextAdjacentEdge(Emb, v, w);
+        if (a === -1) {
+            return -1;
+        }
         v = w;
         w = a;
     }

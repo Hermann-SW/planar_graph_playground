@@ -48,11 +48,16 @@ function doit(G, v, w){
   face = traverse_face(G, v, w);
   console.log(face);
 
+  if (face === -1) {
+    alert("selected vertex pair not adjacent");
+    return;
+  }
+
   slider = document.getElementById("myRange").value;
   slider2 = document.getElementById("myRange2").value;
   selInd = document.forms[0].elements[0].selectedIndex;
 
-  coords = tutte(G, face, slider/100.0);
+  coords = tutte.convex_face_coordinates(G, face, slider/100.0);
   l = slider2;
   r = 12;
 
