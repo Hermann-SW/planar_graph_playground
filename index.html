@@ -13,17 +13,10 @@
 <div><label for="myRange">factor: </label><input type="range" min="50" max="120" value="100" id="myRange"></div>
 <div><label for="myRange2">size: </label><input type="range" min="500" max="1800" value="800" id="myRange2"></div>
 
-<script>
+<script>"use strict";
 
-var G;
-var face;
-var slider;
-var slider2;
-var selInd;
-var coords;
-var size;
-var r;
 var down = -1;
+var G;
 
 function clck(v) {
     if (down < 0) {
@@ -40,30 +33,54 @@ function doi(x) {
 }
 
 function doit(G, v, w) {
-    down = -1;
-    face = traverse_face(G, v, w);
-    console.log(face);
+    var slider = document.getElementById("myRange").value;
+    var slider2 = document.getElementById("myRange2").value;
+    var selInd = document.forms[0].elements[0].selectedIndex;
+    var size = slider2;
+    var r = 12;
+    var coords;
+    var pent;
+    var spl = -1;
+    var tst;
 
+    var face = traverse_face(G, v, w);
+    down = -1;
     if (face === -1) {
         alert("selected vertex pair not adjacent");
         return;
     }
 
-    slider = document.getElementById("myRange").value;
-    slider2 = document.getElementById("myRange2").value;
-    selInd = document.forms[0].elements[0].selectedIndex;
-
     coords = tutte.convex_face_coordinates(G, face, slider / 100.0);
-    size = slider2;
-    r = 12;
+
+    pent = pentagons(G);
+    if (face.length === 5) {
+        tst = linear.fill(n_vertices(G), 1, false);
+        face.forEach(function (v) {
+            tst[v] = true;
+        });
+        pent.forEach(function (c, i) {
+            var good = true;
+            c.forEach(function (v) {
+                if (!tst[v]) {
+                    good = false;
+                }
+            });
+            if (good) {
+                spl = i;
+            }
+        });
+        if (spl !== -1) {
+            pent.splice(spl, 1);
+            // pent.shift();
+        }
+    }
 
     htmlsvg.header(selInd, slider, slider2);
 
-    htmlsvg.straight_line_drawing(G, coords, size, r);
+    htmlsvg.straight_line_drawing(G, coords, pent, size, r);
 }
 
 doi(0);
-
 </script>
 
 </body>

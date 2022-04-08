@@ -4,7 +4,7 @@ var exports = {};
 var htmlsvg = exports;
 
 if (true) {
-    exports.straight_line_drawing = function (G, coords, length, r) {
+    exports.straight_line_drawing = function (G, coords, pent, length, r) {
         var cx;
         var cy;
         var dx;
@@ -12,6 +12,16 @@ if (true) {
 
         document.write('<svg width="' + length + '" height="' + length + '">');
         document.write('<style> .l { stroke:black; stroke-width:2; fill:none; } </style>');
+
+        pent.forEach(function (face) {
+            document.write('<polygon points="');
+            face.forEach(function (v) {
+                cx = length / 2 + (length / 2 - r) * coords[0][v];
+                cy = length / 2 + (length / 2 - r) * coords[1][v];
+                document.write('' + cx + ',' + cy + ' ');
+            });
+            document.write('" stroke="#00ced1" stroke-width="1" fill="#00ced1" opacity="1.0" />');
+        });
 
         forall_edges(G, function (v, w) {
             if (v < w) {
@@ -72,9 +82,9 @@ if (true) {
         document.write('</select> <a href="https://github.com/Hermann-SW/planar_graph_playground#planar_graph_playground">planar_graph_playground github repo</a> hosting this tool');
         document.write('</form></div>');
 
-        document.write('<div><label for="myRange">factor: </label><input type="range" min="50" max="120" value="' + slider + '" id="myRange" name="myRangeN" onInput="javascript:doi(selInd)"></div>');
+        document.write('<div><label for="myRange">factor: </label><input type="range" min="50" max="120" value="' + slider + '" id="myRange" name="myRangeN" onInput="javascript:doi(' + selInd + ')"></div>');
 
-        document.write('<div><label for="myRange2">size: </label><input type="range" min="500" max="5000" value="' + slider2 + '" id="myRange2" onChange="javascript:doi(selInd)"></div>');
+        document.write('<div><label for="myRange2">size: </label><input type="range" min="500" max="5000" value="' + slider2 + '" id="myRange2" onChange="javascript:doi(' + selInd + ')"></div>');
     };
 
 }

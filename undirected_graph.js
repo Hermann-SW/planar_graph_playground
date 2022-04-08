@@ -87,3 +87,40 @@ function is_embedding(G) {
 
     return n_vertices(G) - n_edges(G) + f === 2;
 }
+
+function pentagons(Emb) {
+    var e = n_edges(Emb);
+    var vw2e = linear.zero(n_vertices(Emb), n_vertices(Emb));
+    var visited = linear.fill(2 * e, 1, false);
+    var a;
+    var pent = [];
+    var face;
+
+    e = 0;
+    forall_edges(Emb, function (v, w) {
+        vw2e[v][w] = e;
+        e += 1;
+    });
+
+    forall_edges(Emb, function (v, w) {
+        e = vw2e[v][w];
+        if (!visited[e]) {
+            face = [];
+            while (!visited[e]) {
+                visited[e] = true;
+                face.push(v);
+                a = nextAdjacentEdge(Emb, v, w);
+                assert.assert(a !== -1);
+
+                v = w;
+                w = a;
+                e = vw2e[v][w];
+            }
+            if (face.length === 5) {
+                pent.push(face);
+            }
+        }
+    });
+
+    return pent;
+}
