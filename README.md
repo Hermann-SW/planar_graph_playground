@@ -64,3 +64,13 @@ Just learned how to setup Github Pages, and how to add submodule. After few minu
 
 Peek screenrecorder animated .gif showcasing initial application:  
 ![Initial demo](res/Peek_2022-04-07_04-28.gif)
+
+Latest commits made edge selection different. Now you just cick on an edge,
+and the edge vertex closer to mouse cursor becomes top vertex of outer face,
+and selected edge becomes top right edge:  
+![New edge selection demo](res/Peek_2022-04-15_18-38.gif)
+
+With new commits outer face can be filled as well now.  
+So for fullerenes,
+always 12 pentagons are filled, regardless of outer face vertex count:  
+![New outer face fill](res/convex_face_straight_line_drawing.2.png)
