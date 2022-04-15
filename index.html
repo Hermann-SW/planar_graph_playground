@@ -78,12 +78,10 @@ function doit(G, v, e) {
     forall_edges(G, function (e) {
         v = source(G, e);
         w = target(G, e);
-        if (v < w) {
-            cx = size / 2 + (size / 2 - r) * coords[0][v];
-            cy = size / 2 + (size / 2 - r) * coords[1][v];
-            dx = size / 2 + (size / 2 - r) * coords[0][w];
-            dy = size / 2 + (size / 2 - r) * coords[1][w];
-        }
+        cx = size / 2 + (size / 2 - r) * coords[0][v];
+        cy = size / 2 + (size / 2 - r) * coords[1][v];
+        dx = size / 2 + (size / 2 - r) * coords[0][w];
+        dy = size / 2 + (size / 2 - r) * coords[1][w];
         dx -= cx;
         dy -= cy;
         lcur = Math.sqrt(dx * dx + dy * dy);
@@ -114,7 +112,6 @@ function doit(G, v, e) {
         });
         if (spl !== -1) {
             pent.splice(spl, 1);
-            // pent.shift();
         }
 
     }
