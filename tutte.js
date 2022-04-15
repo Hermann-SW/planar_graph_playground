@@ -5,8 +5,9 @@ var tutte = exports;
 
 if (true) {
     exports.convex_face_coordinates = function (Emb, face, factor) {
-        var n = Emb.length;
+        var n = n_vertices(Emb);
         var v;
+        var w;
 
         var X = linear.zero(n, n);
         var Y = linear.zero(n, n);
@@ -17,7 +18,6 @@ if (true) {
         var delta = factor * (2 * Math.PI) / face.length;
 
         assert.assert(is_embedding(Emb));
-
         face.forEach(function (v) {
             x[v] = Math.sin(angle);
             y[v] = Math.cos(angle);
@@ -32,13 +32,13 @@ if (true) {
                 X[v][v] = -1;
                 Y[v][v] = -1;
 
-                Emb[v].forEach(function (w) {
+                forall_adjacent_edges(Emb, v, function (e) {
+                    w = opposite(Emb, v, e);
                     X[v][w] = 1.0 / degree(Emb, v);
                     Y[v][w] = 1.0 / degree(Emb, v);
                 });
             }
         }
-
         return [linear.solve(X, x), linear.solve(Y, y)];
     };
 }
