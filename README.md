@@ -74,3 +74,17 @@ With new commits outer face can be filled as well now.
 So for fullerenes,
 always 12 pentagons are filled, regardless of outer face vertex count:  
 ![New outer face fill](res/convex_face_straight_line_drawing.2.png)
+
+
+## nodejs
+
+Since the shown JavaScript files are for browser, they do not have module 
+exports needed for nodejs require statements.  
+
+I made C preprocessor #include available to nodejs with [rjs](rjs) tool:  
+
+    #!/bin/bash
+    gcc -E -x c -nostdinc $1 | grep -v "^#"  | node
+
+Simple example nodejs script making use of several browser scripts in this repo:  
+![node include](res/node_include.png)
