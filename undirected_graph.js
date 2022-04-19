@@ -158,45 +158,38 @@ function check_traverse(G, visited, v, e, pftv) {
     }
 }
 
-function is_embedding(G) {
+function full_traverse(G, pftv) {
     var visited = linear.fill(n_edges(G), 2, false);
-    var nfaces = 0;
 
     forall_edges(G, function (g) {
-        check_traverse(G, visited, source(G, g), g, {begin_face: function () {
-            nfaces += 1;
-        }});
-        check_traverse(G, visited, target(G, g), g, {begin_face: function () {
-            nfaces += 1;
-        }});
+        check_traverse(G, visited, source(G, g), g, pftv);
+        check_traverse(G, visited, target(G, g), g, pftv);
     });
+}
+
+function is_embedding(G) {
+    var nfaces = 0;
+
+    full_traverse(G, {begin_face: function () {
+        nfaces += 1;
+    }});
 
     return n_vertices(G) - n_edges(G) + nfaces === 2;
 }
 
 function pentagons(Emb) {
-    var visited = linear.fill(n_edges(Emb), 2, false);
     var pent = [];
     var face;
 
-    var pftv = {
-        begin_face: function () {
-            face = [];
-        },
-        end_face: function () {
-            if (face.length === 5) {
-                pent.push(face);
-            }
-        },
-        next_vertex: function (v) {
-            face.push(v);
+    full_traverse(Emb, {begin_face: function () {
+        face = [];
+    }, end_face: function () {
+        if (face.length === 5) {
+            pent.push(face);
         }
-    };
-
-    forall_edges(Emb, function (g) {
-        check_traverse(Emb, visited, source(Emb, g), g, pftv);
-        check_traverse(Emb, visited, target(Emb, g), g, pftv);
-    });
+    }, next_vertex: function (v) {
+        face.push(v);
+    }});
 
     return pent;
 }
