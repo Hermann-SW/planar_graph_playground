@@ -251,3 +251,29 @@ function dual_graph(G) {
 
     return D;
 }
+
+function is_identical_graph(G, H) {
+    if (n_vertices(G) !== n_vertices(H)) {
+        return false;
+    }
+    if (n_edges(G) !== n_edges(H)) {
+        return false;
+    }
+    if (!G.V.every(function (v, i) {
+        return v.every(function (e, j) {
+            return e === H.V[i][j];
+        });
+    })) {
+        return false;
+    }
+    if (!G.E.every(function (e, i) {
+        return e.every(function (v, j) {
+            return v.every(function (x, k) {
+                return x === H.E[i][j][k];
+            });
+        });
+    })) {
+        return false;
+    }
+    return true;
+}

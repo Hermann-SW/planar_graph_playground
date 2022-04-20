@@ -17,3 +17,7 @@ D = dual_graph(G);
 assert.assert(is_embedding(D));
 console.log("is_embedding(dual_graph(K5-e)) verified, has " + n_faces_planar(D) + " faces");
 print_graph(D, "dual_graph(K5-e): ");
+
+assert.assert(is_identical_graph(G, dual_graph(D)));
+console.log("is_identical(K5-e, dual_graph(dual_graph(K5-e))) verified");
+
