@@ -76,11 +76,16 @@ function new_edge(G, v, w) {
     return new_edge_vertex(G, w, new_edge1(G, v));
 }
 
-function new_graph(n) {
-    const A = Array.from(new Array(n), function () {
+function new_graph(n, m) {
+    if (m === undefined) {
+        m = 0;
+    }
+    return {E: Array.from(new Array(m), function () {
         return [];
-    });
-    return {E: [], V: A};
+    }),
+        V: Array.from(new Array(n), function () {
+        return [];
+    })};
 }
 
 function choose2(n) {
@@ -236,11 +241,7 @@ function pentagons(Emb) {
 
 function dual_graph(G) {
     var last_face = -1;
-    var D = new_graph(n_faces_planar(G));
-
-    D.E = new Array(n_edges(G)).fill(0).map(function () {
-        return [];
-    });
+    var D = new_graph(n_faces_planar(G), n_edges(G));
 
     full_traverse(G, {begin_face: function () {
         last_face += 1;
