@@ -195,7 +195,7 @@ function check_traverse(G, visited, v, e, pftv) {
     }
 }
 
-function full_traverse(G, pftv) {
+function planar_face_traversal(G, pftv) {
     var visited = linear.fill(n_edges(G), 2, false);
 
     if (pftv.begin_traversal) {
@@ -215,7 +215,7 @@ function full_traverse(G, pftv) {
 function is_embedding(G) {
     var nfaces = 0;
 
-    full_traverse(G, {begin_face: function () {
+    planar_face_traversal(G, {begin_face: function () {
         nfaces += 1;
     }});
 
@@ -226,7 +226,7 @@ function pentagons(Emb) {
     var pent = [];
     var face;
 
-    full_traverse(Emb, {begin_face: function () {
+    planar_face_traversal(Emb, {begin_face: function () {
         face = [];
     }, end_face: function () {
         if (face.length === 5) {
@@ -243,7 +243,7 @@ function dual_graph(G) {
     var last_face = -1;
     var D = new_graph(n_faces_planar(G), n_edges(G));
 
-    full_traverse(G, {begin_face: function () {
+    planar_face_traversal(G, {begin_face: function () {
         last_face += 1;
     }, next_edge: function (e) {
         new_edge_vertex(D, last_face, e);
