@@ -76,12 +76,12 @@ always 12 pentagons are filled, regardless of outer face vertex count:
 ![New outer face fill](res/convex_face_straight_line_drawing.2.png)
 
 
-## nodejs
+## Executiong JavaScript with C #include statements using rjs tool
 
 Since the shown JavaScript files are for browser, they do not have module 
 exports needed for nodejs require statements.  
 
-C preprocessor #include statements are made available for JavaScript with [rjs](rjs) tool:  
+C preprocessor #include statements are made available for JavaScript with [rjs](rjs) tool (Run JavaScript) for nodejs execution:  
 
     #!/bin/bash
     gcc -E -x c -nostdinc $1 | grep -v "^#"  | node
