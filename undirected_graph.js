@@ -87,7 +87,6 @@ function from_adjacency_list(L) {
         l.forEach(function (w) {
             if (v < w) {
                 lookup[choose2(w) + v] = new_edge1(G, v);
-                e = lookup[choose2(w) + v];
             } else {
                 e = lookup[choose2(v) + w];
                 new_edge_vertex(G, v, e);
@@ -139,6 +138,12 @@ function traverse_face(G, visited, v, e, i, pftv) {
         if (pftv.next_vertex) {
             pftv.next_vertex(v);
         }
+        if (pftv.next_edge) {
+            pftv.next_edge(e);
+        }
+        if (pftv.next_vertex_edge) {
+            pftv.next_vertex_edge(v, e);
+        }
         v = opposite(G, v, e);
         e = nextAdjacentEdge(G, v, e);
         i = ind(G, v, e);
@@ -161,10 +166,18 @@ function check_traverse(G, visited, v, e, pftv) {
 function full_traverse(G, pftv) {
     var visited = linear.fill(n_edges(G), 2, false);
 
+    if (pftv.begin_traversal) {
+        pftv.begin_traversal();
+    }
+
     forall_edges(G, function (g) {
         check_traverse(G, visited, source(G, g), g, pftv);
         check_traverse(G, visited, target(G, g), g, pftv);
     });
+
+    if (pftv.end_traversal) {
+        pftv.end_traversal();
+    }
 }
 
 function is_embedding(G) {
