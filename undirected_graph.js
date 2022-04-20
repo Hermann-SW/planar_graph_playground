@@ -10,6 +10,14 @@ function n_edges(G) {
     return G.E.length;
 }
 
+function n_faces(G, chi) {
+    return chi + n_edges(G) - n_vertices(G);
+}
+
+function n_faces_planar(G) {
+    return n_faces(G, 2);
+}
+
 function forall_vertices(G, f) {
     var v;
     for (v = 0; v < n_vertices(G); v += 1) {
@@ -122,15 +130,19 @@ function nextAdjacentEdge(G, v, e) {
 }
 
 function ud2st(str) {
-    return (str == undefined) ? "" : str;
+    return (
+        (str === undefined)
+        ? ""
+        : str
+    );
 }
 
 function print_graph(G, str) {
-    console.log(ud2st(str)+n_vertices(G)+" vertices, "+n_edges(G)+" edges");
-    forall_vertices(G, function(v) {
-        str = "["+v+"]:";
-        forall_adjacent_edges(G, v, function(e) {
-            str += " "+e+"["+opposite(G, v, e)+"]";
+    console.log(ud2st(str) + n_vertices(G) + " vertices, " + n_edges(G) + " edges");
+    forall_vertices(G, function (v) {
+        str = v + ":";
+        forall_adjacent_edges(G, v, function (e) {
+            str += " (" + e + ")" + opposite(G, v, e);
         });
         console.log(str);
     });
@@ -220,4 +232,26 @@ function pentagons(Emb) {
     }});
 
     return pent;
+}
+
+function dual_graph(G) {
+    var nfaces = 0;
+    var e2f = linear.fill(n_edges(G), 2, -1);
+    var D = new_graph(2 + n_edges(G) - n_vertices(G));
+
+    full_traverse(G, {end_face: function () {
+        nfaces += 1;
+    }, next_vertex_edge: function (v, e) {
+        e2f[e][ind(G, v, e)] = nfaces;
+    }});
+
+    forall_edges(G, function () {
+        D.E.push([]);
+    });
+
+    full_traverse(G, {next_vertex_edge: function (v, e) {
+        new_edge_vertex(D, e2f[e][ind(G, v, e)], e);
+    }});
+
+    return D;
 }
