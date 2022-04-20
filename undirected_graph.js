@@ -236,21 +236,16 @@ function pentagons(Emb) {
 
 function dual_graph(G) {
     var last_face = -1;
-    var e2f = linear.fill(n_edges(G), 2, -1);
     var D = new_graph(n_faces_planar(G));
+
+    D.E = new Array(n_edges(G)).fill(0).map(function () {
+        return [];
+    });
 
     full_traverse(G, {begin_face: function () {
         last_face += 1;
-    }, next_vertex_edge: function (v, e) {
-        e2f[e][ind(G, v, e)] = last_face;
-    }});
-
-    forall_edges(G, function () {
-        D.E.push([]);
-    });
-
-    full_traverse(G, {next_vertex_edge: function (v, e) {
-        new_edge_vertex(D, e2f[e][ind(G, v, e)], e);
+    }, next_edge: function (e) {
+        new_edge_vertex(D, last_face, e);
     }});
 
     return D;
