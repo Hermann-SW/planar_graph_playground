@@ -121,6 +121,21 @@ function nextAdjacentEdge(G, v, e) {
     }
 }
 
+function ud2st(str) {
+    return (str == undefined) ? "" : str;
+}
+
+function print_graph(G, str) {
+    console.log(ud2st(str)+n_vertices(G)+" vertices, "+n_edges(G)+" edges");
+    forall_vertices(G, function(v) {
+        str = "["+v+"]:";
+        forall_adjacent_edges(G, v, function(e) {
+            str += " "+e+"["+opposite(G, v, e)+"]";
+        });
+        console.log(str);
+    });
+}
+
 function face_vertices(Emb, v, e) {
     var o = e;
     var face = [];

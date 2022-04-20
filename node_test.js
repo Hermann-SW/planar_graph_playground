@@ -7,4 +7,4 @@ var lookup=[];
 var G = from_adjacency_list(F[0]);
 assert.assert(is_embedding(G));
 
-console.log(G.E);
+print_graph(G, "C20: ");
