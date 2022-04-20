@@ -237,7 +237,7 @@ function pentagons(Emb) {
 function dual_graph(G) {
     var last_face = -1;
     var e2f = linear.fill(n_edges(G), 2, -1);
-    var D = new_graph(2 + n_edges(G) - n_vertices(G));
+    var D = new_graph(n_faces_planar(G));
 
     full_traverse(G, {begin_face: function () {
         last_face += 1;
