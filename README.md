@@ -1,5 +1,5 @@
 # planar_graph_playground
-JavaScript playground for drawing planar graphs (eg. fullerenes) in browser.
+JavaScript playground for drawing planar graphs (eg. fullerenes) in browser, or as eg. PostScript file with command line tool rjs (run nodejs script) and "JavaScript with C includes" script.
 
 ## gaus-jordan.js
 
@@ -81,10 +81,57 @@ always 12 pentagons are filled, regardless of outer face vertex count:
 Since the shown JavaScript files are for browser, they do not have module 
 exports needed for nodejs require statements.  
 
-I made C preprocessor #include available to nodejs with [rjs](rjs) tool:  
+C preprocessor #include statements are made available for JavaScript with [rjs](rjs) tool:  
 
     #!/bin/bash
     gcc -E -x c -nostdinc $1 | grep -v "^#"  | node
 
+### node_test.js
 Simple example nodejs script making use of several browser scripts in this repo:  
 ![node include](res/node_include.png)
+
+### node_dual.js
+Simple example nodejs script for testing new "dual_graph()" function:  
+
+    #include "assert.js"
+    #include "fullerenes.js"
+    #include "undirected_graph.js"
+    #include "gauss-jordan.js"
+    
+    var lookup = [];
+    var K4 = [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]];
+    var K5me = [[1, 2, 3, 4], [2, 0, 4], [4, 3, 0, 1], [4, 0, 2], [1, 0, 3, 2]];
+    var D;
+    var G = from_adjacency_list(K5me);
+    
+    assert.assert(is_embedding(G));
+    console.log("is_embedding(K5-e) verified, has " + n_faces_planar(G) + " faces");
+    print_graph(G, "K5-e: ");
+    
+    D = dual_graph(G);
+    assert.assert(is_embedding(D));
+    console.log("is_embedding(dual_graph(K5-e)) verified, has " + n_faces_planar(D) + " faces");
+    print_graph(D, "dual_graph(K5-e): ");
+
+
+Output:  
+
+    pi@pi400-64:~/planar_graph_playground $ rjs node_dual.js 
+    is_embedding(K5-e) verified, has 6 faces
+    K5-e: 5 vertices, 9 edges
+    0: (0)1 (1)2 (2)3 (3)4
+    1: (4)2 (0)0 (5)4
+    2: (6)4 (7)3 (1)0 (4)1
+    3: (8)4 (2)0 (7)2
+    4: (5)1 (3)0 (8)3 (6)2
+    is_embedding(dual_graph(K5-e)) verified, has 5 faces
+    dual_graph(K5-e): 6 vertices, 9 edges
+    0: (0)1 (5)4 (3)3
+    1: (0)0 (1)2 (4)4
+    2: (1)1 (2)3 (7)5
+    3: (2)2 (3)0 (8)5
+    4: (4)1 (6)5 (5)0
+    5: (6)4 (7)2 (8)3
+    pi@pi400-64:~/planar_graph_playground $ 
+
+
