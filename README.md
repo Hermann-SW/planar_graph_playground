@@ -52,7 +52,19 @@ Sample fullerenes C20, C30, ..., C70 adjacency lists.
 
 Function ```header``` writes select and slider elements of HTML page to ```document```.
 
-Function ``'straight_line_drawing(G, coords, length, r)``` creates SVG output of size length×length, with straight line drawing of graph G with vertex array coords coordinates, and vertex label radius r.
+Function ```straight_line_drawing(G, coords, length, r)``` creates SVG output of size length×length, with straight line drawing of graph G with vertex array coords coordinates, and vertex label radius r.
+
+## ps.js
+
+```ps.js``` is counterpart to ```htmlsvg.js```, creates PostScript drawing instead of HTML SVG drawing.
+
+Function ```header``` writes basic ProstScript defines and settings.
+
+Function ```straight_line_drawing(G, coords, length, r)``` creates PostScript output of size length×length, with straight line drawing of graph G with vertex array coords coordinates, and vertex label radius r.
+
+## convex_face_straight_line_drawing.js
+
+Created by externalizing remaining JavaScript in ```index.html```.
 
 ## index.html
 
@@ -135,3 +147,12 @@ Output:
     pi@pi400-64:~/planar_graph_playground $ 
 
 
+### node.convex_face_straight_line_drawing.js
+
+Simple example nodejs script generating PostScript output (C30 fullerene for now):  
+
+    $ rjs node.convex_face_straight_line_drawing.js > C30.ps
+    $ 
+
+[C30.ps](C30.ps) laser printouts, linewidth 1(left) which is checked in line thickness, and linewidth 2/0(right top/bottom).  
+![res/20220421_155813.part.16%.jpg](res/20220421_155813.part.16%.jpg)
