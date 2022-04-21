@@ -21,3 +21,11 @@ print_graph(D, "dual_graph(K5-e): ");
 assert.assert(is_identical_graph(G, dual_graph(D)));
 console.log("is_identical(K5-e, dual_graph(dual_graph(K5-e))) verified");
 
+F.forEach(function (L, i) {
+    G = from_adjacency_list(L);
+    assert.assert(is_embedding(G));
+    D = dual_graph(G);
+    assert.assert(is_embedding(D));
+    assert.assert(is_identical_graph(G, dual_graph(D)));
+    console.log("is_identical(C" + (20 + i * 10) +", dual_graph(dual_graph(C" + (20 + i * 10) +"))) verified");
+});
