@@ -4,7 +4,7 @@ var exports = {};
 var htmlsvg = exports;
 
 if (true) {
-    exports.straight_line_drawing = function (G, coords, pent, length, r, outer) {
+    exports.straight_line_drawing = function (G, coords, pent, length, r, outer, dual) {
         var bx;
         var by;
         var cx;
@@ -13,6 +13,7 @@ if (true) {
         var dy;
         var v;
         var w;
+        var vcol;
 
         document.write('<svg width="' + length + '" height="' + length + '">');
         document.write('<style> .l { stroke:black; stroke-width:2; fill:none; } </style>');
@@ -73,7 +74,12 @@ if (true) {
         forall_vertices(G, function (v) {
             cx = length / 2 + (length / 2 - r - 10) * coords[0][v];
             cy = length / 2 + (length / 2 - r - 10) * coords[1][v];
-            document.write('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" stroke="black" fill="white"></circle>');
+            vcol = (
+                (dual && (degree(G, v) === 5))
+                ? "#00ced1"
+                : "white"
+            );
+            document.write('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" stroke="black" fill="' + vcol + '"></circle>');
 
             if (r >= 12) {
                 document.write('<text x="' + cx + '" y="' + (cy + 1) + '" alignment-baseline="middle" text-anchor="middle">' + (v + 1) + '</text>');
@@ -111,7 +117,7 @@ if (true) {
         document.write('</svg>');
     };
 
-    exports.header = function (selInd, slider, slider2, hidden) {
+    exports.header = function (selInd, slider, slider2, hidden, check) {
         document.body.innerHTML = '';
 
         document.write('<div><form id="myForm">');
@@ -156,10 +162,16 @@ if (true) {
 
         if (!hidden) {
             document.write('Clicking on an edge redraws with that edge being top right edge. Its vertex closer to mouse pointer becomes top vertex.');
-            document.write('<div><label for="myRange">factor: </label><input type="range" min="50" max="120" value="' + slider + '" id="myRange" name="myRangeN" onInput="javascript:doi(' + selInd + ')"></div>');
+            document.write('<div><label for="myRange">factor: </label><input type="range" min="50" max="120" value="' + slider + '" id="myRange" name="myRangeN" onInput="javascript:doi(' + selInd + ')">');
         }
 
-        document.write('<div><label for="myRange2">size: </label><input type="range" min="500" max="7000" value="' + slider2 + '" id="myRange2" onChange="javascript:doi(' + selInd + ')"></div>');
+        document.write('<label for="myRange2">&nbsp;&nbsp;&nbsp;size: </label><input type="range" min="500" max="7000" value="' + slider2 + '" id="myRange2" onChange="javascript:doi(' + selInd + ')">');
+
+        document.write('<label for="myCheckbox">&nbsp;&nbsp;&nbsp;dual: </label><input type="checkbox" id="myCheckbox" onChange="javaScript:doi(' + selInd + ')"' + (
+            check
+            ? " checked"
+            : ""
+        ) + '></div>');
     };
 
 }

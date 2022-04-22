@@ -30,15 +30,20 @@ function doi(x) {
 
     assert.assert(is_embedding(G));
 
-    e = (n_edges(G) > 16) ? 16 : any_edge(G);
+    e = (
+        (n_edges(G) > 16)
+        ? 16
+        : any_edge(G)
+    );
 
     doit(G, source(G, e), e);
 }
 
-function doit(G, v, e) {
+function doit(F, v, e) {
     var slider = document.getElementById("myRange").value;
     var slider2 = document.getElementById("myRange2").value;
     var selInd = document.forms[0].elements[0].selectedIndex;
+    var check = document.getElementById("myCheckbox").checked;
     var size = slider2;
     var r = 12;
     var pent;
@@ -52,17 +57,25 @@ function doit(G, v, e) {
     var dy;
     var w;
 
+    var H = (
+        check
+        ? dual_graph(F)
+        : F
+    );
+
     var visited = linear.fill(n_edges(G), 2, false);
     var face = [];
 
-    traverse_face(G, visited, v, e, ind(G, v, e), { next_vertex: function (v) { face.push(v); } } );
+    traverse_face(H, visited, v, e, ind(H, v, e), {next_vertex: function (v) {
+        face.push(v);
+    }});
     assert.assert(face.length > 0);
 
-    coords = tutte.convex_face_coordinates(G, face, slider / 100.0);
+    coords = tutte.convex_face_coordinates(H, face, slider / 100.0);
 
-    forall_edges(G, function (e) {
-        v = source(G, e);
-        w = target(G, e);
+    forall_edges(H, function (e) {
+        v = source(H, e);
+        w = target(H, e);
         cx = size / 2 + (size / 2 - r) * coords[0][v];
         cy = size / 2 + (size / 2 - r) * coords[1][v];
         dx = size / 2 + (size / 2 - r) * coords[0][w];
@@ -78,9 +91,9 @@ function doit(G, v, e) {
         r = lmin / 3;
     }
 
-    pent = pentagons(G);
+    pent = pentagons(H);
     if (face.length === 5) {
-        tst = linear.fill(n_vertices(G), 1, false);
+        tst = linear.fill(n_vertices(H), 1, false);
         face.forEach(function (v) {
             tst[v] = true;
         });
@@ -101,9 +114,13 @@ function doit(G, v, e) {
 
     }
 
-    htmlsvg.header(selInd, slider, slider2, "");
+    htmlsvg.header(selInd, slider, slider2, "", check);
 
-    htmlsvg.straight_line_drawing(G, coords, pent, size, r, (face.length === 5) ? face : []);
+    htmlsvg.straight_line_drawing(H, coords, pent, size, r, (
+        (face.length === 5)
+        ? face
+        : []
+    ), check);
 }
 
 doi(0);
