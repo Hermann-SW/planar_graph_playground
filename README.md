@@ -91,6 +91,7 @@ always 12 pentagons are filled, regardless of outer face vertex count:
 
 ### added "dual" checkbox allows for drawing selected fullerene or its dual graph
 
+[https://forums.raspberrypi.com/viewtopic.php?p=1995804#p1996069](https://forums.raspberrypi.com/viewtopic.php?p=1995804#p1996069)  
 ![New outer face fill](res/Peek_2022-04-22_11-53.gif)
 
 
