@@ -139,14 +139,18 @@ function ud2st(str) {
     );
 }
 
+function print_vertex(G, v) {
+    var str = v + ":";
+    forall_adjacent_edges(G, v, function (e) {
+        str += " (" + e + ")" + opposite(G, v, e);
+    });
+    console.log(str);
+}
+
 function print_graph(G, str) {
     console.log(ud2st(str) + n_vertices(G) + " vertices, " + n_edges(G) + " edges");
     forall_vertices(G, function (v) {
-        str = v + ":";
-        forall_adjacent_edges(G, v, function (e) {
-            str += " (" + e + ")" + opposite(G, v, e);
-        });
-        console.log(str);
+        print_vertex(G, v);
     });
 }
 
