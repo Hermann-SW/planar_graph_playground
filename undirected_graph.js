@@ -126,12 +126,9 @@ function ind(G, v, e) {
     );
 }
 
-function nextAdjacentEdge(G, v, e) {
-    if (v === source(G, e)) {
-        return G.V[v][(G.E[e][0][1] + 1) % degree(G, v)];
-    } else {
-        return G.V[v][(G.E[e][1][1] + 1) % degree(G, v)];
-    }
+function next_adjacent_edge(G, v, e) {
+    var j = ind(G, v, e);
+    return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)];
 }
 
 function ud2st(str) {
@@ -158,7 +155,7 @@ function face_vertices(Emb, v, e) {
     var face = [];
     do {
         v = opposite(Emb, v, e);
-        e = nextAdjacentEdge(Emb, v, e);
+        e = next_adjacent_edge(Emb, v, e);
         face.push(v);
     } while (e !== o);
     return face;
@@ -177,7 +174,7 @@ function traverse_face(G, visited, v, e, i, pftv) {
             pftv.next_vertex_edge(v, e);
         }
         v = opposite(G, v, e);
-        e = nextAdjacentEdge(G, v, e);
+        e = next_adjacent_edge(G, v, e);
         i = ind(G, v, e);
     }
 }
