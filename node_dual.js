@@ -29,5 +29,5 @@ F.forEach(function (L, i) {
     D = dual_graph(G);
     assert.assert(is_embedding(D));
     assert.assert(is_embedding(G, dual_graph(D)));
-    console.log("is_embedding(C" + (20 + i * 10) +") verified");
+    console.log("is_embedding(C" + (20 + i * 10) + ") verified");
 });
