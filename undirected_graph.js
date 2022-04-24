@@ -282,3 +282,43 @@ function is_identical_graph(G, H) {
     }
     return true;
 }
+
+function is_same_embedding(G, H) {
+    var o;
+    if (n_vertices(G) !== n_vertices(H)) {
+        return false;
+    }
+    if (n_edges(G) !== n_edges(H)) {
+        return false;
+    }
+    if (!G.V.every(function (al, v) {
+	if (al.length !== degree(H, v)) {
+	    return false;
+	}
+	if (al.length === 0) {
+	    return true;
+	}
+	for(o=0; o < al.length; ++o) {
+	    if (al[o] === H.V[v][0]) {
+		break;
+	    }
+	}
+	if (o == al.length) {
+	    return false;
+	}
+	if (!H.V[v].every(function(e, i) {
+	    return al[(o+i)%al.length] === e;
+	})) {
+	    return false;
+	}
+	return true;
+    })) {
+        return false;
+    }
+    if (!G.E.every(function (vt, e) {
+	return ((vt[0][0] === H.E[e][0][0]) && (vt[1][0] === H.E[e][1][0]));
+    })) {
+        return false;
+    }
+    return true;
+}
