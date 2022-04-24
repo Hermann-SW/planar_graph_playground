@@ -196,6 +196,11 @@ function check_traverse(G, visited, v, e, pftv) {
     }
 }
 
+function check_traverse2(G, visited, g, pftv) {
+    check_traverse(G, visited, source(G, g), g, pftv);
+    check_traverse(G, visited, target(G, g), g, pftv);
+}
+
 function planar_face_traversal(G, pftv) {
     var visited = linear.fill(n_edges(G), 2, false);
 
@@ -204,8 +209,7 @@ function planar_face_traversal(G, pftv) {
     }
 
     forall_edges(G, function (g) {
-        check_traverse(G, visited, source(G, g), g, pftv);
-        check_traverse(G, visited, target(G, g), g, pftv);
+        check_traverse2(G, visited, g, pftv);
     });
 
     if (pftv.end_traversal) {
