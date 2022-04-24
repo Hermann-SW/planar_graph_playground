@@ -1,0 +1,2 @@
+#!/bin/bash
+gcc -E -x c -nostdinc $1 | grep -v "^#"  | python

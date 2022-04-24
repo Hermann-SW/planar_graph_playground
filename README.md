@@ -1,5 +1,8 @@
 # planar_graph_playground
-JavaScript playground for drawing planar graphs (eg. fullerenes) in browser, or as eg. PostScript file with command line tool rjs (run nodejs script) and "JavaScript with C includes" script.
+JavaScript playground for drawing planar graphs (eg. fullerenes) in browser, or as eg. PostScript file with command line tool rjs (run nodejs script) and "JavaScript with C includes" script.  
+
+Subdirectory [python](python) contains port to Python, see its [README.md](python/README.md) for details. JavaScript and Python libs will be kept in sync.
+
 
 ## gaus-jordan.js
 

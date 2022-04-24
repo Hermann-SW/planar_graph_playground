@@ -1,0 +1,3 @@
+#!/bin/bash
+gcc -E -x c -nostdinc $1 | grep -v "^#" > /tmp/rpylint
+pylint --docstring-min-length=100 --argument-naming-style=any --variable-naming-style=any --attr-naming-style=any --function-naming-style=any --class-naming-style=any --min-public-methods=0 /tmp/rpylint
