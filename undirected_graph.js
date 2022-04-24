@@ -264,17 +264,17 @@ function is_identical_graph(G, H) {
     if (n_edges(G) !== n_edges(H)) {
         return false;
     }
-    if (!G.V.every(function (v, i) {
-        return v.every(function (e, j) {
-            return e === H.V[i][j];
+    if (!G.V.every(function (al, v) {
+        return al.every(function (e, j) {
+            return e === H.V[v][j];
         });
     })) {
         return false;
     }
-    if (!G.E.every(function (e, i) {
-        return e.every(function (v, j) {
-            return v.every(function (x, k) {
-                return x === H.E[i][j][k];
+    if (!G.E.every(function (vt, e) {
+        return vt.every(function (v2, j) {
+            return v2.every(function (x, k) {
+                return x === H.E[e][j][k];
             });
         });
     })) {
