@@ -15,6 +15,7 @@ if (true) {
                 }
                 found = l.includes("assert.js");
             });
+            throw (message || "Assertion failed");
         }
     };
 }
