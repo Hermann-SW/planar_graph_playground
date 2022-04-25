@@ -4,7 +4,18 @@ var exports = {};
 var ps = exports;
 
 if (true) {
-    exports.straight_line_drawing = function (G, coords, pent, length, r, outer) {
+    exports.set = function (length, r) {
+	exports.length = length;
+	exports.r = r;
+    }
+
+    exports.map = function (v) {
+        return exports.length / 2 + (exports.length / 2 - exports.r - 10) * v;
+    }
+
+    var map = exports.map;
+
+    exports.straight_line_drawing = function (G, coords, pent, length, r, outer, showpage) {
         var bx;
         var by;
         var cx;
@@ -14,14 +25,14 @@ if (true) {
         var v;
         var w;
 
+	exports.set(length, r);
+
         if ((pent.length > 0) && (pent[0].length === 5)) {
 
             pent.forEach(function (face) {
                 console.log(".75 setgray");
                 face.forEach(function (v) {
-                    cx = length / 2 + (length / 2 - r - 10) * coords[0][v];
-                    cy = length / 2 + (length / 2 - r - 10) * coords[1][v];
-                    console.log(' ' + cx + ' ' + cy);
+                    console.log(' ' + map(coords[0][v]) + ' ' + map(coords[1][v]));
                 });
                 console.log('poly fill');
             });
@@ -31,9 +42,7 @@ if (true) {
                 console.log(' 0 0');
 
                 outer.forEach(function (v) {
-                    cx = length / 2 + (length / 2 - r - 10) * coords[0][v];
-                    cy = length / 2 + (length / 2 - r - 10) * coords[1][v];
-                    console.log(' ' + cx + ' ' + cy);
+                    console.log(' ' + map(coords[0][v]) + ' ' + map(coords[1][v]));
                 });
                 console.log(' ' + 0 + ' ' + length);
                 console.log(' ' + length + ' ' + length);
@@ -43,12 +52,8 @@ if (true) {
 
                 console.log(".75 setgray");
                 console.log(' 0 0');
-                cx = length / 2 + (length / 2 - r - 10) * coords[0][outer[0]];
-                cy = length / 2 + (length / 2 - r - 10) * coords[1][outer[0]];
-                console.log(' ' + cx + ' ' + cy);
-                cx = length / 2 + (length / 2 - r - 10) * coords[0][outer[4]];
-                cy = length / 2 + (length / 2 - r - 10) * coords[1][outer[4]];
-                console.log(' ' + cx + ' ' + cy);
+                console.log(' ' + map(coords[0][0]) + ' ' + map(coords[1][0]));
+                console.log(' ' + map(coords[0][4]) + ' ' + map(coords[1][4]));
                 console.log(' ' + 0 + ' ' + length);
                 console.log('poly fill');
             }
@@ -59,47 +64,44 @@ if (true) {
             w = target(G, e);
             if (v < w) {
                 console.log("0 setgray");
-                cx = length / 2 + (length / 2 - r - 10) * coords[0][v];
-                cy = length / 2 + (length / 2 - r - 10) * coords[1][v];
-                console.log(' ' + cx + ' ' + cy);
-                dx = length / 2 + (length / 2 - r - 10) * coords[0][w];
-                dy = length / 2 + (length / 2 - r - 10) * coords[1][w];
-                console.log(' ' + dx + ' ' + dy);
+                console.log(' ' + map(coords[0][v]) + ' ' + map(coords[1][v]));
+                console.log(' ' + map(coords[0][w]) + ' ' + map(coords[1][w]));
                 console.log('poly stroke');
             }
         });
 
         forall_vertices(G, function (v) {
-            cx = length / 2 + (length / 2 - r - 10) * coords[0][v];
-            cy = length / 2 + (length / 2 - r - 10) * coords[1][v];
-            console.log('(' + (v + 1) + ') ' + r + ' ' + cx + ' ' + cy + ' vertex');
+            console.log('(' + (v + 1) + ') ' + r + ' ' + map(coords[0][v]) + ' ' + map(coords[1][v]) + ' vertex');
         });
 
         if ((pent.length > 0) && (pent[0].length === 2)) {
-            cx = length / 2 + (length / 2 - r - 10) * (coords[0][0] + pent[0][0] * (coords[0][3] - coords[0][0]));
-            cy = length / 2 + (length / 2 - r - 10) * (coords[1][0] + pent[0][1] * (coords[1][3] - coords[1][0]));
-            dx = length / 2 + (length / 2 - r - 10) * (coords[0][4] + pent[1][0] * (coords[0][7] - coords[0][4]));
-            dy = length / 2 + (length / 2 - r - 10) * (coords[1][4] + pent[1][1] * (coords[1][7] - coords[1][4]));
+            cx = map(coords[0][0] + pent[0][0] * (coords[0][3] - coords[0][0]));
+            cy = map(coords[1][0] + pent[0][1] * (coords[1][3] - coords[1][0]));
+            dx = map(coords[0][4] + pent[1][0] * (coords[0][7] - coords[0][4]));
+            dy = map(coords[1][4] + pent[1][1] * (coords[1][7] - coords[1][4]));
 
             console.log(".75 setgray");
             conssole.log(' ' + dx + ',' + dy);
-            bx = length / 2 + (length / 2 - r - 10) * coords[0][7];
-            by = length / 2 + (length / 2 - r - 10) * ((coords[1][7] + coords[1][5]) / 2);
+            bx = map(coords[0][7]);
+            by = map((coords[1][7] + coords[1][5]) / 2);
             conssole.log(' ' + bx + ',' + by);
-            bx = length / 2 + (length / 2 - r - 10) * ((coords[0][1] + coords[0][5]) / 2);
-            by = length / 2 + (length / 2 - r - 10) * ((coords[1][1] + coords[1][5]) / 2);
+            bx = map((coords[0][1] + coords[0][5]) / 2);
+            by = map((coords[1][1] + coords[1][5]) / 2);
             conssole.log(' ' + bx + ',' + by);
-            bx = length / 2 + (length / 2 - r - 10) * ((coords[0][1] + coords[0][0]) / 2);
-            by = length / 2 + (length / 2 - r - 10) * ((coords[1][1] + coords[1][0]) / 2);
+            bx = map((coords[0][1] + coords[0][0]) / 2);
+            by = map((coords[1][1] + coords[1][0]) / 2);
             conssole.log(' ' + bx + ',' + by);
             conssole.log(' ' + cx + ',' + cy);
             console.log('poly stroke');
-
-//            document.write('<circle cx="' + dx + '" cy="' + dy + '" r="' + r + '" stroke="red" fill="red"></circle>');
-//            document.write('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" stroke="green" fill="green"></circle>');
         }
 
-        console.log('showpage');
+	if (showpage === undefined) {
+            showpage = true;
+	}
+
+	if (showpage) {
+            console.log('showpage');
+	}
     };
 
     exports.header = function (selInd, slider, slider2, hidden) {
@@ -121,6 +123,16 @@ if (true) {
         console.log("    exch 4 1 roll exch sub -.5 mul 3 1 roll sub -.5 mul exch");
         console.log("    rmoveto show");
         console.log("  } { pop pop pop } ifelse");
+        console.log("} def");
+
+        console.log("/txtdistdeg {");
+        console.log("  newpath moveto");
+        console.log("  gsave dup false charpath flattenpath pathbbox grestore");
+        console.log("  exch 4 1 roll exch sub -.5 mul 3 1 roll sub -.5 mul exch");
+        console.log("  5 3 roll gsave");
+        console.log("  rotate 0 exch rmoveto");
+        console.log("  rmoveto show");
+        console.log("  grestore");
         console.log("} def");
 
         console.log("/poly {");

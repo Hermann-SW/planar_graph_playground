@@ -12,12 +12,10 @@ var K4 = [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]];
 var K4noemb = [[3, 1, 2], [2, 0, 3], [0, 3, 1], [0, 1, 2]];
 var coords;
 
-function scr(xy, length, r) {
-    return length / 2 + (length / 2 - r) * xy;
-}
+var map = ps.map;
 
 function dist(v, evt, size, r) {
-    return Math.sqrt((scr(coords[0][v], size, r) - evt.layerX)**2 + (scr(coords[1][v], size, r) - evt.layerY)**2);
+    return Math.sqrt((map(coords[0][v]) - evt.layerX)**2 + (map(coords[1][v]) - evt.layerY)**2);
 }
 
 function doi(x) {
@@ -28,9 +26,6 @@ function doi(x) {
 
     assert.assert(is_embedding(G));
 
-    //print_graph(G);
-
-    //e = (n_edges(G) > 16) ? 16 : any_edge(G);
     e = (n_edges(G) > 9) ? 9 : any_edge(G);
 
     doit(G, source(G, e), e);
@@ -64,10 +59,10 @@ function doit(G, v, e) {
     forall_edges(G, function (e) {
         v = source(G, e);
         w = target(G, e);
-        cx = size / 2 + (size / 2 - r) * coords[0][v];
-        cy = size / 2 + (size / 2 - r) * coords[1][v];
-        dx = size / 2 + (size / 2 - r) * coords[0][w];
-        dy = size / 2 + (size / 2 - r) * coords[1][w];
+        cx = map(coords[0][v]);
+        cy = map(coords[1][v]);
+        dx = map(coords[0][w]);
+        dy = map(coords[1][w]);
         dx -= cx;
         dy -= cy;
         lcur = Math.sqrt(dx * dx + dy * dy);
