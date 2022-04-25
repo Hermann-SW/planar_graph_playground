@@ -14,10 +14,6 @@ var coords;
 
 var map = ps.map;
 
-function dist(v, evt, size, r) {
-    return Math.sqrt((map(coords[0][v]) - evt.layerX)**2 + (map(coords[1][v]) - evt.layerY)**2);
-}
-
 function doi(x) {
     var e;
 
@@ -26,7 +22,11 @@ function doi(x) {
 
     assert.assert(is_embedding(G));
 
-    e = (n_edges(G) > 9) ? 9 : any_edge(G);
+    e = (
+        (n_edges(G) > 9)
+        ? 9
+        : any_edge(G)
+    );
 
     doit(G, source(G, e), e);
 }
@@ -50,8 +50,11 @@ function doit(G, v, e) {
 
     var visited = linear.fill(n_edges(G), 2, false);
     var face = [];
+    var deg;
 
-    traverse_face(G, visited, v, e, ind(G, v, e), { next_vertex: function (v) { face.push(v); } } );
+    traverse_face(G, visited, v, e, ind(G, v, e), {next_vertex: function (v) {
+        face.push(v);
+    }});
     assert.assert(face.length > 0);
 
     coords = tutte.convex_face_coordinates(G, face, slider / 100.0);
@@ -99,7 +102,23 @@ function doit(G, v, e) {
 
     ps.header(selInd, slider, slider2, "");
 
-    ps.straight_line_drawing(G, coords, pent, size, r, (face.length === 5) ? face : []);
+    ps.straight_line_drawing(G, coords, pent, size, r, (
+        (face.length === 5)
+        ? face
+        : []
+    ), false);
+
+    forall_edges(G, function (e) {
+        v = source(G, e);
+        w = target(G, e);
+        cx = (map(coords[0][v]) + map(coords[0][w])) / 2;
+        cy = (map(coords[1][v]) + map(coords[1][w])) / 2;
+        console.log("() 1 " + cx + " " + cy + " vertex");
+        deg = Math.atan2(coords[1][w] - coords[1][v], coords[0][w] - coords[0][v]) * 180 / Math.PI;
+        console.log("9 " + deg + " (" + e + ") " + cx + " " + cy + " txtdistdeg");
+    });
+
+    console.log("showpage");
 }
 
 doi(1);

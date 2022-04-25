@@ -5,13 +5,13 @@ var ps = exports;
 
 if (true) {
     exports.set = function (length, r) {
-	exports.length = length;
-	exports.r = r;
-    }
+        exports.length = length;
+        exports.r = r;
+    };
 
     exports.map = function (v) {
         return exports.length / 2 + (exports.length / 2 - exports.r - 10) * v;
-    }
+    };
 
     var map = exports.map;
 
@@ -25,7 +25,7 @@ if (true) {
         var v;
         var w;
 
-	exports.set(length, r);
+    exports.set(length, r);
 
         if ((pent.length > 0) && (pent[0].length === 5)) {
 
@@ -81,27 +81,27 @@ if (true) {
             dy = map(coords[1][4] + pent[1][1] * (coords[1][7] - coords[1][4]));
 
             console.log(".75 setgray");
-            conssole.log(' ' + dx + ',' + dy);
+            console.log(' ' + dx + ',' + dy);
             bx = map(coords[0][7]);
             by = map((coords[1][7] + coords[1][5]) / 2);
-            conssole.log(' ' + bx + ',' + by);
+            console.log(' ' + bx + ',' + by);
             bx = map((coords[0][1] + coords[0][5]) / 2);
             by = map((coords[1][1] + coords[1][5]) / 2);
-            conssole.log(' ' + bx + ',' + by);
+            console.log(' ' + bx + ',' + by);
             bx = map((coords[0][1] + coords[0][0]) / 2);
             by = map((coords[1][1] + coords[1][0]) / 2);
-            conssole.log(' ' + bx + ',' + by);
-            conssole.log(' ' + cx + ',' + cy);
+            console.log(' ' + bx + ',' + by);
+            console.log(' ' + cx + ',' + cy);
             console.log('poly stroke');
         }
 
-	if (showpage === undefined) {
+        if (showpage === undefined) {
             showpage = true;
-	}
+        }
 
-	if (showpage) {
+        if (showpage) {
             console.log('showpage');
-	}
+        }
     };
 
     exports.header = function (selInd, slider, slider2, hidden) {
@@ -144,5 +144,5 @@ if (true) {
         console.log("  } loop");
         console.log("} def");
 
-    }
+    };
 }
