@@ -1,5 +1,3 @@
-''' fullerenes '''
-
 with open('../fullerenes.js') as f:
     lines = f.readlines()
 
