@@ -9,11 +9,16 @@ if (true) {
         exports.r = r;
     };
 
-    exports.map = function (v) {
+    exports.scrx = function (v) {
         return exports.length / 2 + (exports.length / 2 - exports.r - 10) * v;
     };
 
-    var map = exports.map;
+    exports.scry = function (v) {
+        return exports.length / 2 - (exports.length / 2 - exports.r - 10) * v;
+    };
+
+    var scrx = exports.scrx;
+    var scry = exports.scry;
 
     exports.straight_line_drawing = function (G, coords, pent, length, r, outer, showpage) {
         var bx;
@@ -32,7 +37,7 @@ if (true) {
             pent.forEach(function (face) {
                 console.log(".75 setgray");
                 face.forEach(function (v) {
-                    console.log(' ' + map(coords[0][v]) + ' ' + map(coords[1][v]));
+                    console.log(' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]));
                 });
                 console.log('poly fill');
             });
@@ -42,7 +47,7 @@ if (true) {
                 console.log(' 0 0');
 
                 outer.forEach(function (v) {
-                    console.log(' ' + map(coords[0][v]) + ' ' + map(coords[1][v]));
+                    console.log(' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]));
                 });
                 console.log(' ' + 0 + ' ' + length);
                 console.log(' ' + length + ' ' + length);
@@ -52,8 +57,8 @@ if (true) {
 
                 console.log(".75 setgray");
                 console.log(' 0 0');
-                console.log(' ' + map(coords[0][0]) + ' ' + map(coords[1][0]));
-                console.log(' ' + map(coords[0][4]) + ' ' + map(coords[1][4]));
+                console.log(' ' + scrx(coords[0][0]) + ' ' + scry(coords[1][0]));
+                console.log(' ' + scrx(coords[0][4]) + ' ' + scry(coords[1][4]));
                 console.log(' ' + 0 + ' ' + length);
                 console.log('poly fill');
             }
@@ -64,32 +69,32 @@ if (true) {
             w = target(G, e);
             if (v < w) {
                 console.log("0 setgray");
-                console.log(' ' + map(coords[0][v]) + ' ' + map(coords[1][v]));
-                console.log(' ' + map(coords[0][w]) + ' ' + map(coords[1][w]));
+                console.log(' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]));
+                console.log(' ' + scrx(coords[0][w]) + ' ' + scry(coords[1][w]));
                 console.log('poly stroke');
             }
         });
 
         forall_vertices(G, function (v) {
-            console.log('(' + (v + 1) + ') ' + r + ' ' + map(coords[0][v]) + ' ' + map(coords[1][v]) + ' vertex');
+            console.log('(' + (v + 1) + ') ' + r + ' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]) + ' vertex');
         });
 
         if ((pent.length > 0) && (pent[0].length === 2)) {
-            cx = map(coords[0][0] + pent[0][0] * (coords[0][3] - coords[0][0]));
-            cy = map(coords[1][0] + pent[0][1] * (coords[1][3] - coords[1][0]));
-            dx = map(coords[0][4] + pent[1][0] * (coords[0][7] - coords[0][4]));
-            dy = map(coords[1][4] + pent[1][1] * (coords[1][7] - coords[1][4]));
+            cx = scrx(coords[0][0] + pent[0][0] * (coords[0][3] - coords[0][0]));
+            cy = scry(coords[1][0] + pent[0][1] * (coords[1][3] - coords[1][0]));
+            dx = scrx(coords[0][4] + pent[1][0] * (coords[0][7] - coords[0][4]));
+            dy = scry(coords[1][4] + pent[1][1] * (coords[1][7] - coords[1][4]));
 
             console.log(".75 setgray");
             console.log(' ' + dx + ',' + dy);
-            bx = map(coords[0][7]);
-            by = map((coords[1][7] + coords[1][5]) / 2);
+            bx = scrx(coords[0][7]);
+            by = scry((coords[1][7] + coords[1][5]) / 2);
             console.log(' ' + bx + ',' + by);
-            bx = map((coords[0][1] + coords[0][5]) / 2);
-            by = map((coords[1][1] + coords[1][5]) / 2);
+            bx = scrx((coords[0][1] + coords[0][5]) / 2);
+            by = scry((coords[1][1] + coords[1][5]) / 2);
             console.log(' ' + bx + ',' + by);
-            bx = map((coords[0][1] + coords[0][0]) / 2);
-            by = map((coords[1][1] + coords[1][0]) / 2);
+            bx = scrx((coords[0][1] + coords[0][0]) / 2);
+            by = scry((coords[1][1] + coords[1][0]) / 2);
             console.log(' ' + bx + ',' + by);
             console.log(' ' + cx + ',' + cy);
             console.log('poly stroke');

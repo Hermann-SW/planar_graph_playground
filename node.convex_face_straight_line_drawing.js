@@ -12,7 +12,8 @@ var K4 = [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]];
 var K4noemb = [[3, 1, 2], [2, 0, 3], [0, 3, 1], [0, 1, 2]];
 var coords;
 
-var map = ps.map;
+var scrx = ps.scrx;
+var scry = ps.scry;
 
 function doi(x) {
     var e;
@@ -62,10 +63,10 @@ function doit(G, v, e) {
     forall_edges(G, function (e) {
         v = source(G, e);
         w = target(G, e);
-        cx = map(coords[0][v]);
-        cy = map(coords[1][v]);
-        dx = map(coords[0][w]);
-        dy = map(coords[1][w]);
+        cx = scrx(coords[0][v]);
+        cy = scry(coords[1][v]);
+        dx = scrx(coords[0][w]);
+        dy = scry(coords[1][w]);
         dx -= cx;
         dy -= cy;
         lcur = Math.sqrt(dx * dx + dy * dy);
@@ -111,10 +112,10 @@ function doit(G, v, e) {
     forall_edges(G, function (e) {
         v = source(G, e);
         w = target(G, e);
-        cx = (map(coords[0][v]) + map(coords[0][w])) / 2;
-        cy = (map(coords[1][v]) + map(coords[1][w])) / 2;
+        cx = (scrx(coords[0][v]) + scrx(coords[0][w])) / 2;
+        cy = (scry(coords[1][v]) + scry(coords[1][w])) / 2;
         console.log("() 1 " + cx + " " + cy + " vertex");
-        deg = Math.atan2(coords[1][w] - coords[1][v], coords[0][w] - coords[0][v]) * 180 / Math.PI;
+        deg = Math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / Math.PI;
         console.log("9 " + deg + " (" + e + ") " + cx + " " + cy + " txtdistdeg");
     });
 
