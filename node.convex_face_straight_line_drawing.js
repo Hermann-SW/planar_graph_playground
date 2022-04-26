@@ -12,9 +12,6 @@ var K4 = [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]];
 var K4noemb = [[3, 1, 2], [2, 0, 3], [0, 3, 1], [0, 1, 2]];
 var coords;
 
-var scrx = ps.scrx;
-var scry = ps.scry;
-
 function doi(x) {
     var e;
 

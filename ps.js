@@ -4,6 +4,9 @@ var exports = {};
 var ps = exports;
 
 if (true) {
+    var scrx;
+    var scry;
+
     exports.set = function (length, r) {
         exports.length = length;
         exports.r = r;
@@ -17,8 +20,8 @@ if (true) {
         return exports.length / 2 - (exports.length / 2 - exports.r - 10) * v;
     };
 
-    var scrx = exports.scrx;
-    var scry = exports.scry;
+    scrx = exports.scrx;
+    scry = exports.scry;
 
     exports.straight_line_drawing = function (G, coords, pent, length, r, outer, showpage) {
         var bx;
@@ -30,7 +33,7 @@ if (true) {
         var v;
         var w;
 
-    exports.set(length, r);
+        exports.set(length, r);
 
         if ((pent.length > 0) && (pent[0].length === 5)) {
 
@@ -109,7 +112,7 @@ if (true) {
         }
     };
 
-    exports.header = function (selInd, slider, slider2, hidden) {
+    exports.header = function () {
         console.log("%!");
         console.log("% " + process.argv.length + " " + process.argv[0]);
         console.log("1 setlinewidth");
