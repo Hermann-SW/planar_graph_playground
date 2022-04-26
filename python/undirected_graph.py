@@ -1,5 +1,3 @@
-''' undirected_graph '''
-
 def filled_array(n, m, v=0):
     A = []
     for _ in range(n):
@@ -11,6 +9,9 @@ def filled_array(n, m, v=0):
 
 def incr(arr, i=0):
     arr[i] += 1
+
+def aset(arr, x, i=0):
+    arr[i] = x
 
 class graph:
     def __init__(self, n, m):
@@ -182,22 +183,23 @@ def is_embedding(G):
     return n_vertices(G) - n_edges(G) + nfaces[0] == 2
 
 def pentagons(Emb):
-    global pent
-    global face
-    def init_face():
-        face = []
-    def append_pent():
-        if face.length == 5:
-            pent.append(face)
-    def face_add(v):
-        face.append(v)
+    def init_face(f):
+        f[0] = []
+
+    def append_pent(p, f):
+        if f.length == 5:
+            p[0].append(f)
+
+    def face_add(f, v):
+        f[0].append(v)
     
-    pent = []
+    pent = [[]]
+    face = [[]]
 
     pftv = planar_face_traversal_visitor()
-    pftv.begin_face  = lambda: init_face
-    pftv.end_face    = lambda: append_pent
-    pftv.next_vertex = lambda v: face_add
+    pftv.begin_face  = lambda: init_face(face)
+    pftv.end_face    = lambda: append_pent(pent, face[0])
+    pftv.next_vertex = lambda v: face_add(face, v)
 
     planar_face_traversal(Emb, pftv)
 
@@ -230,3 +232,5 @@ def is_identical_graph(G, H):
                 if x != H.E[i][j][k]:
                     return False
     return True
+
+
