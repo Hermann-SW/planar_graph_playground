@@ -38,7 +38,7 @@ def draw(x):
 
     rgb = [ "0 0 1", "0 1 0", "1 0 0", "0.5 0.5 1" ]
 
-    def draw_vertex_edge_label(G, v, e, rgb):
+    def draw_vertex_edge_vector(G, v, e, rgb):
         w = opposite(G, v, e)
         cx = (ps.scrx(coords[0][v]) + ps.scrx(coords[0][w])) / 2
         cy = (ps.scry(coords[1][v]) + ps.scry(coords[1][w])) / 2
@@ -50,7 +50,8 @@ def draw(x):
     cnt = [-1]
     pftv                  = planar_face_traversal_visitor()
     pftv.begin_face       = lambda: (incr(last_face), aset(cnt,0))
-    pftv.next_vertex_edge = lambda v, e: (draw_vertex_edge_label(G, v, e, rgb[last_face[0]]),
+    pftv.next_vertex_edge = lambda v, e: (draw_vertex_edge_vector(G, v, e,
+                                                                  rgb[last_face[0] % len(rgb)]),
                                           incr(cnt))
     planar_face_traversal(G, pftv)
 
