@@ -47,12 +47,10 @@ def draw(x):
               " " + str(cx) + " " + str(cy) + " parrow")
 
     last_face = [-1]
-    cnt = [-1]
     pftv                  = planar_face_traversal_visitor()
-    pftv.begin_face       = lambda: (incr(last_face), aset(cnt,0))
-    pftv.next_vertex_edge = lambda v, e: (draw_vertex_edge_vector(G, v, e,
-                                                                  rgb[last_face[0] % len(rgb)]),
-                                          incr(cnt))
+    pftv.begin_face       = lambda: incr(last_face)
+    pftv.next_vertex_edge = lambda v, e: draw_vertex_edge_vector(G, v, e,
+                                                                 rgb[last_face[0] % len(rgb)])
     planar_face_traversal(G, pftv)
 
 
