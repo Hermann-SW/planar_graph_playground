@@ -6,10 +6,15 @@ var ps = exports;
 if (true) {
     var scrx;
     var scry;
+    var set;
 
-    exports.set = function (length, r) {
+    exports.set = function (length, r, i) {
         exports.length = length;
         exports.r = r;
+        if (i === undefined) {
+            i = 1;
+        }
+        exports.i = i;
     };
 
     exports.scrx = function (v) {
@@ -22,6 +27,7 @@ if (true) {
 
     scrx = exports.scrx;
     scry = exports.scry;
+    set  = exports.set;
 
     exports.straight_line_drawing = function (G, coords, pent, length, r, outer, showpage) {
         var bx;
@@ -33,7 +39,7 @@ if (true) {
         var v;
         var w;
 
-        exports.set(length, r);
+        set(length, r);
 
         if ((pent.length > 0) && (pent[0].length === 5)) {
 
@@ -153,4 +159,56 @@ if (true) {
         console.log("} def");
 
     };
+
+    exports.header2 = function () {
+        console.log("%% http://computer-programming-forum.com/36-postscript/3d1b79b93a578811.htm");
+        console.log("/arrow          %% angle /arrow -- draws arrowhead");
+        console.log("{");
+        console.log("gsave");
+        console.log("  currentpoint translate 90 sub rotate .5 .5 scale");
+        console.log("  newpath");
+        console.log("  0.1 setlinewidth");
+        console.log("  0 -15 moveto");
+        console.log("  -6 -18 lineto");
+        console.log("  -4 -15 -1 -9 0 0 curveto");
+        console.log("  1 -9 4 -15 6 -18 curveto");
+        console.log("  0 -15 lineto");
+        console.log("  fill");
+        console.log("grestore");
+        console.log("} def");
+
+        console.log("/arrowto        %% x1 y1 arrowto -- draws line with arrowhead");
+        console.log("{");
+        console.log("  2 copy                  % x1 y1 x1 y1");
+        console.log("  currentpoint            % x1 y1 x1 y1 x0 y0");
+        console.log("  3 -1 roll exch          % x1 y1 x1 x0 y1 y0");
+        console.log("  sub                     % x1 y1 x1 x0 y1-y0");
+        console.log("  3 1 roll                % x1 y1 y1-y0 x1 x0");
+        console.log("  sub                     % x1 y1 y1-y0 x1-x0");
+        console.log("  atan                    % x1 y1 theta");
+        console.log("  3 1 roll                % theta x1 y1");
+        console.log("  2 copy lineto           % theta x1 y1");
+        console.log("  2 copy stroke moveto    % theta x1 y1");
+        console.log("  3 -1 roll arrow         % x1 y1");
+        console.log("  moveto");
+        console.log("} def");
+
+        console.log("/rarrowto {     %%  dx dy rarrowto --");
+        console.log("  exch currentpoint       % dy dx x0 y0");
+        console.log("  4 1 roll                % y0 dy dx x0");
+        console.log("  add 3 1 roll            % x0+dx y0 dy");
+        console.log("  add arrowto");
+        console.log("} def");
+
+        console.log("%% len dist cr cg cb angle x1 y1");
+        console.log("/parrow {");
+        console.log("  gsave");
+        console.log("  newpath translate 0 0 moveto");
+        console.log("  rotate");
+        console.log("  setrgbcolor");
+        console.log("  0 exch rmoveto");
+        console.log("  0 rarrowto ");
+        console.log("  grestore");
+        console.log("} def");
+    }
 }
