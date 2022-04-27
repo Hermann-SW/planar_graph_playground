@@ -17,7 +17,6 @@ function draw(x) {
     var size = 592;
     var r = 12;
     var last_face;
-    var pftv;
     var rgb;
 
     ps.set(size, r, 0);
@@ -36,14 +35,11 @@ function draw(x) {
     }
 
     last_face = -1;
-    pftv = planar_face_traversal_visitor();
-    pftv.begin_face = function () {
+    planar_face_traversal(G, {begin_face: function () {
         last_face += 1;
-    };
-    pftv.next_vertex_edge = function (v, e) {
+    }, next_vertex_edge: function (v, e) {
         draw_vertex_edge_vector(G, v, e, rgb[last_face % rgb.length]);
-    };
-    planar_face_traversal(G, pftv);
+    }});
 
 
     console.log("0 0 (is_embedding=" + is_embedding(G) + ",");
