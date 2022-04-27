@@ -78,7 +78,7 @@ Screenshot of 2nd page of Postscript file created, showing a drawing of complete
 
 ## embedding_demo.3.py
 
-[embedding_demo.3.py](embedding_demo.3.py) utilized new ```ps.header2()``` function that defines ```/parrow```. It outputs no lables to Postscript on the fly while running planar face traversal, but colored vectors in direction of traversal of the edge.
+[embedding_demo.3.py](embedding_demo.3.py) utilizes new ```ps.header2()``` function that defines ```/parrow```. It outputs no lables to Postscript on the fly while running planar face traversal, but colored vectors in direction of traversal of the edge.
 
 Embedding K4 with 4 faces shows 4 vector colors:  
 ![../res/postscript_traversal_edge_vectors.K4.png](../res/postscript_traversal_edge_vectors.K4.png)
