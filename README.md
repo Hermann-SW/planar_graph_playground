@@ -156,6 +156,48 @@ Output:
     5: (6)4 (7)2 (8)3
     pi@pi400-64:~/planar_graph_playground $ 
 
+## embedding_demo.js
+
+[embedding_demo.js](embedding_demo.js) demonstrates how ```is_embedding(G)``` works, by doing ```planar_face_traversal(G)``` and counting faces. ```G``` is an embedding only, if determined number of faces is ```2 + n_vertices(G) - n_edges(G)```.  
+
+2-page Postscript file [ed.ps](res/ed.ps) created and viewed with these commands (```gv``` is GhostView):  
+
+    pi@pi400-64:~/planar_graph_playground/python $ ./rjs embedding_demo.js > ed.ps
+    pi@pi400-64:~/planar_graph_playground/python $ gv ed.ps
+
+Screenshot of first page of Postscript file created, showing an embdding of complete graph on 4 vertices, created with ```from_adjacency_list()```. The left number of edge labels gives the face number, the right letters describe the order the edges of that face have been traversed (a, b, ...). Traversal of a face with edge e, from vertex v is done in ```traverce_face()``` by:
+
+    v = opposite(G, v, e);
+    e = next_adjacent_edge(G, v, e);
+
+Next adjacent edge is next (cyclical) in clockwise order of shown vertex:  
+![res/postscript_traversal_edge_labels.K4.png](res/postscript_traversal_edge_labels.K4.png)
+
+Screenshot of 2nd page of Postscript file created, showing a drawing of complete graph on 4 vertices, created with ```from_adjacency_list()```, which is no embedding. As printed below, G would need 4 faces in traversal for being a planar graph, but as the drawing shows, only two "faces" were traversed:  
+![res/postscript_traversal_edge_labels.K4noemb.png](res/postscript_traversal_edge_labels.K4noemb.png)
+
+
+## embedding_demo.2.js
+
+[embedding_demo.2.js](embedding_demo.2.js) does the same thing, just without storing the labels in edge array ```eface``` first.  It outputs the lables to Postscript on the fly while running planar face traversal.
+
+## embedding_demo.3.js
+
+[embedding_demo.3.js](embedding_demo.3.js) utilizes new ```ps.header2()``` function that defines ```/parrow```. It outputs no labels to Postscript on the fly while running planar face traversal, but colored vectors in direction of traversal of the edge.  
+
+The non-embedding K4noemb has two vector colors only:  
+[res/postscript_traversal_edge_vectors.K4noemb.png](res/postscript_traversal_edge_vectors.K4noemb.png)
+
+Embedding K4 with 4 faces shows 4 vector colors:  
+![res/postscript_traversal_edge_vectors.K4.png](res/postscript_traversal_edge_vectors.K4.png)
+
+All colored vectors are created with this only 11 lines of code on the fly, with inlined visitor functions in call of ```planar_face_traversal()```:  
+![res/embedding_demo.3.js.2.png](res/embedding_demo.3.js.2.png)
+
+```/parrow``` is called with these arguments:
+
+    %% len dist cr cg cb angle x1 y1
+    /parrow {
 
 ### node.convex_face_straight_line_drawing.js
 
