@@ -1,3 +1,7 @@
+function planar_face_traversal_visitor() {
+    return {};
+}
+
 function degree(G, v) {
     return G.V[v].length;
 }
