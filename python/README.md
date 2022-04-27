@@ -71,3 +71,13 @@ Next adjacent edge is next (cyclical) in clockwise order of shown vertex:
 Screenshot of 2nd page of Postscript file created, showing a drawing of complete graph on 4 vertices, created with ```from_adjacency_list()```, which is no embedding. As printed below, G would need 4 faces in traversal for being a planar graph, but as the drawing shows, only two "faces" were traversed:  
 ![../res/postscript_traversal_edge_labels.K4noemb.png](../res/postscript_traversal_edge_labels.K4noemb.png)
 
+
+[embedding_demo.2.py](embedding_demo.2.py) does the same thing, just without storing the labels in edge array ```eface``` first.  It outputs the lables to Postscript on the fly while running planar face traversal.
+
+Finally [embedding_demo.3.py](embedding_demo.3.py) utilized new ```ps.header2()``` function that defines ```/parrow```. It outputs no lables to Postscript on the fly while running planar face traversal, but colored vectors in direction of traversal of the edge.
+
+Embedding K4 with 4 faces shows 4 vector colors:  
+![../res/postscript_traversal_edge_vectors.K4.png](../res/postscript_traversal_edge_vectors.K4.png)
+
+The non-embedding K4noemb has two vector colors only:  
+[../res/postscript_traversal_edge_vectors.K4noemb.png](../res/postscript_traversal_edge_vectors.K4noemb.png)
