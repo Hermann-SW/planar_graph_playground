@@ -168,9 +168,9 @@ Output:
 Screenshot of first page of Postscript file created, showing an embdding of complete graph on 4 vertices, created with ```from_adjacency_list()```. The left number of edge labels gives the face number, the right letters describe the order the edges of that face have been traversed (a, b, ...). Traversal of a face with edge e, from vertex v is done in ```traverce_face()``` by:
 
     v = opposite(G, v, e);
-    e = next_adjacent_edge(G, v, e);
+    e = next_incident_edge(G, v, e);
 
-Next adjacent edge is next (cyclical) in clockwise order of shown vertex:  
+Next incident edge is next (cyclical) in clockwise order of shown vertex:  
 ![res/postscript_traversal_edge_labels.K4.png](res/postscript_traversal_edge_labels.K4.png)
 
 Screenshot of 2nd page of Postscript file created, showing a drawing of complete graph on 4 vertices, created with ```from_adjacency_list()```, which is no embedding. As printed below, G would need 4 faces in traversal for being a planar graph, but as the drawing shows, only two "faces" were traversed:  

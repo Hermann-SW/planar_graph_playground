@@ -2,6 +2,10 @@ function planar_face_traversal_visitor() {
     return {};
 }
 
+function empty_graph() {
+    return { V: [], E: [] };
+}
+
 function degree(G, v) {
     return G.V[v].length;
 }
@@ -29,6 +33,18 @@ function forall_vertices(G, f) {
     }
 }
 
+function max_degree(G) {
+    var mdeg = -1;
+
+    forall_vertices(G, function (v) {
+        if (degree(G, v) > mdeg) {
+            mdeg = degree(G, v);
+        }
+    });
+
+    return mdeg;
+}
+
 function forall_edges(G, f) {
     var e;
     for (e = 0; e < n_edges(G); e += 1) {
@@ -44,7 +60,7 @@ function any_edge(G) {
     );
 }
 
-function forall_adjacent_edges(G, v, f) {
+function forall_incident_edges(G, v, f) {
     G.V[v].forEach(function (e) {
         f(e);
     });
@@ -131,7 +147,7 @@ function ind(G, v, e) {
     );
 }
 
-function next_adjacent_edge(G, v, e) {
+function next_incident_edge(G, v, e) {
     var j = ind(G, v, e);
     return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)];
 }
@@ -146,7 +162,7 @@ function ud2st(str) {
 
 function print_vertex(G, v) {
     var str = v + ":";
-    forall_adjacent_edges(G, v, function (e) {
+    forall_incident_edges(G, v, function (e) {
         str += " (" + e + ")" + opposite(G, v, e);
     });
     console.log(str);
@@ -164,7 +180,7 @@ function face_vertices(Emb, v, e) {
     var face = [];
     do {
         v = opposite(Emb, v, e);
-        e = next_adjacent_edge(Emb, v, e);
+        e = next_incident_edge(Emb, v, e);
         face.push(v);
     } while (e !== o);
     return face;
@@ -183,7 +199,7 @@ function traverse_face(G, visited, v, e, i, pftv) {
             pftv.next_vertex_edge(v, e);
         }
         v = opposite(G, v, e);
-        e = next_adjacent_edge(G, v, e);
+        e = next_incident_edge(G, v, e);
         i = ind(G, v, e);
     }
 }

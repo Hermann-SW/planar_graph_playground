@@ -60,7 +60,7 @@ def forall_edges(G, f):
 def any_edge(G):
     return 0 if (len(G.E) > 0) else -1
 
-def forall_adjacent_edges(G, v, f):
+def forall_incidcent_edges(G, v, f):
     for e in G.V[v]:
         f(e)
 
@@ -115,13 +115,13 @@ def opposite(G, v, e):
 def ind(G, v, e):
     return 0 if (v == source(G, e)) else 1
 
-def next_adjacent_edge(G, v, e):
+def next_incident_edge(G, v, e):
     j = ind(G, v, e)
     return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)]
 
 def print_vertex(G, v):
     print(str(v) + ":", end="")
-    forall_adjacent_edges(G, v, lambda e: print(" ("+str(e)+")"+str(opposite(G, v, e)), end=""))
+    forall_incident_edges(G, v, lambda e: print(" ("+str(e)+")"+str(opposite(G, v, e)), end=""))
     print()
     
 def print_graph(G, st=""):
@@ -133,7 +133,7 @@ def face_vertices(Emb, v, e):
     face = []
     while True:
         v = opposite(Emb, v, e)
-        e = next_adjacent_edge(Emb, v, e)
+        e = next_incident_edge(Emb, v, e)
         face.append(v)
         if e == o:
             break
@@ -147,7 +147,7 @@ def traverse_face(G, visited, v, e, i, pftv):
         pftv.next_edge(e)
         pftv.next_vertex_edge(v, e)
         v = opposite(G, v, e)
-        e = next_adjacent_edge(G, v, e)
+        e = next_incident_edge(G, v, e)
         i = ind(G, v, e)
 
 def check_traverse(G, visited, v, e, pftv):

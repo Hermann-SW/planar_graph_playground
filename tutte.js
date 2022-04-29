@@ -32,7 +32,7 @@ if (true) {
                 X[v][v] = -1;
                 Y[v][v] = -1;
 
-                forall_adjacent_edges(Emb, v, function (e) {
+                forall_incident_edges(Emb, v, function (e) {
                     w = opposite(Emb, v, e);
                     X[v][w] = 1.0 / degree(Emb, v);
                     Y[v][w] = 1.0 / degree(Emb, v);
