@@ -99,6 +99,7 @@ function choose2(n) {
 function from_adjacency_list(L) {
     var e;
     var G = new_graph(L.length);
+    var lookup = []
 
     L.forEach(function (l, v) {
         l.forEach(function (w) {
