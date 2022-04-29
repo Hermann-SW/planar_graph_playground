@@ -95,9 +95,7 @@ def choose2(n):
     return n * (n + 1) // 2
 
 def from_adjacency_list(L):
-    global lookup
-    if len(lookup) < choose2(len(L)):
-        lookup = [0]*choose2(len(L))
+    lookup = [0]*choose2(len(L))
 
     G = new_graph(len(L))
 

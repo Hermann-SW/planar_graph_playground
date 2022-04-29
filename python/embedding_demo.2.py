@@ -15,7 +15,6 @@ def print_to_string(*args, **kwargs):
 
 ps = ps()
 
-lookup  = []
 K4      = [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]]
 K4noemb = [[3, 1, 2], [2, 0, 3], [0, 3, 1], [1, 2, 0]]
 F       = [ K4, K4noemb ]
