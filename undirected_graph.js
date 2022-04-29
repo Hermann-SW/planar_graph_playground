@@ -3,7 +3,7 @@ function planar_face_traversal_visitor() {
 }
 
 function empty_graph() {
-    return { V: [], E: [] };
+    return {E: [], V: []};
 }
 
 function degree(G, v) {
@@ -108,14 +108,106 @@ function new_graph(n, m) {
     })};
 }
 
+function remove_edge1(G, v, e) {
+    var i = ind(G, v, e);
+    var f = G.V[v].pop();
+    var j;
+    if (e !== f) {
+        j = ind(G, v, f);
+        G.E[f][j][1] = G.E[e][i][1];
+        G.V[v][G.E[f][j][1]] = f;
+    }
+    G.E[e][i][1] = -1;
+}
+
+function compact5(G) {
+    var S = [];
+    var small = Array.from(new Array(n_vertices(G)), function () {
+        return false;
+    });
+    var v;
+
+    forall_vertices(G, function (v) {
+        if (degree(G, v) < 6) {
+            S.push(v);
+            small[v] = true;
+        }
+    });
+
+    while (S.length > 0) {
+        v = S.pop();
+        forall_incident_edges(G, v, function (e) {
+            var w = opposite(G, v, e);
+            remove_edge1(G, w, e);
+            if ((!small[w]) && (degree(G, w) < 6)) {
+                S.push(w);
+                small[w] = true;
+            }
+        });
+    }
+}
+
+function compact5_find(C, v, w) {
+    var ret = -1;
+    forall_incident_edges(C, v, function (e) {
+        if (opposite(C, v, e) === w) {
+            ret = e;
+        }
+    });
+    forall_incident_edges(C, w, function (e) {
+        if (opposite(C, w, e) === v) {
+            ret = e;
+        }
+    });
+    return ret;
+}
+
+function from_adjacency_list(L) {
+    var C = new_graph(L.length);
+    var G;
+    var e;
+
+    L.forEach(function (l, v) {
+        l.forEach(function (w) {
+            if (v < w) {
+                new_edge(C, v, w);
+            }
+        });
+    });
+
+    compact5(C);
+
+    if (max_degree(C) > 5) {
+        return empty_graph();
+    }
+
+    G = new_graph(L.length);
+
+    L.forEach(function (l, v) {
+        l.forEach(function (w) {
+            if (v < w) {
+                new_edge1(G, v);
+            } else {
+                e = compact5_find(C, v, w);
+                if (e === -1) {
+                    return empty_graph();
+                }
+                new_edge_vertex(G, v, e);
+            }
+        });
+    });
+
+    return G;
+}
+
 function choose2(n) {
     return n * (n + 1) / 2;
 }
 
-function from_adjacency_list(L) {
+function from_adjacency_list_lookup(L) {
     var e;
     var G = new_graph(L.length);
-    var lookup = []
+    var lookup = [];
 
     L.forEach(function (l, v) {
         l.forEach(function (w) {
@@ -123,6 +215,9 @@ function from_adjacency_list(L) {
                 lookup[choose2(w) + v] = new_edge1(G, v);
             } else {
                 e = lookup[choose2(v) + w];
+                if (e === -1) {
+                    return empty_graph();
+                }
                 new_edge_vertex(G, v, e);
             }
         });
