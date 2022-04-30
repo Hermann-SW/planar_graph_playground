@@ -215,7 +215,7 @@ Demo got enhanced in showing edge numbers as edge lables:
 
 ### node.convex_face_straight_line_drawing.6coloring.js
 
-Uses "six_coloring()" function, which makes use of "compact5_traversal_visitor" to determine 6-coloring of planar graph.
+Uses "six_coloring()" function, which makes use of "compact5_traversal_visitor" to determine 6-coloring of dual of planar graph for face coloring. Every planar graph has a 4-coloring, but an algorithm for that is difficult to implement. There is a [linear time algorithm for computing 5-coloring of planar graph](https://en.wikipedia.org/wiki/Five_color_theorem#Linear_time_five-coloring_algorithm). 6-coloring git implemented first because it can just be implemented by a compact5_traversal, with passing few visitor functions.
 
 Here for [graphs/C20.a](graphs/C20.a), with faces colored and inner faces showing face number (vertex number of dual graph) at centroid for faces vertices coordinates:
 

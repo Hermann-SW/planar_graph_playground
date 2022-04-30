@@ -159,9 +159,9 @@ function compact5_traversal(G, c5v) {
         _f(c5v.begin_vertex)(v);
 
         forall_incident_edges(G, v, function (e) {
+            var w = opposite(G, v, e);
             _f(c5v.next_edge)(e);
             _f(c5v.next_vertex_edge)(v, e);
-            var w = opposite(G, v, e);
             remove_edge1(G, w, e);
             if ((!small[w]) && (degree(G, w) < 6)) {
                 S.push(w);
@@ -259,13 +259,15 @@ function six_coloring(G) {
     var col = linear.fill(n_vertices(G), 1, -1);
     var mc = [0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,5,
               0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0];
+    var v;
+    var bs;
 
-    var c5v = compact5_traversal_visitor();
-    c5v.begin_vertex = function (v) { S.push(v); }
-    c5v.end_traversal = function () {
+    return compact5_traversal(G, {begin_vertex: function (v) {
+        S.push(v);
+    }, end_traversal: function () {
         while (S.length > 0) {
-            var v = S.pop();
-            var bs = 0;
+            bs = 0;
+            v = S.pop();
             forall_incident_edges(G, v, function (e) {
                 bs |= 1 << col[opposite(G, v, e)];
             });
@@ -273,8 +275,7 @@ function six_coloring(G) {
             col[v] = mc[bs];
         }
         return col;
-    }
-    return compact5_traversal(G, c5v);
+    }});
 }
 
 function opposite(G, v, e) {
