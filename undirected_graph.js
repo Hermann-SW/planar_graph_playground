@@ -1,3 +1,9 @@
+function _f(g) {
+    return g || function (_i) {
+        _i = _i;
+    };
+}
+
 function planar_face_traversal_visitor() {
     return {};
 }
@@ -289,15 +295,9 @@ function face_vertices(Emb, v, e) {
 function traverse_face(G, visited, v, e, i, pftv) {
     while (!visited[e][i]) {
         visited[e][i] = true;
-        if (pftv.next_vertex) {
-            pftv.next_vertex(v);
-        }
-        if (pftv.next_edge) {
-            pftv.next_edge(e);
-        }
-        if (pftv.next_vertex_edge) {
-            pftv.next_vertex_edge(v, e);
-        }
+        _f(pftv.next_vertex)(v);
+        _f(pftv.next_edge)(e);
+        _f(pftv.next_vertex_edge)(v, e);
         v = opposite(G, v, e);
         e = next_incident_edge(G, v, e);
         i = ind(G, v, e);
@@ -307,13 +307,9 @@ function traverse_face(G, visited, v, e, i, pftv) {
 function check_traverse(G, visited, v, e, pftv) {
     var i = ind(G, v, e);
     if (!visited[e][i]) {
-        if (pftv.begin_face) {
-            pftv.begin_face();
-        }
+        _f(pftv.begin_face)();
         traverse_face(G, visited, v, e, i, pftv);
-        if (pftv.end_face) {
-            pftv.end_face();
-        }
+        _f(pftv.end_face)();
     }
 }
 
@@ -325,17 +321,13 @@ function check_traverse2(G, visited, g, pftv) {
 function planar_face_traversal(G, pftv) {
     var visited = linear.fill(n_edges(G), 2, false);
 
-    if (pftv.begin_traversal) {
-        pftv.begin_traversal();
-    }
+    _f(pftv.begin_traversal)();
 
     forall_edges(G, function (g) {
         check_traverse2(G, visited, g, pftv);
     });
 
-    if (pftv.end_traversal) {
-        pftv.end_traversal();
-    }
+    _f(pftv.end_traversal)();
 }
 
 function is_embedding(G) {
