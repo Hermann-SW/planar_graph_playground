@@ -211,3 +211,27 @@ Simple example nodejs script generating PostScript output (C30 fullerene for now
 
 Demo got enhanced in showing edge numbers as edge lables:  
 ![res/postscript_edge_labels.png](res/postscript_edge_labels.png)
+
+
+### node.convex_face_straight_line_drawing.6coloring.js
+
+Uses "six_coloring()" function, which makes use of "compact5_traversal_visitor" to determine 6-coloring of planar graph.
+
+Here for [graphs/C20.a](graphs/C20.a), with faces colored and inner faces showing face number (vertex number of dual graph) at centroid for faces vertices coordinates:
+
+    $ rjs node.convex_face_straight_line_drawing.6coloring.js graphs/C20.a | gv -
+
+![res/C20_6col.png](res/C20_6col.png)
+
+Same with [graphs/C60.a](graphs/C60.a), here vertex distances are too close and vertex numbers are not displayed, vertex radius is reduced.
+
+    $ rjs node.convex_face_straight_line_drawing.6coloring.js graphs/C60.a | gv -
+
+![res/C60_6col.png](res/C60_6col.png)
+
+50 vertex maximal planar graph [graphs/50.a](graphs/50.a) has too small faces, so using option "-dual" to compute its dual and embed that and determine 6coloring for that graph:
+
+    $ rjs node.convex_face_straight_line_drawing.6coloring.js graphs/50.a -dual | gv -
+
+
+![res/max_planar_50_dual.6col.png](res/max_planar_50_dual.6col.png)
