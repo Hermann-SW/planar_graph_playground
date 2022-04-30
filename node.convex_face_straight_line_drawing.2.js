@@ -19,15 +19,7 @@ function doi(x) {
     var e;
     var L;
 
-    const fs = require('fs');
-
-    try {
-        const data = fs.readFileSync(sel, 'utf8');
-        L = JSON.parse(data);
-    } catch (err) {
-        console.error(err);
-    }
-
+    L = JSON.parse(require('fs').readFileSync(sel, 'utf8'));
     G = from_adjacency_list(L);
 
     assert.assert(is_embedding(G));
