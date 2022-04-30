@@ -8,6 +8,10 @@ function planar_face_traversal_visitor() {
     return {};
 }
 
+function compact5_traversal_visitor() {
+    return {};
+}
+
 function empty_graph() {
     return {E: [], V: []};
 }
@@ -131,12 +135,18 @@ function remove_edge1(G, v, e) {
     G.E[e][i][1] = -1;
 }
 
-function compact5(G) {
+function compact5_traversal(G, c5v) {
     var S = [];
     var small = Array.from(new Array(n_vertices(G)), function () {
         return false;
     });
     var v;
+
+    if (c5v === undefined) {
+        c5v = {};
+    }
+
+    _f(c5v.begin_traversal)();
 
     forall_vertices(G, function (v) {
         if (degree(G, v) < 6) {
@@ -147,7 +157,12 @@ function compact5(G) {
 
     while (S.length > 0) {
         v = S.pop();
+
+        _f(c5v.begin_vertex)(v);
+
         forall_incident_edges(G, v, function (e) {
+            _f(c5v.next_edge)(e);
+            _f(c5v.next_vertex_edge)(v, e);
             var w = opposite(G, v, e);
             remove_edge1(G, w, e);
             if ((!small[w]) && (degree(G, w) < 6)) {
@@ -155,7 +170,11 @@ function compact5(G) {
                 small[w] = true;
             }
         });
+
+        _f(c5v.end_vertex)(v);
     }
+
+    _f(c5v.end_traversal)();
 }
 
 function compact5_find(C, v, w) {
@@ -186,7 +205,7 @@ function from_adjacency_list(L) {
         });
     });
 
-    compact5(C);
+    compact5_traversal(C);
 
     if (max_degree(C) > 5) {
         return empty_graph();
