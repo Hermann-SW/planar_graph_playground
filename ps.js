@@ -29,6 +29,31 @@ if (true) {
     scry = exports.scry;
     set  = exports.set;
 
+    exports.fill_outer_face = function (face, coords, rgb) {
+        var size = exports.length;
+
+        console.log(rgb + " setrgbcolor");
+
+        console.log(' 0 ' + size);
+
+        face.forEach(function (v) {
+            console.log(' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]));
+        });
+        console.log(' ' + 0 + ' ' + (size - 10));
+        console.log(' 0 0');
+        console.log(' ' + size + ' 0');
+        console.log(' ' + size + ' ' + size);
+
+        console.log('poly fill');
+
+
+        console.log('  0 ' + size);
+        console.log(' 0 ' + (size-10));
+        console.log(' ' + scrx(coords[0][face[face.length - 1]]) + ' ' + scry(coords[1][face[face.length - 1]]));
+        console.log(' ' + scrx(coords[0][face[0]]) + ' ' + scry(coords[1][face[0]]));
+        console.log('poly fill');
+    }
+
     exports.straight_line_drawing = function (G, coords, pent, length, r, outer, showpage) {
         var bx;
         var by;
@@ -52,24 +77,7 @@ if (true) {
             });
 
             if (pent.length !== 12) {
-                console.log(".75 setgray");
-                console.log(' 0 0');
-
-                outer.forEach(function (v) {
-                    console.log(' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]));
-                });
-                console.log(' ' + 0 + ' ' + length);
-                console.log(' ' + length + ' ' + length);
-                console.log(' ' + length + ' ' + 0);
-
-                console.log('poly fill');
-
-                console.log(".75 setgray");
-                console.log(' 0 0');
-                console.log(' ' + scrx(coords[0][0]) + ' ' + scry(coords[1][0]));
-                console.log(' ' + scrx(coords[0][4]) + ' ' + scry(coords[1][4]));
-                console.log(' ' + 0 + ' ' + length);
-                console.log('poly fill');
+                exports.fill_outer_face(outer, coords, "0.75 0.75 0.75");
             }
         }
 
