@@ -61,8 +61,13 @@ function any_edge(G) {
 }
 
 function forall_incident_edges(G, v, f) {
-    G.V[v].forEach(function (e) {
-        f(e);
+    if (!Array.isArray(v)) {
+        v = [v];
+    }
+    v.forEach(function (v) {
+        G.V[v].forEach(function (e) {
+            f(e, v);
+        });
     });
 }
 
