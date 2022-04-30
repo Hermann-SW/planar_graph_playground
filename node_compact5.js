@@ -12,15 +12,7 @@ var sel = (
 var L;
 var G;
 
-const fs = require('fs');
-
-try {
-  const data = fs.readFileSync(sel, 'utf8');
-  L = JSON.parse(data);
-} catch (err) {
-  console.error(err);
-}
-
+L = JSON.parse(require('fs').readFileSync(sel, 'utf8'));
 G = from_adjacency_list(L);
 
 L.forEach(function (l, v) {
