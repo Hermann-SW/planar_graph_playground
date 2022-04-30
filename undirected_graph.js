@@ -137,9 +137,7 @@ function remove_edge1(G, v, e) {
 
 function compact5_traversal(G, c5v) {
     var S = [];
-    var small = Array.from(new Array(n_vertices(G)), function () {
-        return false;
-    });
+    var small = linear.fill(n_vertices(G), 1, false);
     var v;
 
     if (c5v === undefined) {
@@ -174,7 +172,7 @@ function compact5_traversal(G, c5v) {
         _f(c5v.end_vertex)(v);
     }
 
-    _f(c5v.end_traversal)();
+    return _f(c5v.end_traversal)();
 }
 
 function compact5_find(C, v, w) {
@@ -254,6 +252,29 @@ function from_adjacency_list_lookup(L) {
     });
 
     return G;
+}
+
+function six_coloring(G) {
+    var S = [];
+    var col = linear.fill(n_vertices(G), 1, -1);
+    var mc = [0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,5,
+              0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0];
+
+    var c5v = compact5_traversal_visitor();
+    c5v.begin_vertex = function (v) { S.push(v); }
+    c5v.end_traversal = function () {
+        while (S.length > 0) {
+            var v = S.pop();
+            var bs = 0;
+            forall_incident_edges(G, v, function (e) {
+                bs |= 1 << col[opposite(G, v, e)];
+            });
+            assert.assert(bs < mc.length);
+            col[v] = mc[bs];
+        }
+        return col;
+    }
+    return compact5_traversal(G, c5v);
 }
 
 function opposite(G, v, e) {
