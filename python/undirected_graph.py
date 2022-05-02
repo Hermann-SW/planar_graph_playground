@@ -60,7 +60,7 @@ def forall_edges(G, f):
 def any_edge(G):
     return 0 if (len(G.E) > 0) else -1
 
-def forall_incidcent_edges(G, v, f):
+def forall_incident_edges(G, v, f):
     for e in G.V[v]:
         f(e)
 
