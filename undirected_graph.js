@@ -172,7 +172,7 @@ function compact5_traversal(G, c5v) {
         _f(c5v.end_vertex)(v);
     }
 
-    return _f(c5v.end_traversal)();
+    _f(c5v.end_traversal)();
 }
 
 function compact5_find(C, v, w) {
@@ -262,20 +262,19 @@ function six_coloring(G) {
     var v;
     var bs;
 
-    return compact5_traversal(G, {begin_vertex: function (v) {
+    compact5_traversal(G, {begin_vertex: function (v) {
         S.push(v);
-    }, end_traversal: function () {
-        while (S.length > 0) {
-            bs = 0;
-            v = S.pop();
-            forall_incident_edges(G, v, function (e) {
-                bs |= 1 << col[opposite(G, v, e)];
-            });
-            assert.assert(bs < mc.length);
-            col[v] = mc[bs];
-        }
-        return col;
     }});
+    while (S.length > 0) {
+        bs = 0;
+        v = S.pop();
+        forall_incident_edges(G, v, function (e) {
+            bs |= 1 << col[opposite(G, v, e)];
+        });
+        assert.assert(bs < mc.length);
+        col[v] = mc[bs];
+    }
+    return col;
 }
 
 function opposite(G, v, e) {
