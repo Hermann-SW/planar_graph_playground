@@ -1,3 +1,4 @@
+''' undirected graph '''
 def filled_array(n, m, v=0):
     A = []
     for _ in range(n):
@@ -33,6 +34,19 @@ class planar_face_traversal_visitor:
     def __init__(self):
         pass
 
+class compact5_traversal_visitor:
+    begin_traversal  = lambda self: dummy
+    end_traversal    = lambda self: dummy
+    begin_vertex     = lambda self, v: dummy
+    end_vertex       = lambda self, v: dummy
+    next_edge        = lambda self, e: dummy
+    next_vertex_edge = lambda self, v, e: dummy
+
+    def __init__(self):
+        pass
+
+def empty_graph():
+    return graph(0, 0)
 
 def degree(G, v):
     return len(G.V[v])
@@ -53,6 +67,17 @@ def forall_vertices(G, f):
     for v in range(n_vertices(G)):
         f(v)
 
+def max_degree(G):
+    mdeg = [-1]
+
+    def update_mdeg(v):
+        if degree(G, v) > mdeg[0]:
+            mdeg[0] = degree(G, v)
+
+    forall_vertices(G, lambda v: update_mdeg(v))
+
+    return mdeg[0]
+
 def forall_edges(G, f):
     for e in range(n_edges(G)):
         f(e)
@@ -63,6 +88,11 @@ def any_edge(G):
 def forall_incident_edges(G, v, f):
     for e in G.V[v]:
         f(e)
+
+def forall_incident2_edges(G, a, f):
+    for v in a:
+        for e in G.V[v]:
+            f(e, v)
 
 def source(G, e):
     return G.E[e][0][0]
@@ -91,10 +121,93 @@ def new_edge(G, v, w):
 def new_graph(n, m=0):
     return graph(n, m)
 
+def remove_edge1(G, v, e):
+    i = ind(G, v, e)
+    f = G.V[v].pop()
+    if e != f: 
+        j = ind(G, v, f)
+        G.E[f][j][1] = G.E[e][i][1]
+        G.V[v][G.E[f][j][1]] = f
+
+    G.E[e][i][1] = -1
+
+def compact5_traversal(G, c5v):
+    S = []
+    small = [False]*n_vertices(G)
+
+    c5v.begin_traversal()
+
+    def update_small(v):
+        if degree(G, v) < 6:
+            S.append(v)
+            small[v] = True
+
+    forall_vertices(G, lambda v: update_small(v))
+
+    while len(S) > 0:
+        v = S.pop()
+
+        c5v.begin_vertex(v)
+
+        def work_edge(v, e):
+            w = opposite(G, v, e)
+            c5v.next_edge(e)
+            c5v.next_vertex_edge(v, e)
+            remove_edge1(G, w, e)
+            if (not(small[w]) and (degree(G, w) < 6)):
+                S.append(w) 
+                small[w] = True
+
+        forall_incident_edges(G, v, lambda e: work_edge(v, e))
+
+        c5v.end_vertex(v)
+
+    c5v.end_traversal()
+
+def compact5_find(C, v, w):
+    ret = [-1]
+
+    def update_ret(u, x, e):
+        if opposite(C, u, e) == x:
+            ret[0] = e
+
+    forall_incident_edges(C, v, lambda e: update_ret(v, w, e))
+    forall_incident_edges(C, w, lambda e: update_ret(w, v, e))
+
+    return ret[0]
+
+def from_adjacency_list(L):
+    C = new_graph(len(L))
+
+    for (v, l) in enumerate(L):
+        for w in l:
+            if v < w:
+                new_edge(C, v, w)
+
+    compact5_traversal(C, compact5_traversal_visitor())
+
+    if max_degree(C) > 5:
+        return empty_graph()
+
+    G = new_graph(len(L))
+
+    for (v, l) in enumerate(L):
+        for w in l:
+            if v < w:
+                new_edge1(G, v)
+            else:
+                e = compact5_find(C, v, w)
+                if e == -1:
+                    return empty_graph()
+
+                new_edge_vertex(G, v, e)
+
+    return G
+
 def choose2(n):
     return n * (n + 1) // 2
 
-def from_adjacency_list(L):
+def from_adjacency_list_lookup(L):
     lookup = [0]*choose2(len(L))
 
     G = new_graph(len(L))
@@ -108,6 +221,31 @@ def from_adjacency_list(L):
                 new_edge_vertex(G, v, e)
 
     return G
+
+def six_coloring(G):
+    S = []
+    col = [-1]*n_vertices(G)
+    mc = [0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,5,
+          0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0]
+
+    c5tv = compact5_traversal_visitor()
+    c5tv.begin_vertex = lambda v: S.append(v)
+    compact5_traversal(G, c5tv)
+
+    bs = [ 0 ]
+
+    def edge_bit(v, e):
+        bs[0] |= 1 << col[opposite(G, v, e)]
+
+    while len(S) > 0:
+        bs[0] = 0
+        v = S.pop()
+        forall_incident_edges(G, v, lambda e: edge_bit(v, e))
+
+        assert bs[0] < len(mc)
+        col[v] = mc[bs[0]]
+
+    return col
 
 def opposite(G, v, e):
     return target(G, e) if (v == source(G, e)) else source(G, e)
@@ -184,24 +322,17 @@ def pentagons(Emb):
     def init_face(f):
         f[0] = []
 
-    def append_pent(p, f):
-        if f.length == 5:
-            p[0].append(f)
-
-    def face_add(f, v):
-        f[0].append(v)
-    
-    pent = [[]]
+    pent = [[],[]]
     face = [[]]
 
     pftv = planar_face_traversal_visitor()
     pftv.begin_face  = lambda: init_face(face)
-    pftv.end_face    = lambda: append_pent(pent, face[0])
-    pftv.next_vertex = lambda v: face_add(face, v)
+    pftv.end_face    = lambda: pent[0 if len(face[0]) == 5 else 1].append(face[0])
+    pftv.next_vertex = lambda v: face[0].append(v)
 
     planar_face_traversal(Emb, pftv)
 
-    return pent
+    return pent[0]
 
 def dual_graph(G):
     last_face = [-1]
