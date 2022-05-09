@@ -47,16 +47,16 @@ def parse2(st):
 
     while st[i] != ']':
 
-         i += 1
-         while st[i].isspace():
-             i += 1
+        i += 1
+        while st[i].isspace():
+            i += 1
 
-         st, p = parse(st[i:])
-         result.append(p)
+        st, p = parse(st[i:])
+        result.append(p)
 
-         i = 0
-         while st[i] != ']' and st[i] != ',':
-             i += 1
+        i = 0
+        while st[i] != ']' and st[i] != ',':
+            i += 1
 
     return st[i+1:],result
 
@@ -69,16 +69,16 @@ def parse3(st):
 
     while st[i] != ']':
 
-         i += 1
-         while st[i].isspace():
-             i += 1
+        i += 1
+        while st[i].isspace():
+            i += 1
 
-         st, p = parse2(st[i:])
-         result.append(p)
+        st, p = parse2(st[i:])
+        result.append(p)
 
-         i = 0
-         while st[i] != ']' and st[i] != ',':
-             i += 1
+        i = 0
+        while st[i] != ']' and st[i] != ',':
+            i += 1
 
     return result
 
