@@ -71,10 +71,13 @@ function any_edge(G) {
 }
 
 function forall_incident_edges(G, v, f) {
-    if (!Array.isArray(v)) {
-        v = [v];
-    }
-    v.forEach(function (v) {
+    G.V[v].forEach(function (e) {
+        f(e);
+    });
+}
+
+function forall_incident2_edges(G, a, f) {
+    a.forEach(function (v) {
         G.V[v].forEach(function (e) {
             f(e, v);
         });
@@ -157,7 +160,6 @@ function compact5_traversal(G, c5v) {
         v = S.pop();
 
         _f(c5v.begin_vertex)(v);
-
         forall_incident_edges(G, v, function (e) {
             var w = opposite(G, v, e);
             _f(c5v.next_edge)(e);
@@ -168,10 +170,8 @@ function compact5_traversal(G, c5v) {
                 small[w] = true;
             }
         });
-
         _f(c5v.end_vertex)(v);
     }
-
     _f(c5v.end_traversal)();
 }
 
@@ -203,7 +203,7 @@ function from_adjacency_list(L) {
         });
     });
 
-    compact5_traversal(C);
+    compact5_traversal(C, {});
 
     if (max_degree(C) > 5) {
         return empty_graph();
@@ -430,46 +430,6 @@ function is_identical_graph(G, H) {
                 return x === H.E[e][j][k];
             });
         });
-    })) {
-        return false;
-    }
-    return true;
-}
-
-function is_same_embedding(G, H) {
-    var o;
-    if (n_vertices(G) !== n_vertices(H)) {
-        return false;
-    }
-    if (n_edges(G) !== n_edges(H)) {
-        return false;
-    }
-    if (!G.V.every(function (al, v) {
-        if (al.length !== degree(H, v)) {
-            return false;
-        }
-        if (al.length === 0) {
-            return true;
-        }
-        for (o = 0; o < al.length; o += 1) {
-            if (al[o] === H.V[v][0]) {
-                break;
-            }
-        }
-        if (o === al.length) {
-            return false;
-        }
-        if (!H.V[v].every(function (e, i) {
-            return al[(o + i) % al.length] === e;
-        })) {
-            return false;
-        }
-        return true;
-    })) {
-        return false;
-    }
-    if (!G.E.every(function (vt, e) {
-        return ((vt[0][0] === H.E[e][0][0]) && (vt[1][0] === H.E[e][1][0]));
     })) {
         return false;
     }
