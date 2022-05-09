@@ -1,17 +1,4 @@
-def filled_array(n, m, v=0):
-    A = []
-    for _ in range(n):
-        a = []
-        for _ in range(m):
-            a.append(v)
-        A.append(a)
-    return A
-
-def incr(arr, i=0):
-    arr[i] += 1
-
-def aset(arr, x, i=0):
-    arr[i] = x
+#include "util.py"
 
 class graph:
     def __init__(self, n, m):
@@ -73,7 +60,7 @@ def max_degree(G):
         if degree(G, v) > mdeg[0]:
             mdeg[0] = degree(G, v)
 
-    forall_vertices(G, lambda v: update_mdeg(v))
+    forall_vertices(G, update_mdeg)
 
     return mdeg[0]
 
@@ -141,7 +128,7 @@ def compact5_traversal(G, c5v):
             S.append(v)
             small[v] = True
 
-    forall_vertices(G, lambda v: update_small(v))
+    forall_vertices(G, update_small)
 
     while len(S) > 0:
         v = S.pop()
@@ -228,7 +215,7 @@ def six_coloring(G):
           0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0]
 
     c5tv = compact5_traversal_visitor()
-    c5tv.begin_vertex = lambda v: S.append(v)
+    c5tv.begin_vertex = S.append
     compact5_traversal(G, c5tv)
 
     bs = [ 0 ]
