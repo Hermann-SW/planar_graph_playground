@@ -1,2 +1,4 @@
 #!/bin/bash
-gcc -E -x c -nostdinc $1 | grep -v "^#"  | python
+file=$1
+shift
+gcc -E -x c -nostdinc $file | grep -v "^#"  | python - $*
