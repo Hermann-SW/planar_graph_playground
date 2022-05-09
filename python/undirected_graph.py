@@ -1,4 +1,3 @@
-''' undirected graph '''
 def filled_array(n, m, v=0):
     A = []
     for _ in range(n):
@@ -329,6 +328,7 @@ def pentagons(Emb):
     pftv.begin_face  = lambda: init_face(face)
     pftv.end_face    = lambda: pent[0 if len(face[0]) == 5 else 1].append(face[0])
     pftv.next_vertex = lambda v: face[0].append(v)
+#pragma    pftv.next_vertex = face[0].append
 
     planar_face_traversal(Emb, pftv)
 
