@@ -19,9 +19,6 @@ print_graph(D, "dual_graph(K5-e): ");
 
 print_graph(dual_graph(D), "dual_graph(dual_graph(K5-e)): ");
 
-assert.assert(is_same_embedding(G, dual_graph(D)));
-console.log("is_same_embedding(K5-e, dual_graph(dual_graph(K5-e))) verified");
-
 F.forEach(function (L, i) {
     G = from_adjacency_list(L);
     assert.assert(is_embedding(G));
