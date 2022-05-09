@@ -19,7 +19,7 @@ function doi(x) {
     var e;
     var L;
 
-    L = JSON.parse(require('fs').readFileSync(sel, 'utf8'));
+    L = JSON.parse(require('fs').readFileSync(x, 'utf8'));
     G = from_adjacency_list(L);
 
     assert.assert(is_embedding(G));
@@ -55,6 +55,8 @@ function doit(G, v, e) {
     var deg;
     var last_face;
 
+    ps.set(size, r);
+
     traverse_face(G, visited, v, e, ind(G, v, e), {next_vertex: function (v) {
         face.push(v);
     }});
@@ -78,6 +80,7 @@ function doit(G, v, e) {
     });
     if (lmin < 2 * r + 2) {
         r = lmin / 3;
+        ps.set(size, r);
     }
 
     pent = pentagons(G);

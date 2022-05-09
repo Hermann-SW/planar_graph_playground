@@ -45,6 +45,8 @@ function doit(G, v, e) {
     var dy;
     var w;
 
+    ps.set(size, r)
+
     var visited = linear.fill(n_edges(G), 2, false);
     var face = [];
     var deg;
@@ -72,6 +74,7 @@ function doit(G, v, e) {
     });
     if (lmin < 2 * r + 2) {
         r = lmin / 3;
+        ps.set(size, r)
     }
 
     pent = pentagons(G);
