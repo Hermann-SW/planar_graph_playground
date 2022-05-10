@@ -6,24 +6,23 @@
 #include "fullerenes.js"
 
 
-var G;
-var coords;
 var sel = (
     (process.argv.length > 2)
     ? process.argv[2]
     : "graphs/C30.a"
 );
 
-function doi(sel) {
+function doi(x, dual) {
     var e;
     var L;
+    var G;
 
-    L = parse2file(sel);
+    L = parse2file(x);
     G = from_adjacency_list(L);
 
     assert.assert(is_embedding(G));
 
-    if ((process.argv.length > 3) && (process.argv[3] === "-dual")) {
+    if (dual) {
         G = dual_graph(G);
     }
 
@@ -44,6 +43,7 @@ function doit(G, v, e) {
     var dx;
     var dy;
     var w;
+    var coords;
 
     var visited = filled_array(n_edges(G), 2, false);
     var face = [];
@@ -137,4 +137,4 @@ function doit(G, v, e) {
     console.log("showpage");
 }
 
-doi(sel);
+doi(sel, (process.argv.length > 3) && (process.argv[3] === "-dual"))
