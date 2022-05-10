@@ -119,7 +119,7 @@ def remove_edge1(G, v, e):
 
 def compact5_traversal(G, c5v):
     S = []
-    small = [False]*n_vertices(G)
+    small = filled_array(n_vertices(G), 1, False)
 
     c5v.begin_traversal()
 
@@ -190,11 +190,11 @@ def from_adjacency_list(L):
 
     return G
 
-def choose2(n):
-    return n * (n + 1) // 2
-
 def from_adjacency_list_lookup(L):
-    lookup = [0]*choose2(len(L))
+    def choose2(n):
+        return n * (n + 1) // 2
+
+    lookup = filled_array(choose2(len(L)), 1) 
 
     G = new_graph(len(L))
 
@@ -210,7 +210,7 @@ def from_adjacency_list_lookup(L):
 
 def six_coloring(G):
     S = []
-    col = [-1]*n_vertices(G)
+    col = filled_array(n_vertices(G), 1, -1)
     mc = [0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,5,
           0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0]
 
@@ -286,7 +286,6 @@ def check_traverse2(G, visited, g, pftv):
     check_traverse(G, visited, target(G, g), g, pftv)
 
 def planar_face_traversal(G, pftv):
-#pragma    visited = [[False,False]]*n_edges(G)
     visited = filled_array(n_edges(G), 2, False)
 
     pftv.begin_traversal()

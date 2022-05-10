@@ -1,10 +1,13 @@
 def filled_array(n, m, v=0):
     A = []
     for _ in range(n):
-        a = []
-        for _ in range(m):
-            a.append(v)
-        A.append(a)
+        if m == 1:
+            A.append(v)
+        else:
+            a = []
+            for _ in range(m):
+                a.append(v)
+            A.append(a)
     return A
 
 def incr(arr, i=0):
