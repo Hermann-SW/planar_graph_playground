@@ -7,7 +7,7 @@
 assert.assert(process.argv.length > 2);
 var dual = (process.argv.length > 3);
 
-var adj = JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8'));
+var adj = parse2file(process.argv[2]);
 
 var G = from_adjacency_list(adj);
 

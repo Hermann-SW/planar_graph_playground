@@ -18,7 +18,7 @@ function doi(sel) {
     var e;
     var L;
 
-    L = JSON.parse(require('fs').readFileSync(sel, 'utf8'));
+    L = parse2file(sel);
     G = from_adjacency_list(L);
 
     assert.assert(is_embedding(G));
