@@ -1,3 +1,9 @@
+import math
+import numpy as np
+assert math and np
+#ifndef __util__
+#define __util__
+
 def filled_array(n, m, v=0):
     A = []
     for _ in range(n):
@@ -87,3 +93,5 @@ def parse3(st):
 
 def parse2file(name):
     return parse2(open(name).read())[1]
+
+#endif

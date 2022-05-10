@@ -1,5 +1,6 @@
-#include "fullerenes.py"
+''' python_test.py '''
 #include "undirected_graph.py"
+#include "fullerenes.py"
 
 G = from_adjacency_list(F[0])
 assert is_embedding(G)

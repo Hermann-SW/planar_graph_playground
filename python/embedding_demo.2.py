@@ -1,5 +1,4 @@
 ''' embedding_demo.py '''
-import math
 import io
 
 #include "undirected_graph.py"

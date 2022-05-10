@@ -17,6 +17,35 @@ class ps:
     def scry (self, v):
         return self._length / 2 - (self._length / 2 - self._r - 10) * v
 
+    def fill_outer_face (self, face, coords, rgb):
+        size = self._length
+
+        scrx = self.scrx
+        scry = self.scry
+
+        print(rgb, " setrgbcolor")
+
+        print(' 0 ' + str(size))
+
+        for v in face:
+            print(' ' + str(scrx(coords[0][v])) + ' ' + str(scry(coords[1][v])))
+
+        print(' ' + str(0) + ' ' + str(size - 10))
+        print(' 0 0')
+        print(' ' + str(size) + ' 0')
+        print(' ' + str(size) + ' ' + str(size))
+
+        print('poly fill')
+
+
+        print('  0 ' + str(size))
+        print(' 0 ' + str(size-10))
+        print(' ' + str(scrx(coords[0][face[-1]])) + ' ' + str(scry(coords[1][face[-1]])))
+        print(' ' + str(scrx(coords[0][face[0]])) + ' ' + str(scry(coords[1][face[0]])))
+        print('poly fill')
+
+
+
     def straight_line_drawing (self, G, coords, pent, length, r, outer, showpage=True):
 #pragma        set(length, r)
 

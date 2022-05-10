@@ -1,12 +1,11 @@
-import math
-import numpy as np
 
 class tutte:
     ''' tutte '''
     def __init__(self):
         self.x = 42
 
-    def convex_face_coordinates(_self, Emb, face, factor):
+    @staticmethod
+    def convex_face_coordinates(Emb, face, factor):
         n = n_vertices(Emb)
 
         X = np.zeros((n, n))

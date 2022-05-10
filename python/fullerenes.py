@@ -1,5 +1,3 @@
-#include "util.py"
-
 with open('../fullerenes.js') as f:
     lines = f.readlines()
 

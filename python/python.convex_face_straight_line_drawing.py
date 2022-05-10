@@ -1,10 +1,9 @@
+''' python.convex_face_straight_line_drawing.py '''
+
 #include "undirected_graph.py"
 #include "tutte.py"
 #include "ps.py"
 #include "fullerenes.py"
-
-from sys import argv
-import math
 
 tutte = tutte()
 ps = ps()
@@ -13,8 +12,6 @@ K4 = [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]]
 K4noemb = [[3, 1, 2], [2, 0, 3], [0, 3, 1], [0, 1, 2]]
 
 def doi(x):
-    global coords
-
     G = from_adjacency_list(F[x])
 
     assert is_embedding(G)
@@ -27,7 +24,6 @@ def doi(x):
 def doit(G, v, e):
     slider = 100
     slider2 = 592
-    selInd = 0
     size = slider2
     r = 12
     spl = -1
@@ -38,7 +34,7 @@ def doit(G, v, e):
     face = []
 
     pftv            = planar_face_traversal_visitor()
-    pftv.next_vertex = lambda v: face.append(v)
+    pftv.next_vertex = face.append
     traverse_face(G, visited, v, e, ind(G, v, e), pftv)
     assert len(face) > 0
 
@@ -54,32 +50,32 @@ def doit(G, v, e):
         dx -= cx
         dy -= cy
         lcur = math.sqrt(dx * dx + dy * dy)
-        if (lcur < lmin[0]):
+        if lcur < lmin[0]:
             lmin[0] = lcur
 
     lmin = [99999]
     forall_edges(G, lambda e: min_edge(G, e, coords, lmin))
 
-    if (lmin[0] < 2 * r + 2):
+    if lmin[0] < 2 * r + 2:
         r = lmin[0] / 3
         ps.set(size, r)
 
     pent = pentagons(G)
     if len(face) == 5:
         tst = filled_array(n_vertices(G), 1, False)
-        for v in face:
-            tst[v] = True
+        for w in face:
+            tst[w] = True
 
-        for [i, c] in list(sequence(pent)):
+        for [i, c] in list(enumerate(pent)):
             good = True
-            for v in c:
-                if not tst[v]:
+            for w in c:
+                if not tst[w]:
                     good = False
 
-            if (good):
+            if good:
                 spl = i
 
-        if (spl != -1):
+        if spl != -1:
             del pent[spl]
 
     ps.header()

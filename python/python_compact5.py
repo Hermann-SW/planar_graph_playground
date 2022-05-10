@@ -1,7 +1,8 @@
-#include "fullerenes.py"
-#include "undirected_graph.py"
-
+''' python_compact5.py '''
 from sys import argv
+
+#include "undirected_graph.py"
+#include "fullerenes.py"
 
 sel = argv[1] if len(argv) > 1 else  "../graphs/10.a"
 
