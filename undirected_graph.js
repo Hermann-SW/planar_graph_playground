@@ -230,14 +230,14 @@ function from_adjacency_list(L) {
     return G;
 }
 
-function choose2(n) {
-    return n * (n + 1) / 2;
-}
-
 function from_adjacency_list_lookup(L) {
+    function choose2(n) {
+        return n * (n + 1) / 2;
+    }
+
     var e;
     var G = new_graph(L.length);
-    var lookup = [];
+    var lookup = filled_array(choose2(L.length), 1);
 
     L.forEach(function (l, v) {
         l.forEach(function (w) {
