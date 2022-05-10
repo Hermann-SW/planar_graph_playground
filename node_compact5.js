@@ -11,7 +11,7 @@ var sel = (
 var L;
 var G;
 
-L = JSON.parse(require('fs').readFileSync(sel, 'utf8'));
+L = parse2file(sel);
 G = from_adjacency_list(L);
 
 L.forEach(function (l, v) {

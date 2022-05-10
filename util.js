@@ -18,3 +18,6 @@ function zero(n, m) {
     return filled_array(n, m, 0);
 }
 
+function parse2file(name) {
+    return JSON.parse(require('fs').readFileSync(name, 'utf8'));
+}
