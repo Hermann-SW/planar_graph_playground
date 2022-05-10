@@ -98,7 +98,7 @@ function doit(G, v, e) {
 
     }
 
-    ps.header(selInd, slider, slider2, "");
+    ps.header();
 
     ps.straight_line_drawing(G, coords, pent, size, r, (
         (face.length === 5)
