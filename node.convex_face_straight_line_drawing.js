@@ -1,5 +1,4 @@
 #include "assert.js"
-#include "gauss-jordan.js"
 #include "undirected_graph.js"
 #include "tutte.js"
 #include "ps.js"
@@ -15,7 +14,6 @@ function doi(x) {
     var e;
 
     G = from_adjacency_list(F[x]);
-    //G = from_adjacency_list(K4noemb);
 
     assert.assert(is_embedding(G));
 
