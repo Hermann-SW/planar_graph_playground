@@ -5,10 +5,6 @@
 #include "ps.js"
 
 
-var G;
-var coords;
-var scrx;
-var scry;
 var sel = (
     (process.argv.length > 2)
     ? process.argv[2]
@@ -18,8 +14,9 @@ var sel = (
 function doi(x) {
     var e;
     var L;
+    var G;
 
-    L = JSON.parse(require('fs').readFileSync(x, 'utf8'));
+    L = parse2file(x);
     G = from_adjacency_list(L);
 
     assert.assert(is_embedding(G));
@@ -62,15 +59,15 @@ function doit(G, v, e) {
     }});
     assert.assert(face.length > 0);
 
-    coords = tutte.convex_face_coordinates(G, face, slider / 100.0);
+    var coords = tutte.convex_face_coordinates(G, face, slider / 100.0);
 
     forall_edges(G, function (e) {
         v = source(G, e);
         w = target(G, e);
-        cx = scrx(coords[0][v]);
-        cy = scry(coords[1][v]);
-        dx = scrx(coords[0][w]);
-        dy = scry(coords[1][w]);
+        cx = ps.scrx(coords[0][v]);
+        cy = ps.scry(coords[1][v]);
+        dx = ps.scrx(coords[0][w]);
+        dy = ps.scry(coords[1][w]);
         dx -= cx;
         dy -= cy;
         lcur = Math.sqrt(dx * dx + dy * dy);
