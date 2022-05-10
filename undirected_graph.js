@@ -1,3 +1,5 @@
+#include "util.js"
+
 function _f(g) {
     return g || function (_i) {
         _i = _i;
@@ -140,7 +142,7 @@ function remove_edge1(G, v, e) {
 
 function compact5_traversal(G, c5v) {
     var S = [];
-    var small = linear.fill(n_vertices(G), 1, false);
+    var small = filled_array(n_vertices(G), 1, false);
     var v;
 
     if (c5v === undefined) {
@@ -256,7 +258,7 @@ function from_adjacency_list_lookup(L) {
 
 function six_coloring(G) {
     var S = [];
-    var col = linear.fill(n_vertices(G), 1, -1);
+    var col = filled_array(n_vertices(G), 1, -1);
     var mc = [0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,5,
               0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0];
     var v;
@@ -359,7 +361,7 @@ function check_traverse2(G, visited, g, pftv) {
 }
 
 function planar_face_traversal(G, pftv) {
-    var visited = linear.fill(n_edges(G), 2, false);
+    var visited = filled_array(n_edges(G), 2, false);
 
     _f(pftv.begin_traversal)();
 

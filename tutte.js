@@ -9,10 +9,10 @@ if (true) {
         var v;
         var w;
 
-        var X = linear.zero(n, n);
-        var Y = linear.zero(n, n);
-        var x = linear.zero(n, 1);
-        var y = linear.zero(n, 1);
+        var X = zero(n, n);
+        var Y = zero(n, n);
+        var x = zero(n, 1);
+        var y = zero(n, 1);
 
         var angle = Math.PI;
         var delta = factor * (2 * Math.PI) / face.length;

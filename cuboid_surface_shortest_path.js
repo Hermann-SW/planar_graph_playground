@@ -29,7 +29,7 @@ function doit(G, v, e) {
     var s = [0.4, 0.1];
     var t = [0.9, 0.6];
 
-    var visited = linear.fill(n_edges(G), 2, false);
+    var visited = filled_array(n_edges(G), 2, false);
     var face = [];
     traverse_face(G, visited, v, e, ind(G, v, e), {next_vertex: function (v) {
         face.push(v);

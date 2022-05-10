@@ -152,27 +152,4 @@ exports.invert = function invert(A) {
   return new Mat(A, identity(A.length)).gauss();
 }
 
-function fill(n, m, v) {
-  var zm = new Array(n);
-  if (m==1)
-    zm.fill(v);
-  else
-    for (var j=0; j<n; j++) {
-      zm[j] = fill(m, 1, v);
-    }
-  return zm;
-}
- 
-exports.fill = function (n, m, v) {
-  return fill(n, m, v);
-}
-
-/**
- * create n×m matrix filled with value v
- */
-
-exports.zero = function (n, m) {
-  return fill(n, m, 0);
-}
-
 } // avoid module leak

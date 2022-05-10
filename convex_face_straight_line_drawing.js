@@ -62,7 +62,7 @@ function doit(F, v, e) {
         : F
     );
 
-    var visited = linear.fill(n_edges(G), 2, false);
+    var visited = filled_array(n_edges(G), 2, false);
     var face = [];
 
     traverse_face(H, visited, v, e, ind(H, v, e), {next_vertex: function (v) {
@@ -92,7 +92,7 @@ function doit(F, v, e) {
 
     pent = pentagons(H);
     if (face.length === 5) {
-        tst = linear.fill(n_vertices(H), 1, false);
+        tst = filled_array(n_vertices(H), 1, false);
         face.forEach(function (v) {
             tst[v] = true;
         });

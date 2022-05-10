@@ -45,7 +45,7 @@ function doit(G, v, e) {
     var dy;
     var w;
 
-    var visited = linear.fill(n_edges(G), 2, false);
+    var visited = filled_array(n_edges(G), 2, false);
     var face = [];
     var last_face;
     var D;

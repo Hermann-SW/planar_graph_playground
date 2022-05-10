@@ -47,7 +47,7 @@ function doit(G, v, e) {
 
     ps.set(size, r)
 
-    var visited = linear.fill(n_edges(G), 2, false);
+    var visited = filled_array(n_edges(G), 2, false);
     var face = [];
     var deg;
 
@@ -79,7 +79,7 @@ function doit(G, v, e) {
 
     pent = pentagons(G);
     if (face.length === 5) {
-        tst = linear.fill(n_vertices(G), 1, false);
+        tst = filled_array(n_vertices(G), 1, false);
         face.forEach(function (v) {
             tst[v] = true;
         });

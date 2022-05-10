@@ -25,7 +25,7 @@ function draw(x) {
     ps.straight_line_drawing(G, coords, [], size, r, [], false);
 
 
-    eface = linear.fill(n_edges(G), 2, -1);
+    eface = filled_array(n_edges(G), 2, -1);
     last_face = -1;
     cnt = -1;
     pftv = planar_face_traversal_visitor();
