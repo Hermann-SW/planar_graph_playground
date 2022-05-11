@@ -72,6 +72,14 @@ function any_edge(G) {
     );
 }
 
+function first_incident_edge(G, v) {
+    return (
+        degree(G, v) == 0
+        ? -1
+        : G.V[v][0]
+    );
+}
+
 function forall_incident_edges(G, v, f) {
     G.V[v].forEach(function (e) {
         f(e);

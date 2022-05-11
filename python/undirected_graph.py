@@ -71,6 +71,9 @@ def forall_edges(G, f):
 def any_edge(G):
     return 0 if (len(G.E) > 0) else -1
 
+def first_incident_edge(G, v):
+    return  -1 if degree(G, v) == 0 else G.V[v][0]
+
 def forall_incident_edges(G, v, f):
     for e in G.V[v]:
         f(e)
