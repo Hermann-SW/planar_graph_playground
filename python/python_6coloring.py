@@ -17,7 +17,7 @@ print(len(pent), "pentagons for graph")
 D = dual_graph(G)
 print(len(pentagons(D)), "pentagons for dual graph")
 
-if (n_vertices(G) <= 100):
+if n_vertices(G) <= 100:
     print_graph(D if dual else G, "dual graph: " if dual else  "graph: ")
 
 print("6-coloring of","dual" if dual else "", "graph")
