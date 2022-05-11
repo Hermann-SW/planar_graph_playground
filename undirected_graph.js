@@ -169,10 +169,6 @@ function compact5_traversal(G, c5v) {
     var small = filled_array(n_vertices(G), 1, false);
     var v;
 
-    if (c5v === undefined) {
-        c5v = {};
-    }
-
     _f(c5v.begin_traversal)();
 
     forall_vertices(G, function (v) {
