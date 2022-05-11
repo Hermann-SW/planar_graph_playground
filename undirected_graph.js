@@ -149,12 +149,7 @@ function new_graph(n, m) {
     if (m === undefined) {
         m = 0;
     }
-    return {E: Array.from(new Array(m), function () {
-        return [];
-    }),
-        V: Array.from(new Array(n), function () {
-        return [];
-    })};
+    return {E: filled_array(m, 0), V: filled_array(n, 0)};
 }
 
 function remove_edge1(G, v, e) {
