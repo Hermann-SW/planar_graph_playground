@@ -86,6 +86,16 @@ def forall_incident2_edges(G, a, f):
 def source(G, e):
     return G.E[e][0][0]
 
+def opposite(G, v, e):
+    return target(G, e) if (v == source(G, e)) else source(G, e)
+
+def ind(G, v, e):
+    return 0 if (v == source(G, e)) else 1
+
+def next_incident_edge(G, v, e):
+    j = ind(G, v, e)
+    return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)]
+
 def target(G, e):
     return G.E[e][1][0]
 
@@ -235,16 +245,6 @@ def six_coloring(G):
         col[v] = mc[bs[0]]
 
     return col
-
-def opposite(G, v, e):
-    return target(G, e) if (v == source(G, e)) else source(G, e)
-
-def ind(G, v, e):
-    return 0 if (v == source(G, e)) else 1
-
-def next_incident_edge(G, v, e):
-    j = ind(G, v, e)
-    return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)]
 
 def print_vertex(G, v):
     print(str(v) + ":", end="")

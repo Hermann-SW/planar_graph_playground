@@ -98,6 +98,27 @@ function source(G, e) {
     return G.E[e][0][0];
 }
 
+function opposite(G, v, e) {
+    return (
+        (v === source(G, e))
+        ? target(G, e)
+        : source(G, e)
+    );
+}
+
+function ind(G, v, e) {
+    return (
+        (v === source(G, e))
+        ? 0
+        : 1
+    );
+}
+
+function next_incident_edge(G, v, e) {
+    var j = ind(G, v, e);
+    return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)];
+}
+
 function target(G, e) {
     return G.E[e][1][0];
 }
@@ -286,27 +307,6 @@ function six_coloring(G) {
         col[v] = mc[bs];
     }
     return col;
-}
-
-function opposite(G, v, e) {
-    return (
-        (v === source(G, e))
-        ? target(G, e)
-        : source(G, e)
-    );
-}
-
-function ind(G, v, e) {
-    return (
-        (v === source(G, e))
-        ? 0
-        : 1
-    );
-}
-
-function next_incident_edge(G, v, e) {
-    var j = ind(G, v, e);
-    return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)];
 }
 
 function ud2st(str) {
