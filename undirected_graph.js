@@ -98,6 +98,10 @@ function source(G, e) {
     return G.E[e][0][0];
 }
 
+function target(G, e) {
+    return G.E[e][1][0];
+}
+
 function opposite(G, v, e) {
     return (
         (v === source(G, e))
@@ -117,10 +121,6 @@ function ind(G, v, e) {
 function next_incident_edge(G, v, e) {
     var j = ind(G, v, e);
     return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)];
-}
-
-function target(G, e) {
-    return G.E[e][1][0];
 }
 
 function new_vertex(G) {

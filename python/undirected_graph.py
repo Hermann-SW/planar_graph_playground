@@ -86,6 +86,9 @@ def forall_incident2_edges(G, a, f):
 def source(G, e):
     return G.E[e][0][0]
 
+def target(G, e):
+    return G.E[e][1][0]
+
 def opposite(G, v, e):
     return target(G, e) if (v == source(G, e)) else source(G, e)
 
@@ -95,9 +98,6 @@ def ind(G, v, e):
 def next_incident_edge(G, v, e):
     j = ind(G, v, e)
     return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)]
-
-def target(G, e):
-    return G.E[e][1][0]
 
 def new_vertex(G):
     v = n_vertices(G)
