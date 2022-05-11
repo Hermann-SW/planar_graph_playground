@@ -164,6 +164,29 @@ function remove_edge1(G, v, e) {
     G.E[e][i][1] = -1;
 }
 
+function ud2st(str) {
+    return (
+        (str === undefined)
+        ? ""
+        : str
+    );
+}
+
+function print_vertex(G, v) {
+    var str = v + ":";
+    forall_incident_edges(G, v, function (e) {
+        str += " (" + e + ")" + opposite(G, v, e);
+    });
+    console.log(str);
+}
+
+function print_graph(G, str) {
+    console.log(ud2st(str) + n_vertices(G) + " vertices, " + n_edges(G) + " edges");
+    forall_vertices(G, function (v) {
+        print_vertex(G, v);
+    });
+}
+
 function compact5_traversal(G, c5v) {
     var S = [];
     var small = filled_array(n_vertices(G), 1, false);
@@ -296,29 +319,6 @@ function six_coloring(G) {
         col[v] = mc[bs];
     }
     return col;
-}
-
-function ud2st(str) {
-    return (
-        (str === undefined)
-        ? ""
-        : str
-    );
-}
-
-function print_vertex(G, v) {
-    var str = v + ":";
-    forall_incident_edges(G, v, function (e) {
-        str += " (" + e + ")" + opposite(G, v, e);
-    });
-    console.log(str);
-}
-
-function print_graph(G, str) {
-    console.log(ud2st(str) + n_vertices(G) + " vertices, " + n_edges(G) + " edges");
-    forall_vertices(G, function (v) {
-        print_vertex(G, v);
-    });
 }
 
 function face_vertices(Emb, v, e) {

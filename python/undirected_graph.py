@@ -130,6 +130,15 @@ def remove_edge1(G, v, e):
 
     G.E[e][i][1] = -1
 
+def print_vertex(G, v):
+    print(str(v) + ":", end="")
+    forall_incident_edges(G, v, lambda e: print(" ("+str(e)+")"+str(opposite(G, v, e)), end=""))
+    print()
+    
+def print_graph(G, st=""):
+    print(st+str(n_vertices(G))+" vertices, "+str(n_edges(G))+" edges")
+    forall_vertices(G, lambda v: print_vertex(G, v))
+
 def compact5_traversal(G, c5v):
     S = []
     small = filled_array(n_vertices(G), 1, False)
@@ -243,15 +252,6 @@ def six_coloring(G):
         col[v] = mc[bs[0]]
 
     return col
-
-def print_vertex(G, v):
-    print(str(v) + ":", end="")
-    forall_incident_edges(G, v, lambda e: print(" ("+str(e)+")"+str(opposite(G, v, e)), end=""))
-    print()
-    
-def print_graph(G, st=""):
-    print(st+str(n_vertices(G))+" vertices, "+str(n_edges(G))+" edges")
-    forall_vertices(G, lambda v: print_vertex(G, v))
 
 def face_vertices(Emb, v, e):
     o = e
