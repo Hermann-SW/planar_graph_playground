@@ -196,9 +196,7 @@ def from_adjacency_list(L):
                 new_edge1(G, v)
             else:
                 e = compact5_find(C, v, w)
-                if e == -1:
-                    return empty_graph()
-
+                assert e != -1
                 new_edge_vertex(G, v, e)
 
     return G
