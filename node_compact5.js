@@ -1,26 +1,38 @@
 #include "assert.js"
 #include "fullerenes.js"
 #include "undirected_graph.js"
+#include "node_compact5.sj"
 
-var sel = (
-    process.argv.length > 2
-    ? process.argv[2]
-    : "graphs/10.a"
-);
+function _main(argc, argv) {
+    var sel = (
+        argc > 2
+        ? argv[2]
+        : "graphs/10.a"
+    );
 
-var L;
-var G;
+    var L;
+    var G;
 
-L = parse2file(sel);
-G = from_adjacency_list(L);
+  _ L = parse2file(sel);
+  _ G = from_adjacency_list(L);
 
-L.forEach(function (l, v) {
-    l.forEach(function (w, j) {
-        assert.assert(w === opposite(G, v, G.V[v][j]));
+  _ L.forEach(function (l, v) {
+        l.forEach(function (w, j) {
+            assert.assert(w === opposite(G, v, G.V[v][j]));
+        });
     });
-});
 
-console.log("identical vertex ordering in adjacency list and graph verified");
+  _ assert.assert(is_embedding(G));
 
-assert.assert(is_embedding(G));
-console.log("is_embedding(" + sel + ") verified, has " + n_faces_planar(G) + " faces");
+  _ compact5_traversal(G, {});
+
+  _ assert.assert(max_degree(G) <= 5);
+  _
+    console.log("identical vertex ordering in adjacency list and graph verified");
+
+    console.log("is_embedding(" + sel + ") verified, has " + n_faces_planar(G) + " faces");
+
+    console.log("compat5_traversal(G, {}) done");
+
+    console.log("maxdegree(G) <=5 verified");
+}
