@@ -1,0 +1,31 @@
+import time
+import sys
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+_ts = ["               init: ", "         parse2file: ",
+       "from_adjacency_list: ", "  graph list verify: ",
+       "       is_embedding: ", " compact5_traversal: ",
+       "         max_degree: ", "               exit: ",
+       "                sum: "]
+_t = [0,0,0,0,0,0,0,0,0]
+__t = 0
+def _nxt():
+    global _t
+    global __t
+    _t[__t] = time.time()
+    __t = __t + 1
+
+#define _ _nxt() 
+
+def _tdif(s, i, j):
+    eprint(_ts[s] + "%.3f" % (_t[j] - _t[i]) + "s")
+
+def _summary():
+    _
+    _main(len(sys.argv), sys.argv)
+    _
+    for i in range(__t - 1):
+        _tdif(i, i, i+1)
+    _tdif(__t - 1, 0, __t - 1)
