@@ -29,10 +29,7 @@ function _main(argc, argv) {
   _ assert.assert(max_degree(G) <= 5);
   _
     console.log("identical vertex ordering in adjacency list and graph verified");
-
     console.log("is_embedding(" + sel + ") verified, has " + n_faces_planar(G) + " faces");
-
     console.log("compat5_traversal(G, {}) done");
-
     console.log("maxdegree(G) <=5 verified");
 }
