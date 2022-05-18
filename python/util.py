@@ -92,6 +92,6 @@ def parse3(st):
     return result
 
 def parse2file(name):
-    return parse2(open(name).read())[1]
+    return eval(open(name).read())
 
 #endif
