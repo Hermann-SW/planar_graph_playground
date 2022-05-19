@@ -227,18 +227,19 @@ void compact5_traversal(graph& G, compact5_traversal_visitor c5v) {
 }
 
 edge compact5_find(const graph& C, vertex v, vertex w) {
-    edge ret = -1;
-    forall_incident_edges(C, v, [&C, v, w, &ret](edge e) {
-        if (opposite(C, v, e) == w) {
-            ret = e;
-        }
+    auto res = std::find_if(C.V[v].cbegin(), C.V[v].cend(), [&C, v, w](edge e) {
+        return (opposite(C, v, e) == w);
     });
-    forall_incident_edges(C, w, [&C, v, w, &ret](edge e) {
-        if (opposite(C, w, e) == v) {
-            ret = e;
-        }
+    if (res != C.V[v].cend()) {
+        return *res;
+    }
+    res = std::find_if(C.V[w].cbegin(), C.V[w].cend(), [&C, v, w](edge e) {
+        return (opposite(C, w, e) == v);
     });
-    return ret;
+    if (res != C.V[w].cend()) {
+        return *res;
+    }
+    return -1;
 }
 
 graph from_adjacency_list(const std::vector<std::vector<vertex>>& L) {
