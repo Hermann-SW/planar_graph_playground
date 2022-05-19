@@ -112,8 +112,8 @@ void forall_incident_edges(const graph& G, vertex v, const F& f) {
 template <typename F>
 void forall_incident2_edges(const graph& G, std::vector<vertex>& a,
                             const F& f) {
-    std::for_each(a.cbegin(), a.cend(), [&G, f](vertex v) {
-        std::for_each(G.V[v].cbegin(), G.V[v].cend(), [v, f](edge e) {
+    std::for_each(a.cbegin(), a.cend(), [&G, &f](vertex v) {
+        std::for_each(G.V[v].cbegin(), G.V[v].cend(), [v, &f](edge e) {
             f(v, e);
         });
     });
@@ -211,7 +211,7 @@ void compact5_traversal(graph& G, compact5_traversal_visitor c5v) {
         vertex v = pop(S);
 
         _f(c5v.begin_vertex)(v);
-        forall_incident_edges(G, v, [&G, v, &S, &small, c5v](edge e) {
+        forall_incident_edges(G, v, [&G, v, &S, &small, &c5v](edge e) {
             vertex w = opposite(G, v, e);
             _f(c5v.next_edge)(e);
             _f(c5v.next_vertex_edge)(v, e);
@@ -372,7 +372,7 @@ void planar_face_traversal(const graph& G, planar_face_traversal_visitor pftv) {
                                            std::array<bool, 2>({false, false}));
     _f(pftv.begin_traversal)();
 
-    forall_edges(G, [&G, &visited, pftv](edge g) {
+    forall_edges(G, [&G, &visited, &pftv](edge g) {
         check_traverse2(G, visited, g, pftv);
     });
 
