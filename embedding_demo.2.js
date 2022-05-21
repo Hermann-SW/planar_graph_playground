@@ -1,3 +1,4 @@
+#include "assert.js"
 #include "undirected_graph.js"
 #include "ps.js"
 #include "gauss-jordan.js"
