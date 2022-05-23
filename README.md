@@ -255,8 +255,8 @@ From thread "Toothpick polyhedra, fullerenes":
 
 
 C20 and C60 toothpick polyhedra:  
-![res/c20_c60,png.50%.jpg](res/c20_c60.png.50%.jpg)
+![res/c20_c60.png.50pc.jpg](res/c20_c60.png.50pc.jpg)
 
 
 92cm high paper drinking straw C60, hanging 3m high, without any glue:  
-![res/C60.33%.jpg](res/C60.33%.jpg)
+![res/C60.33pc.jpg](res/C60.33pc.jpg)
