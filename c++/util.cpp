@@ -9,7 +9,7 @@ char *readFile(const char *name) {
     rewind(src);
     char *buf = reinterpret_cast<char *>(malloc(l+1));
     assert(buf);
-    fread(buf, 1, l, src);
+    assert(1 == fread(buf, l, 1, src));
     fclose(src);
     buf[l] = 0x0;
     return buf;
