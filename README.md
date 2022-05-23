@@ -235,3 +235,15 @@ Same with [graphs/C60.a](graphs/C60.a), here vertex distances are too close and 
 
 
 ![res/max_planar_50_dual.6col.png](res/max_planar_50_dual.6col.png)
+
+### OpenSCAD 3D debug output
+
+New demo not yet committed/pushed, just as heads up. For debugging 3D graph computations, it turned out to be very helpful to view 3D output with OpenSCAD.
+
+These few lines create graph in 3D to be viewed with OpenSCAD:  
+![res/fold_cubic_debug.OpenSCAD.png](res/fold_cubic_debug.OpenSCAD.png)
+
+
+And this is how generated debug outpút looks like in OpenSCAD,  where it can be moved, zoomed, rotated, ...:  
+![res/fold_cubic_debug.png](res/fold_cubic_debug.png)
+
