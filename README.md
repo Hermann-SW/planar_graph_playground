@@ -247,3 +247,16 @@ These few lines create graph in 3D to be viewed with OpenSCAD:
 And this is how generated debug output looks like in OpenSCAD,  where it can be moved, zoomed, rotated, ...:  
 ![res/fold_cubic_debug.png](res/fold_cubic_debug.png)
 
+
+### Analog 3D views of C20 and C60
+
+From thread "Toothpick polyhedra, fullerenes":  
+[https://forum.prusa3d.com/forum/english-forum-awesome-prints-hall-of-fame/toothpick-polyhedra-fullerenes/](https://forum.prusa3d.com/forum/english-forum-awesome-prints-hall-of-fame/toothpick-polyhedra-fullerenes/)  
+
+
+C20 and C60 toothpick polyhedra:  
+![res/c20_c60,png.50%.jpg](res/c20_c60.png.50%.jpg)
+
+
+92cm high paper drinking straw C60, hanging 3m high, without any glue:  
+![res/C60.33%.jpg](res/C60.33%.jpg)
