@@ -244,6 +244,6 @@ These few lines create graph in 3D to be viewed with OpenSCAD:
 ![res/fold_cubic_debug.OpenSCAD.png](res/fold_cubic_debug.OpenSCAD.png)
 
 
-And this is how generated debug outpút looks like in OpenSCAD,  where it can be moved, zoomed, rotated, ...:  
+And this is how generated debug output looks like in OpenSCAD,  where it can be moved, zoomed, rotated, ...:  
 ![res/fold_cubic_debug.png](res/fold_cubic_debug.png)
 
