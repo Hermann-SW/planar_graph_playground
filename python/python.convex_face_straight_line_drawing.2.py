@@ -1,6 +1,7 @@
 ''' python.convex_face_straight_line_drawing.2.py '''
 from sys import argv
 
+#include "util.py"
 #include "undirected_graph.py"
 #include "tutte.py"
 #include "ps.py"

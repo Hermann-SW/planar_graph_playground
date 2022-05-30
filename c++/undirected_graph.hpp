@@ -7,8 +7,6 @@
 #include <functional>
 #include <cassert>
 
-#include "util.hpp"
-
 typedef int vertex;
 typedef int edge;
 

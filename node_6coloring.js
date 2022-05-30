@@ -1,6 +1,7 @@
 // Copyright: https://mit-license.org/
 
 #include "assert.js"
+#include "util.js"
 #include "gauss-jordan.js"
 #include "undirected_graph.js"
 

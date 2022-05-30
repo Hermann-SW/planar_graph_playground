@@ -1,6 +1,7 @@
 // Copyright: https://mit-license.org/
 
 #include <vector>
+#include "util.hpp"
 #include "c++/undirected_graph.hpp"
 #include "c++/c++_compact5.hpp"
 

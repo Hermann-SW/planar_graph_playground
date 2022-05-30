@@ -1,6 +1,7 @@
 ''' embedding_demo.py '''
 import io
 
+#include "util.py"
 #include "undirected_graph.py"
 #include "ps.py"
 

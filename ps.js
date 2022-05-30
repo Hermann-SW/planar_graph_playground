@@ -128,7 +128,6 @@ if (true) {
 
     exports.header = function () {
         console.log("%!");
-        console.log("% " + process.argv.length + " " + process.argv[0]);
         console.log("1 setlinewidth");
         console.log("/Times-Roman findfont 12 scalefont setfont");
 

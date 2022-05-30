@@ -1,4 +1,6 @@
 ''' python_test.py '''
+
+#include "util.py"
 #include "undirected_graph.py"
 #include "fullerenes.py"
 

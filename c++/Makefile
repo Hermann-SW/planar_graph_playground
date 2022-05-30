@@ -3,6 +3,19 @@ CCFLAGS = -Wall -Wextra -pedantic -std=c++14 -O3 -I.. -pg # -g
 
 all: c++_test c++_dual c++_compact5 c++_6coloring
 
+verify:
+	./c++_test > out
+	./c++_dual >> out
+#	./c++.convex_face_straight_line_drawing >> out
+#	./embedding_demo >> out
+#	./embedding_demo.2 >> out
+#	./embedding_demo.3 >> out
+	./c++_compact5 2>err >> out
+#	./c++.convex_face_straight_line_drawing.2 >> out
+#	./c++.convex_face_straight_line_drawing.6coloring >> out
+	./c++_6coloring ../graphs/10000.a 2>err >> out
+	diff out good
+
 cpplint:
 	cd .. && cpplint c++/util.cpp 
 	cd .. && cpplint c++/util.hpp 2>&1 | grep -v "Is this a non-const reference?"

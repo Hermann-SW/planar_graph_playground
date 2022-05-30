@@ -1,5 +1,7 @@
-''' xxx '''
+''' python_6coloring.py '''
 from sys import argv
+
+#include "util.py"
 #include "undirected_graph.py"
 
 assert len(argv) > 1

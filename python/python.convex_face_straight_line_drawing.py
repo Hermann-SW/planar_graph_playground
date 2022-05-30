@@ -1,5 +1,6 @@
 ''' python.convex_face_straight_line_drawing.py '''
 
+#include "util.py"
 #include "undirected_graph.py"
 #include "tutte.py"
 #include "ps.py"

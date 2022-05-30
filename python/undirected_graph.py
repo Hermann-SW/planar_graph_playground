@@ -1,5 +1,3 @@
-#include "util.py"
-
 class graph:
     def __init__(self, n, m):
         self.V = filled_array(n, 0)
