@@ -19,7 +19,7 @@ function draw(x) {
     var r = 12;
     var last_face;
 
-    ps.set(size, r, 0);
+    ps.set_(size, r, 0);
 
     ps.straight_line_drawing(G, coords, [], size, r, [], false);
 

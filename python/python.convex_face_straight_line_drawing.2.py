@@ -28,7 +28,7 @@ def doit(G, v, e):
     r = 12
     spl = -1
 
-    ps.set(size, r)
+    ps.set_(size, r, 0)
 
     visited = filled_array(n_edges(G), 2, False)
     face = []
@@ -58,7 +58,7 @@ def doit(G, v, e):
 
     if lmin[0] < 2 * r + 2:
         r = lmin[0] / 3
-        ps.set(size, r)
+        ps.set(size, r, 0)
 
     pent = pentagons(G)
     if len(face) == 5:
@@ -90,8 +90,8 @@ def doit(G, v, e):
         cx = (ps.scrx(coords[0][v]) + ps.scrx(coords[0][w])) / 2
         cy = (ps.scry(coords[1][v]) + ps.scry(coords[1][w])) / 2
         deg = math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / math.pi
-        print("15 15 " +rgb[last_face[0] % len(rgb)] + " " + str(deg) + " " +
-              str(cx) + " " + str(cy) + " parrow")
+        print("15 15 " +rgb[last_face[0] % len(rgb)] + " " + ps.frm(deg) + " " +
+              ps.frm(cx) + " " + ps.frm(cy) + " parrow")
 
     pftv                  = planar_face_traversal_visitor()
     pftv.begin_face       = lambda: incr(last_face)

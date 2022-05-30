@@ -67,7 +67,7 @@ function doit(G, v, e) {
     ps.header();
     ps.header2();
 
-    ps.set(size, r);
+    ps.set_(size, r, 0);
 
 
     forall_edges(G, function (e) {
@@ -86,7 +86,7 @@ function doit(G, v, e) {
     });
     if (lmin < 2 * r + 2) {
         r = lmin / 3;
-        ps.set(size, r);
+        ps.set_(size, r, 0);
     }
 
 

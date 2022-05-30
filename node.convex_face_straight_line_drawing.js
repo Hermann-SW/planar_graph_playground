@@ -45,7 +45,7 @@ function doit(G, v, e) {
     var dy;
     var w;
 
-    ps.set(size, r)
+    ps.set_(size, r, 0)
 
     var visited = filled_array(n_edges(G), 2, false);
     var face = [];
@@ -74,7 +74,7 @@ function doit(G, v, e) {
     });
     if (lmin < 2 * r + 2) {
         r = lmin / 3;
-        ps.set(size, r)
+        ps.set_(size, r, 0)
     }
 
     pent = pentagons(G);

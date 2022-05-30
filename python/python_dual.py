@@ -17,6 +17,8 @@ assert is_embedding(D)
 print("is_embedding(dual_graph(K5-e)) verified, has " + str(n_faces_planar(D)) + " faces")
 print_graph(D, "dual_graph(K5-e): ")
 
+print_graph(dual_graph(D), "dual_graph(dual_graph(K5-e)): ")
+
 
 #pragma assert is_identical_graph(K, dual_graph(D))
 #pragma print("is_identical(K5-e, dual_graph(dual_graph(K5-e))) verified")

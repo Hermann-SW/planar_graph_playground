@@ -6,10 +6,10 @@ var ps = exports;
 if (true) {
     var scrx;
     var scry;
-    var set;
+    var set_;
     var frm;
 
-    exports.set = function (length, r, i) {
+    exports.set_ = function (length, r, i) {
         exports.length = length;
         exports.r = r;
         if (i === undefined) {
@@ -32,7 +32,7 @@ if (true) {
 
     scrx = exports.scrx;
     scry = exports.scry;
-    set  = exports.set;
+    set_  = exports.set_;
     frm  = exports.frm;
 
     exports.fill_outer_face = function (face, coords, rgb) {
@@ -70,7 +70,7 @@ if (true) {
         var v;
         var w;
 
-        set(length, r);
+        set_(length, r, 0);
 
         if ((pent.length > 0) && (pent[0].length === 5)) {
 

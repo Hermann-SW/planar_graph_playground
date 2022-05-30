@@ -6,7 +6,7 @@ class ps:
         self._r = -1
         self._i = 1
 
-    def set (self, length, r, i=1):
+    def set_ (self, length, r, i=1):
         self._length = length
         self._r = r
         self._i = i
@@ -17,18 +17,22 @@ class ps:
     def scry (self, v):
         return self._length / 2 - (self._length / 2 - self._r - 10) * v
 
+    def frm (self, f):
+        return format(f, ".6f")
+
     def fill_outer_face (self, face, coords, rgb):
         size = self._length
 
         scrx = self.scrx
         scry = self.scry
+        frm = self.frm
 
-        print(rgb, " setrgbcolor")
+        print(rgb, "setrgbcolor")
 
         print(' 0 ' + str(size))
 
         for v in face:
-            print(' ' + str(scrx(coords[0][v])) + ' ' + str(scry(coords[1][v])))
+            print(' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])))
 
         print(' ' + str(0) + ' ' + str(size - 10))
         print(' 0 0')
@@ -40,24 +44,25 @@ class ps:
 
         print('  0 ' + str(size))
         print(' 0 ' + str(size-10))
-        print(' ' + str(scrx(coords[0][face[-1]])) + ' ' + str(scry(coords[1][face[-1]])))
-        print(' ' + str(scrx(coords[0][face[0]])) + ' ' + str(scry(coords[1][face[0]])))
+        print(' ' + frm(scrx(coords[0][face[-1]])) + ' ' + frm(scry(coords[1][face[-1]])))
+        print(' ' + frm(scrx(coords[0][face[0]])) + ' ' + frm(scry(coords[1][face[0]])))
         print('poly fill')
 
 
 
     def straight_line_drawing (self, G, coords, pent, length, r, outer, showpage=True):
-#pragma        set(length, r)
+        self.set_(length, r)
 
         scrx = self.scrx
         scry = self.scry
+        frm = self.frm
 
         if ((len(pent) > 0) and (len(pent[0]) == 5)):
 
             for face in pent:
                 print(".75 setgray")
                 for v in face:
-                    print(' ' + str(scrx(coords[0][v])) + ' ' + str(scry(coords[1][v])))
+                    print(' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])))
                 print('poly fill')
 
             if len(pent) != 12:
@@ -65,7 +70,7 @@ class ps:
                 print(' 0 0')
 
                 for v in outer:
-                    print(' ' + str(scrx(coords[0][v])) + ' ' + str(scry(coords[1][v])))
+                    print(' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])))
 
                 print(' ' + str(0) + ' ' + str(length))
                 print(' ' + str(length) + ' ' + str(length))
@@ -75,8 +80,8 @@ class ps:
 
                 print(".75 setgray")
                 print(' 0 0')
-                print(' ' + str(scrx(coords[0][0])) + ' ' + str(scry(coords[1][0])))
-                print(' ' + str(scrx(coords[0][4])) + ' ' + str(scry(coords[1][4])))
+                print(' ' + frm(scrx(coords[0][0])) + ' ' + frm(scry(coords[1][0])))
+                print(' ' + frm(scrx(coords[0][4])) + ' ' + frm(scry(coords[1][4])))
                 print(' ' + str(0) + ' ' + str(length))
                 print('poly fill')
 
@@ -85,14 +90,14 @@ class ps:
             w = target(G, e)
             if v < w:
                 print("0 setgray")
-                print(' ' + str(scrx(coords[0][v])) + ' ' + str(scry(coords[1][v])))
-                print(' ' + str(scrx(coords[0][w])) + ' ' + str(scry(coords[1][w])))
+                print(' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])))
+                print(' ' + frm(scrx(coords[0][w])) + ' ' + frm(scry(coords[1][w])))
                 print('poly stroke')
 
         forall_edges(G, lambda e: draw_edge(G, e, coords))
 
         forall_vertices(G, lambda v: print('(' + str(v + self._i) + ') ' + 
-            str(r) + ' ' + str(scrx(coords[0][v])) + ' ' + str(scry(coords[1][v])) + ' vertex'))
+            frm(r) + ' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' vertex'))
 
         if showpage:
             print('showpage')

@@ -48,7 +48,7 @@ def doit(G, v, e):
     ps.header()
     ps.header2()
 
-    ps.set(size, r)
+    ps.set_(size, r, 0)
 
 
     def min_edge(G, e, coords, lmin):
@@ -68,7 +68,7 @@ def doit(G, v, e):
 
     if lmin[0] < 2 * r + 2:
         r = lmin[0] / 3
-        ps.set(size, r)
+        ps.set_(size, r, 0)
 
 
     D = dual_graph(G)
@@ -90,7 +90,7 @@ def doit(G, v, e):
 
     def nv(v, last_face):
         if last_face:
-            print(" " + str(ps.scrx(coords[0][v])) + " " + str(ps.scry(coords[1][v])))
+            print(" " + ps.frm(ps.scrx(coords[0][v])) + " " + ps.frm(ps.scry(coords[1][v])))
 
     last_face = [-1]
     pftv                  = planar_face_traversal_visitor()
@@ -116,8 +116,8 @@ def doit(G, v, e):
 
     def ef2():
         if last_face[0] != 0:
-            print('0 0 (' + str(last_face[0]) + ') ' + str(cx[0] / w[0]) +
-                  ' ' + str(cy[0] / w[0]) + ' txtdistdeg')
+            print('0 0 (' + str(last_face[0]) + ') ' + ps.frm(cx[0] / w[0]) +
+                  ' ' + ps.frm(cy[0] / w[0]) + ' txtdistdeg')
 
     def nv2(v):
         cx[0] += ps.scrx(coords[0][v])

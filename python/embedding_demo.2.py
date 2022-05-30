@@ -30,7 +30,7 @@ def draw(x):
     size = 592
     r = 12
 
-    ps.set(size, r, 0)
+    ps.set_(size, r, 0)
 
     ps.straight_line_drawing(G, coords, [], size, r, [], False)
 
@@ -40,8 +40,8 @@ def draw(x):
         cx = (ps.scrx(coords[0][v]) + ps.scrx(coords[0][w])) / 2
         cy = (ps.scry(coords[1][v]) + ps.scry(coords[1][w])) / 2
         deg = math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / math.pi
-        print("12 " + str(deg) + " (" + l + ") " +
-              str(cx) + " " + str(cy) + " txtdistdeg")
+        print("12 " + ps.frm(deg) + " (" + l + ") " +
+              ps.frm(cx) + " " + ps.frm(cy) + " txtdistdeg")
 
     last_face = [-1]
     cnt = [-1]
