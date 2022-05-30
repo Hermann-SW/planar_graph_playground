@@ -113,9 +113,9 @@ function doit(G, v, e) {
         w = target(G, e);
         cx = (scrx(coords[0][v]) + scrx(coords[0][w])) / 2;
         cy = (scry(coords[1][v]) + scry(coords[1][w])) / 2;
-        console.log("() 1 " + cx + " " + cy + " vertex");
+        console.log("() 1 " + frm(cx) + " " + frm(cy) + " vertex");
         deg = Math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / Math.PI;
-        console.log("9 " + deg + " (" + e + ") " + cx + " " + cy + " txtdistdeg");
+        console.log("9 " + frm(deg) + " (" + e + ") " + frm(cx) + " " + frm(cy) + " txtdistdeg");
     });
 
     console.log("showpage");

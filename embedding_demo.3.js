@@ -33,7 +33,7 @@ function draw(x) {
         var cx = (ps.scrx(coords[0][v]) + ps.scrx(coords[0][w])) / 2;
         var cy = (ps.scry(coords[1][v]) + ps.scry(coords[1][w])) / 2;
         var deg = Math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / Math.PI;
-        console.log("30 6 " + rgb[last_face % rgb.length] + " " + deg + " " + cx + " " + cy + " parrow");
+        console.log("30 6 " + rgb[last_face % rgb.length] + " " + frm(deg) + " " + ps.frm(cx) + " " + ps.frm(cy) + " parrow");
     }});
 
 

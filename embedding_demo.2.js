@@ -31,7 +31,7 @@ function draw(x) {
         var cx = (ps.scrx(coords[0][v]) + ps.scrx(coords[0][w])) / 2;
         var cy = (ps.scry(coords[1][v]) + ps.scry(coords[1][w])) / 2;
         var deg = Math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / Math.PI;
-        console.log("12 " + (deg) + " (" + l + ") " + cx + " " + cy + " txtdistdeg");
+        console.log("12 " + ps.frm(deg) + " (" + l + ") " + ps.frm(cx) + " " + ps.frm(cy) + " txtdistdeg");
     }
 
     last_face = -1;

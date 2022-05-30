@@ -110,7 +110,7 @@ function doit(G, v, e) {
         }
     }, next_vertex: function (v) {
         if (last_face) {
-            console.log(" " + scrx(coords[0][v]) + " " + scry(coords[1][v]));
+            console.log(" " + frm(scrx(coords[0][v])) + " " + frm(scry(coords[1][v])));
         }
     }});
 
@@ -126,7 +126,7 @@ function doit(G, v, e) {
         w = 0;
     }, end_face: function () {
         if (last_face !== 0) {
-            console.log('0 0 (' + last_face + ') ' + (cx / w) + ' ' + (cy / w) + ' txtdistdeg');
+            console.log('0 0 (' + last_face + ') ' + frm(cx / w) + ' ' + frm(cy / w) + ' txtdistdeg');
         }
     }, next_vertex: function (v) {
         cx += scrx(coords[0][v]);

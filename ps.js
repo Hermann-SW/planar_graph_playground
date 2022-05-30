@@ -7,6 +7,7 @@ if (true) {
     var scrx;
     var scry;
     var set;
+    var frm;
 
     exports.set = function (length, r, i) {
         exports.length = length;
@@ -25,9 +26,14 @@ if (true) {
         return exports.length / 2 - (exports.length / 2 - exports.r - 10) * v;
     };
 
+    exports.frm = function (d) {
+	return d.toFixed(6);
+    }
+
     scrx = exports.scrx;
     scry = exports.scry;
     set  = exports.set;
+    frm  = exports.frm;
 
     exports.fill_outer_face = function (face, coords, rgb) {
         var size = exports.length;
@@ -37,7 +43,7 @@ if (true) {
         console.log(' 0 ' + size);
 
         face.forEach(function (v) {
-            console.log(' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]));
+            console.log(' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])));
         });
         console.log(' ' + 0 + ' ' + (size - 10));
         console.log(' 0 0');
@@ -49,8 +55,8 @@ if (true) {
 
         console.log('  0 ' + size);
         console.log(' 0 ' + (size-10));
-        console.log(' ' + scrx(coords[0][face[face.length - 1]]) + ' ' + scry(coords[1][face[face.length - 1]]));
-        console.log(' ' + scrx(coords[0][face[0]]) + ' ' + scry(coords[1][face[0]]));
+        console.log(' ' + frm(scrx(coords[0][face[face.length - 1]])) + ' ' + frm(scry(coords[1][face[face.length - 1]])));
+        console.log(' ' + frm(scrx(coords[0][face[0]])) + ' ' + frm(scry(coords[1][face[0]])));
         console.log('poly fill');
     }
 
@@ -71,7 +77,7 @@ if (true) {
             pent.forEach(function (face) {
                 console.log(".75 setgray");
                 face.forEach(function (v) {
-                    console.log(' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]));
+                    console.log(' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])));
                 });
                 console.log('poly fill');
             });
@@ -86,14 +92,14 @@ if (true) {
             w = target(G, e);
             if (v < w) {
                 console.log("0 setgray");
-                console.log(' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]));
-                console.log(' ' + scrx(coords[0][w]) + ' ' + scry(coords[1][w]));
+                console.log(' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])));
+                console.log(' ' + frm(scrx(coords[0][w])) + ' ' + frm(scry(coords[1][w])));
                 console.log('poly stroke');
             }
         });
 
         forall_vertices(G, function (v) {
-            console.log('(' + (v + 1) + ') ' + r + ' ' + scrx(coords[0][v]) + ' ' + scry(coords[1][v]) + ' vertex');
+            console.log('(' + (v + 1) + ') ' + frm(r) + ' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' vertex');
         });
 
         if ((pent.length > 0) && (pent[0].length === 2)) {
@@ -103,17 +109,17 @@ if (true) {
             dy = scry(coords[1][4] + pent[1][1] * (coords[1][7] - coords[1][4]));
 
             console.log(".75 setgray");
-            console.log(' ' + dx + ',' + dy);
+            console.log(' ' + frm(dx) + ',' + frm(dy));
             bx = scrx(coords[0][7]);
             by = scry((coords[1][7] + coords[1][5]) / 2);
-            console.log(' ' + bx + ',' + by);
+            console.log(' ' + frm(bx) + ',' + frm(by));
             bx = scrx((coords[0][1] + coords[0][5]) / 2);
             by = scry((coords[1][1] + coords[1][5]) / 2);
-            console.log(' ' + bx + ',' + by);
+            console.log(' ' + frm(bx) + ',' + frm(by));
             bx = scrx((coords[0][1] + coords[0][0]) / 2);
             by = scry((coords[1][1] + coords[1][0]) / 2);
-            console.log(' ' + bx + ',' + by);
-            console.log(' ' + cx + ',' + cy);
+            console.log(' ' + frm(bx) + ',' + frm(by));
+            console.log(' ' + frm(cx) + ',' + frm(cy));
             console.log('poly stroke');
         }
 
