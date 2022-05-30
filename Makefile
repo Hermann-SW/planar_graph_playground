@@ -2,6 +2,8 @@ all:
 
 clean:
 	rm -f err out
+
+clean_all: clean
 	rm -f python/err python/out
 	cd c++; make clean
 

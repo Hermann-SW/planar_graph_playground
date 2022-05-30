@@ -3,6 +3,15 @@ CCFLAGS = -Wall -Wextra -pedantic -std=c++14 -O3 -I.. -pg # -g
 
 all: c++_test c++_dual c++_compact5 c++_6coloring
 
+clean:
+	rm -f util.o fullerenes.o c++_test c++_dual c++_compact5 c++_6coloring
+	rm -f err out
+	rm -f gmon.out
+
+clean_all: clean
+	rm -f ../err ../out
+	rm -f ../python/err ../python/out
+
 verify_all: verify
 	cd ..; make verify
 	cd ../python; make verify
@@ -51,9 +60,3 @@ c++_compact5: c++_compact5.cpp c++_compact5.hpp  util.o undirected_graph.hpp
 c++_6coloring: c++_6coloring.cpp util.o undirected_graph.hpp
 	$(CC) $(CCFLAGS) c++_6coloring.cpp util.o -o c++_6coloring
 
-clean:
-	rm -f util.o fullerenes.o c++_test c++_dual c++_compact5 c++_6coloring
-	rm -f err out
-	rm -f gmon.out
-	rm -f ../err ../out
-	rm -f ../python/err ../python/out
