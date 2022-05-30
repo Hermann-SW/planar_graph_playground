@@ -3,7 +3,15 @@ CCFLAGS = -Wall -Wextra -pedantic -std=c++14 -O3 -I.. -pg # -g
 
 all: c++_test c++_dual c++_compact5 c++_6coloring
 
-verify:
+verify_all: verify
+	cd ..; make verify
+	cd ../python; make verify
+	echo
+	diff out good
+	diff ../out ../good
+	diff ../python/out ../python/good
+
+verify: all
 	./c++_test > out
 	./c++_dual >> out
 #	./c++.convex_face_straight_line_drawing >> out
@@ -45,3 +53,7 @@ c++_6coloring: c++_6coloring.cpp util.o undirected_graph.hpp
 
 clean:
 	rm -f util.o fullerenes.o c++_test c++_dual c++_compact5 c++_6coloring
+	rm -f err out
+	rm -f gmon.out
+	rm -f ../err ../out
+	rm -f ../python/err ../python/out

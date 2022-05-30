@@ -1,5 +1,17 @@
 all:
 
+clean:
+	rm -f err out
+	rm -f ../err ../out
+	cd ../c++; make clean
+
+verify_all: verify
+	cd ..; make verify
+	cd ../c++; make verify
+	echo
+	diff out good
+	diff ../out ../good
+	diff ../c++/out ../c++/good
 
 verify:
 	./rpy python_test.py > out

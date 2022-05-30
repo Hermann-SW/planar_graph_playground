@@ -1,5 +1,17 @@
 all:
 
+clean:
+	rm -f err out
+	rm -f python/err python/out
+	cd c++; make clean
+
+verify_all: verify
+	cd c++; make verify
+	cd python; make verify
+	echo
+	diff out good
+	diff python/out python/good
+	diff c++/out c++/good
 
 verify:
 	./rjs node_test.js > out
