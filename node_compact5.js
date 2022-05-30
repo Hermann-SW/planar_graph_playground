@@ -1,4 +1,5 @@
 #include "assert.js"
+#include "util.js"
 #include "fullerenes.js"
 #include "undirected_graph.js"
 #include "node_compact5.sj"

@@ -1,7 +1,5 @@
 "use strict"; // avoid module leak
 
-#include "gauss-jordan.js"
-
 var exports = {};
 var tutte = exports;
 

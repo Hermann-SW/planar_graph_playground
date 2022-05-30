@@ -1,5 +1,3 @@
-#include "util.js"
-
 function _f(g) {
     return g || function (_i) {
         _i = _i;
