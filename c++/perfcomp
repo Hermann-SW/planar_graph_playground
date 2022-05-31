@@ -1,0 +1,13 @@
+#!/bin/bash
+if [[ "$1" == "" ]]; then
+    echo "Format: $0 graph_file"
+    exit
+fi
+echo "planar_graph_playground    C++  NodeJS  Python"
+echo "                        ------  ------  ------"
+make c++_compact5 >/dev/null
+./c++_compact5 $1 1>/dev/null 2>err
+../rjs ../node_compact5.js $1 1>/dev/null 2>../err
+../python/rpy ../python/python_compact5.py $1 1>/dev/null 2> ../python/err
+
+paste <(cut -f1 -d: err ) <(cut -f2 -d: err | cut -b2-)  <(cut -f2 -d: ../err | cut -b2-) <(cut -f2 -d: ../python/err | cut -b2-)
