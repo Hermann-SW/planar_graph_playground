@@ -14,6 +14,8 @@ verify_all: verify
 	diff out good
 	diff python/out python/good
 	diff c++/out c++/good
+	python/norm python/good | diff - good
+	wc good
 
 verify:
 	./rjs node_test.js > out

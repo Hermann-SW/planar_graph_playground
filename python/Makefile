@@ -14,6 +14,8 @@ verify_all: verify
 	diff out good
 	diff ../out ../good
 	diff ../c++/out ../c++/good
+	./norm good | diff - ../good
+	wc ../good
 
 verify:
 	./rpy python_test.py > out

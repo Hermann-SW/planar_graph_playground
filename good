@@ -540,7 +540,7 @@ poly stroke
 12 138.366461 (3_c) 172.700000 405.600000 txtdistdeg
 0 0 (is_embedding=true,
  n_faces_planar=4,
- traversed faces=31) 300 20 txtdistdeg
+ traversed faces=4) 300 20 txtdistdeg
 0 0 (from_adjacency_list( [[1,3,2],[2,3,0],[0,3,1],[0,1,2]] )) 300 570 txtdistdeg
 showpage
 2 99 translate
@@ -587,7 +587,7 @@ poly stroke
 12 154.798876 (1_d) 282.300000 405.600000 txtdistdeg
 0 0 (is_embedding=false,
  n_faces_planar=4,
- traversed faces=11) 300 20 txtdistdeg
+ traversed faces=2) 300 20 txtdistdeg
 0 0 (from_adjacency_list( [[3,1,2],[2,0,3],[0,3,1],[1,2,0]] )) 300 570 txtdistdeg
 showpage
 %!

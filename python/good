@@ -541,8 +541,7 @@ poly stroke
 0 0 (is_embedding=True,
  n_faces_planar=4,
  traversed faces=4) 300 20 txtdistdeg
-0 0 (from_adjacency_list\( [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]]
- \)) 300 570 txtdistdeg
+0 0 (from_adjacency_list( [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]] )) 300 570 txtdistdeg
 showpage
 2 99 translate
 newpath 0 0 moveto 591 0 lineto 591 591 lineto 0 591 lineto closepath stroke
@@ -589,8 +588,7 @@ poly stroke
 0 0 (is_embedding=False,
  n_faces_planar=4,
  traversed faces=2) 300 20 txtdistdeg
-0 0 (from_adjacency_list\( [[3, 1, 2], [2, 0, 3], [0, 3, 1], [1, 2, 0]]
- \)) 300 570 txtdistdeg
+0 0 (from_adjacency_list( [[3, 1, 2], [2, 0, 3], [0, 3, 1], [1, 2, 0]] )) 300 570 txtdistdeg
 showpage
 %!
 1 setlinewidth
@@ -668,8 +666,7 @@ poly stroke
 0 0 (is_embedding=True,
  n_faces_planar=4,
  traversed faces=4) 300 20 txtdistdeg
-0 0 (from_adjacency_list\( [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]]
- \)) 300 570 txtdistdeg
+0 0 (from_adjacency_list( [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]] )) 300 570 txtdistdeg
 showpage
 2 99 translate
 newpath 0 0 moveto 591 0 lineto 591 591 lineto 0 591 lineto closepath stroke
@@ -716,8 +713,7 @@ poly stroke
 0 0 (is_embedding=False,
  n_faces_planar=4,
  traversed faces=2) 300 20 txtdistdeg
-0 0 (from_adjacency_list\( [[3, 1, 2], [2, 0, 3], [0, 3, 1], [1, 2, 0]]
- \)) 300 570 txtdistdeg
+0 0 (from_adjacency_list( [[3, 1, 2], [2, 0, 3], [0, 3, 1], [1, 2, 0]] )) 300 570 txtdistdeg
 showpage
 %!
 1 setlinewidth
@@ -841,8 +837,7 @@ poly stroke
 0 0 (is_embedding=True,
  n_faces_planar=4,
  traversed faces=4) 300 20 txtdistdeg
-0 0 (from_adjacency_list\( [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]]
- \)) 300 570 txtdistdeg
+0 0 (from_adjacency_list( [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]] )) 300 570 txtdistdeg
 showpage
 2 99 translate
 newpath 0 0 moveto 591 0 lineto 591 591 lineto 0 591 lineto closepath stroke
@@ -889,8 +884,7 @@ poly stroke
 0 0 (is_embedding=False,
  n_faces_planar=4,
  traversed faces=2) 300 20 txtdistdeg
-0 0 (from_adjacency_list\( [[3, 1, 2], [2, 0, 3], [0, 3, 1], [1, 2, 0]]
- \)) 300 570 txtdistdeg
+0 0 (from_adjacency_list( [[3, 1, 2], [2, 0, 3], [0, 3, 1], [1, 2, 0]] )) 300 570 txtdistdeg
 showpage
 identical vertex ordering in adjacency list and graph verified
 is_embedding(../graphs/10.a) verified, has 16 faces

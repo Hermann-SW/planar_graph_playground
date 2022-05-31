@@ -56,7 +56,7 @@ def draw(x):
     print("0 0 (is_embedding=" + str(is_embedding(G)) + ",")
     print(" n_faces_planar=" + str(n_faces_planar(G)) + ",") 
     print(" traversed faces=" + str(last_face[0]+1) +") 300 20 txtdistdeg")
-    print(r"0 0 (from_adjacency_list\( " + print_to_string(F[x]) + r" \)) 300 570 txtdistdeg")
+    print(r"0 0 (from_adjacency_list( " + print_to_string(F[x], end="") + r" )) 300 570 txtdistdeg")
 
     print("showpage")
 

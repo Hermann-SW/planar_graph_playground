@@ -1,0 +1,8 @@
+#!/bin/bash
+while IFS= read -r line; do
+  if [[ "$line" == *"from_adjacency_list("* ]]; then
+    echo "$line" | sed "s/, /,/g" 
+  else
+    printf '%s\n' "$line"
+  fi
+done < $1 | sed "s/True/true/;s/False/false/;s/\.\.\/graphs/graphs/"

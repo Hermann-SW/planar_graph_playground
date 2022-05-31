@@ -58,7 +58,7 @@ function draw(x) {
 
     console.log("0 0 (is_embedding=" + is_embedding(G) + ",");
     console.log(" n_faces_planar=" + n_faces_planar(G) + ",");
-    console.log(" traversed faces=" + last_face + 1 + ") 300 20 txtdistdeg");
+    console.log(" traversed faces=" + (last_face + 1) + ") 300 20 txtdistdeg");
     console.log("0 0 (from_adjacency_list( " + JSON.stringify(F[x]) + " )) 300 570 txtdistdeg");
 
     console.log("showpage");

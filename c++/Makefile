@@ -19,6 +19,8 @@ verify_all: verify
 	diff out good
 	diff ../out ../good
 	diff ../python/out ../python/good
+	../python/norm ../python/good | diff - ../good
+	wc ../good
 
 verify: all
 	./c++_test > out
