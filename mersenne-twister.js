@@ -1,3 +1,7 @@
+/*
+  Copy of this 13yo gist:
+  https://gist.github.com/banksean/300494
+*/
 
 /*
   I've wrapped Makoto Matsumoto and Takuji Nishimura's code in a namespace
