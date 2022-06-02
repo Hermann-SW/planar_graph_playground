@@ -1,0 +1,14 @@
+#!/bin/bash
+( cd c++; if [[ mt19973.cpp -nt mt19973 ]]; then g++ mt19973.cpp -o mt19973; fi; )
+cat mersenne-twister.js mt19973.js | nodejs - > out
+( cd python; python mt19973.py > out )
+( cd c++; ./mt19973 > out )
+diff out python/out
+diff out c++/out
+seed=`date +%s`
+cat mersenne-twister.js mt19973.js | nodejs - 10000 $seed > out
+( cd python; python mt19973.py 10000 $seed > out )
+( cd c++; ./mt19973 10000 $seed > out )
+diff out python/out
+diff out c++/out
+
