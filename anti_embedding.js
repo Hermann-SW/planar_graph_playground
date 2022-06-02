@@ -70,7 +70,7 @@ console.log(m);
 
 while (N > 0) {
     var e = random_edge(G);
-    var v = (Math.random() >= 0.5) ? source(G, e) : target(G, e);
+    var v = (rand_uint32() >= 2*(1<<30)) ? source(G, e) : target(G, e);
 
     swap_edge(G, v, e);
 
