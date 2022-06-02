@@ -30,7 +30,7 @@ def draw(x):
     size = 592
     r = 12
 
-    ps.set_(size, r, 0)
+    ps.set_(size, r)
 
     ps.straight_line_drawing(G, coords, [], size, r, [], False)
 

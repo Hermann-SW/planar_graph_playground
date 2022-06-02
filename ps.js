@@ -9,13 +9,9 @@ if (true) {
     var set_;
     var frm;
 
-    exports.set_ = function (length, r, i) {
+    exports.set_ = function (length, r) {
         exports.length = length;
         exports.r = r;
-        if (i === undefined) {
-            i = 1;
-        }
-        exports.i = i;
     };
 
     exports.scrx = function (v) {
@@ -70,7 +66,7 @@ if (true) {
         var v;
         var w;
 
-        set_(length, r, 0);
+        set_(length, r);
 
         if ((pent.length > 0) && (pent[0].length === 5)) {
 
@@ -99,7 +95,7 @@ if (true) {
         });
 
         forall_vertices(G, function (v) {
-            console.log('(' + (v + 1) + ') ' + frm(r) + ' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' vertex');
+            console.log('(' + v + ') ' + frm(r) + ' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' vertex');
         });
 
         if ((pent.length > 0) && (pent[0].length === 2)) {

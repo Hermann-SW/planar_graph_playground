@@ -4,12 +4,10 @@ class ps:
     def __init__(self):
         self._length = -1
         self._r = -1
-        self._i = 1
 
-    def set_ (self, length, r, i=1):
+    def set_ (self, length, r):
         self._length = length
         self._r = r
-        self._i = i
 
     def scrx (self, v):
         return self._length / 2 + (self._length / 2 - self._r - 10) * v
@@ -96,7 +94,7 @@ class ps:
 
         forall_edges(G, lambda e: draw_edge(G, e, coords))
 
-        forall_vertices(G, lambda v: print('(' + str(v + self._i) + ') ' + 
+        forall_vertices(G, lambda v: print('(' + str(v) + ') ' + 
             frm(r) + ' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' vertex'))
 
         if showpage:

@@ -21,7 +21,7 @@ function draw(x) {
     var cnt;
     var pftv;
 
-    ps.set_(size, r, 0);
+    ps.set_(size, r);
 
     ps.straight_line_drawing(G, coords, [], size, r, [], false);
 

@@ -29,7 +29,7 @@ def doit(G, v, e):
     r = 12
     spl = -1
 
-    ps.set_(size, r, 0)
+    ps.set_(size, r)
 
     visited = filled_array(n_edges(G), 2, False)
     face = []
@@ -59,7 +59,7 @@ def doit(G, v, e):
 
     if lmin[0] < 2 * r + 2:
         r = lmin[0] / 3
-        ps.set_(size, r, 0)
+        ps.set_(size, r)
 
     pent = pentagons(G)
     if len(face) == 5:

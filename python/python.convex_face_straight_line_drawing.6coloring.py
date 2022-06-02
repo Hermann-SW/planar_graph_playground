@@ -48,7 +48,7 @@ def doit(G, v, e):
     ps.header()
     ps.header2()
 
-    ps.set_(size, r, 0)
+    ps.set_(size, r)
 
 
     def min_edge(G, e, coords, lmin):
@@ -68,7 +68,7 @@ def doit(G, v, e):
 
     if lmin[0] < 2 * r + 2:
         r = lmin[0] / 3
-        ps.set_(size, r, 0)
+        ps.set_(size, r)
 
 
     D = dual_graph(G)

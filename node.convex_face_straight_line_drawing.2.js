@@ -53,7 +53,7 @@ function doit(G, v, e) {
     var deg;
     var last_face;
 
-    ps.set_(size, r, 0);
+    ps.set_(size, r);
 
     traverse_face(G, visited, v, e, ind(G, v, e), {next_vertex: function (v) {
         face.push(v);
@@ -78,7 +78,7 @@ function doit(G, v, e) {
     });
     if (lmin < 2 * r + 2) {
         r = lmin / 3;
-        ps.set_(size, r, 0);
+        ps.set_(size, r);
     }
 
     pent = pentagons(G);
