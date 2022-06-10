@@ -2,7 +2,6 @@
 #include "util.js"
 #include "undirected_graph.js"
 #include "ps.js"
-#include "gauss-jordan.js"
 
 var K4 = [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]];
 var K4noemb = [[3, 1, 2], [2, 0, 3], [0, 3, 1], [1, 2, 0]];
