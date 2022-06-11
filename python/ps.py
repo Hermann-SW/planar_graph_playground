@@ -16,7 +16,7 @@ class ps:
         return self._length / 2 - (self._length / 2 - self._r - 10) * v
 
     def frm (self, f):
-        return format(f, ".6f")
+        return format(f, ".1f")
 
     def fill_outer_face (self, face, coords, rgb):
         size = self._length

@@ -23,7 +23,7 @@ if (true) {
     };
 
     exports.frm = function (d) {
-	return d.toFixed(6);
+	return d.toFixed(1);
     }
 
     scrx = exports.scrx;
