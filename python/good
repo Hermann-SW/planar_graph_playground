@@ -886,6 +886,181 @@ poly stroke
  traversed faces=2) 300 20 txtdistdeg
 0 0 (from_adjacency_list( [[3, 1, 2], [2, 0, 3], [0, 3, 1], [1, 2, 0]] )) 300 570 txtdistdeg
 showpage
+%!
+1 setlinewidth
+/Times-Roman findfont 12 scalefont setfont
+2 99 translate
+newpath 0 0 moveto 591 0 lineto 591 591 lineto 0 591 lineto closepath stroke
+/vertex { 2 copy 5 4 roll dup 4 1 roll
+  newpath 0 360 arc closepath
+  gsave 1.0 setgray fill grestore
+  stroke
+  12 ge { 
+    newpath moveto
+    gsave dup false charpath flattenpath pathbbox grestore
+    exch 4 1 roll exch sub -.5 mul 3 1 roll sub -.5 mul exch
+    rmoveto show
+  } { pop pop pop } ifelse
+} def
+/txtdistdeg {
+  newpath moveto
+  gsave dup false charpath flattenpath pathbbox grestore
+  exch 4 1 roll exch sub -.5 mul 3 1 roll sub -.5 mul exch
+  5 3 roll gsave
+  rotate 0 exch rmoveto
+  rmoveto show
+  grestore
+} def
+/poly {
+  newpath
+  moveto
+  {
+    count 0 eq { exit } if
+    lineto
+  } loop
+} def
+%% http://computer-programming-forum.com/36-postscript/3d1b79b93a578811.htm
+/arrow          %% angle /arrow -- draws arrowhead
+{
+gsave
+  currentpoint translate 90 sub rotate .5 .5 scale
+  newpath
+  0.1 setlinewidth
+  0 -15 moveto
+  -6 -18 lineto
+  -4 -15 -1 -9 0 0 curveto
+  1 -9 4 -15 6 -18 curveto
+  0 -15 lineto
+  fill
+grestore
+} def
+/arrowto        %% x1 y1 arrowto -- draws line with arrowhead
+{
+  2 copy                  % x1 y1 x1 y1
+  currentpoint            % x1 y1 x1 y1 x0 y0
+  3 -1 roll exch          % x1 y1 x1 x0 y1 y0
+  sub                     % x1 y1 x1 x0 y1-y0
+  3 1 roll                % x1 y1 y1-y0 x1 x0
+  sub                     % x1 y1 y1-y0 x1-x0
+  atan                    % x1 y1 theta
+  3 1 roll                % theta x1 y1
+  2 copy lineto           % theta x1 y1
+  2 copy stroke moveto    % theta x1 y1
+  3 -1 roll arrow         % x1 y1
+  moveto
+} def
+/rarrowto {     %%  dx dy rarrowto --
+  exch currentpoint       % dy dx x0 y0
+  4 1 roll                % y0 dy dx x0
+  add 3 1 roll            % x0+dx y0 dy
+  add arrowto
+} def
+%% len dist cr cg cb angle x1 y1
+/parrow {
+  gsave
+  newpath translate 0 0 moveto
+  rotate
+  setrgbcolor
+  0 exch rmoveto
+  0 rarrowto 
+  grestore
+} def
+0 setgray
+ 433.0 515.2
+ 296.0 49.4
+poly stroke
+0 setgray
+ 433.0 515.2
+ 213.8 515.2
+poly stroke
+0 setgray
+ 296.0 49.4
+ 213.8 515.2
+poly stroke
+0 setgray
+ 296.0 49.4
+ 487.8 460.4
+poly stroke
+0 setgray
+ 213.8 515.2
+ 487.8 460.4
+poly stroke
+(0) 12.0 433.0 515.2 vertex
+(1) 12.0 296.0 49.4 vertex
+(2) 12.0 213.8 515.2 vertex
+(3) 12.0 487.8 460.4 vertex
+12 -106.4 (0_a) 364.5 282.3 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+gsave 317.9 107.3 translate 0 0 moveto -286.4 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 65.0 317.9 107.3 parrow
+grestore
+12 65.0 (0_b) 391.9 254.9 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+newpath 487.8 460.4 18.0 183.7 -130.0 arc stroke
+gsave 476.2 446.6 translate 0 0 moveto -115.0 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 168.7 469.8 459.2 parrow
+grestore
+12 168.7 (0_c) 350.8 487.8 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+newpath 213.8 515.2 18.0 -65.0 -26.3 arc stroke
+gsave 229.9 507.2 translate 0 0 moveto -11.3 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 -80.0 221.4 498.9 parrow
+grestore
+12 -80.0 (0_d) 254.9 282.3 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+gsave 297.1 69.8 translate 0 0 moveto -260.0 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 73.6 297.1 69.8 parrow
+grestore
+12 73.6 (0_e) 364.5 282.3 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+newpath 433.0 515.2 18.0 195.0 -121.4 arc stroke
+gsave 423.6 499.8 translate 0 0 moveto -106.4 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 180.0 415.6 510.5 parrow
+grestore
+12 180.0 (0_f) 323.4 515.2 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+gsave 260.8 510.5 translate 0 0 moveto 0.0 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 -11.3 260.8 510.5 parrow
+grestore
+12 -11.3 (0_g) 350.8 487.8 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+newpath 487.8 460.4 18.0 -100.0 -206.3 arc stroke
+gsave 471.7 468.4 translate 0 0 moveto -191.3 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 -115.0 484.7 442.7 parrow
+grestore
+12 -115.0 (0_h) 391.9 254.9 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+newpath 296.0 49.4 18.0 115.0 -310.0 arc stroke
+gsave 307.6 63.2 translate 0 0 moveto -295.0 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 100.0 288.4 65.7 parrow
+grestore
+12 100.0 (0_i) 254.9 282.3 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+newpath 213.8 515.2 18.0 15.0 -95.0 arc stroke
+gsave 212.2 497.3 translate 0 0 moveto -80.0 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 0.0 231.2 519.9 parrow
+grestore
+12 0.0 (0_j) 323.4 515.2 txtdistdeg
+gsave
+0 0 1 setrgbcolor
+newpath 433.0 515.2 18.0 -91.4 -195.0 arc stroke
+gsave 415.6 519.9 translate 0 0 moveto -180.0 rotate 18.0 0 lineto stroke grestore
+36.0 0 0 0 1 -106.4 432.6 497.2 parrow
+grestore
+0 0 (is_embedding=False,
+ n_faces_planar=3,
+ traversed faces=1) 300 20 txtdistdeg
+0 0 (from_adjacency_list( [[1, 2], [2, 0, 3], [0, 3, 1], [1, 2]] )) 300 570 txtdistdeg
+showpage
 identical vertex ordering in adjacency list and graph verified
 is_embedding(../graphs/10.a) verified, has 16 faces
 compat5_traversal(G, {}) done

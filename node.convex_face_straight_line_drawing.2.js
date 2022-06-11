@@ -121,7 +121,7 @@ function doit(G, v, e) {
         w = opposite(G, v, e);
         cx = (ps.scrx(coords[0][v]) + ps.scrx(coords[0][w])) / 2;
         cy = (ps.scry(coords[1][v]) + ps.scry(coords[1][w])) / 2;
-        deg = Math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / Math.PI;
+        deg = ps.r2d(Math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]));
         console.log("15 15 " + rgb[last_face % rgb.length] + " " + ps.frm(deg) + " " + ps.frm(cx) + " " + ps.frm(cy) + " parrow");
     }});
 

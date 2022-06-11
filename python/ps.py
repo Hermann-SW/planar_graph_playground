@@ -18,6 +18,12 @@ class ps:
     def frm (self, f):
         return format(f, ".1f")
 
+    def r2d (self, r):
+        return r / math.pi * 180
+
+    def d2r (self, d):
+        return d / 180 *  math.pi
+
     def fill_outer_face (self, face, coords, rgb):
         size = self._length
 
@@ -191,3 +197,37 @@ class ps:
         print("  0 rarrowto ")
         print("  grestore")
         print("} def")
+
+
+    def vertex_indicator (self, G, v, e, coords, r, da):
+        scrx = self.scrx
+        scry = self.scry
+        frm = self.frm
+        r2d = self.r2d
+        d2r = self.d2r
+
+        w = opposite(G, v, e)
+        deg = r2d(math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]))
+        print("gsave")
+        v = w
+        e = next_incident_edge(G, v, e)
+        w = opposite(G, v, e)
+        deg2 = r2d(math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]))
+        R = r
+        t = (deg + 540 - deg2) % 360
+        T = math.tan(d2r(t))**2
+        f = math.sin(d2r(da)) * math.sqrt((math.sqrt(T + 1) + 1)**2 / T + 1)
+        print("0 0 1 setrgbcolor")
+
+        if t > 2*da:
+            print("newpath " + frm(scrx(coords[0][v])) + " " + frm(scry(coords[1][v])) + " " + frm(r) + " " + frm(deg2 + da) + " " + frm(deg -180 - da) + " arc stroke")
+            print("gsave " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg - 180 - da))) + " " + frm(scry(coords[1][v]) + R * math.sin(d2r(deg - 180 - da))) + " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) + " 0 lineto stroke grestore")
+            print(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg2 + da))) + " " + frm(scry(coords[1][v]) + R * math.sin(d2r(deg2 + da))) + " parrow")
+        else:
+            R = r*f
+
+            print("gsave " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg - 180 - t/2))) + " " + frm(scry(coords[1][v]) + R * math.sin(d2r(deg - 180 - t/2))) + " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) + " 0 lineto stroke grestore")
+            print(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg2 + t/2))) + " " + frm(scry(coords[1][v]) + R * math.sin(d2r(deg2 + t/2))) + " parrow")
+
+        print("grestore")
+

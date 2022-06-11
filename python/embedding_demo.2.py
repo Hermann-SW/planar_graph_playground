@@ -39,7 +39,7 @@ def draw(x):
         w = opposite(G, v, e)
         cx = (ps.scrx(coords[0][v]) + ps.scrx(coords[0][w])) / 2
         cy = (ps.scry(coords[1][v]) + ps.scry(coords[1][w])) / 2
-        deg = math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / math.pi
+        deg = ps.r2d(math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]))
         print("12 " + ps.frm(deg) + " (" + l + ") " +
               ps.frm(cx) + " " + ps.frm(cy) + " txtdistdeg")
 

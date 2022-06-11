@@ -46,7 +46,7 @@ function draw(x) {
         var w = target(G, e);
         var cx = (ps.scrx(coords[0][v]) + ps.scrx(coords[0][w])) / 2;
         var cy = (ps.scry(coords[1][v]) + ps.scry(coords[1][w])) / 2;
-        var deg = Math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / Math.PI;
+        var deg = ps.r2d(Math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]));
         console.log("12 " + ps.frm(deg) + " (" + eface[e][0] + ") " + ps.frm(cx) + " " + ps.frm(cy) + " txtdistdeg");
         console.log("12 " + ps.frm(180 + deg) + " (" + eface[e][1] + ") " + ps.frm(cx) + " " + ps.frm(cy) + " txtdistdeg");
     }

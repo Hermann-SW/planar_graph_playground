@@ -89,7 +89,7 @@ def doit(G, v, e):
         cx = (ps.scrx(coords[0][v]) + ps.scrx(coords[0][w])) / 2
         cy = (ps.scry(coords[1][v]) + ps.scry(coords[1][w])) / 2
         print("() 1 " + ps.frm(cx) + " " + ps.frm(cy) + " vertex")
-        deg = math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]) * 180 / math.pi
+        deg = ps.r2d(math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]))
         print("9 " + ps.frm(deg) + " (" + str(e) + ") " + ps.frm(cx) + " " + ps.frm(cy) + " txtdistdeg")
 
     forall_edges(G, lambda e: draw_edge_label(G, e, coords))
