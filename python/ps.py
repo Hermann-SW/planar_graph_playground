@@ -70,24 +70,7 @@ class ps:
                 print('poly fill')
 
             if len(pent) != 12:
-                print(".75 setgray")
-                print(' 0 0')
-
-                for v in outer:
-                    print(' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])))
-
-                print(' ' + str(0) + ' ' + str(length))
-                print(' ' + str(length) + ' ' + str(length))
-                print(' ' + str(length) + ' ' + str(0))
-
-                print('poly fill')
-
-                print(".75 setgray")
-                print(' 0 0')
-                print(' ' + frm(scrx(coords[0][0])) + ' ' + frm(scry(coords[1][0])))
-                print(' ' + frm(scrx(coords[0][4])) + ' ' + frm(scry(coords[1][4])))
-                print(' ' + str(0) + ' ' + str(length))
-                print('poly fill')
+                self.fill_outer_face(outer, coords, "0.75 0.75 0.75");
 
         def draw_edge(G, e, coords):
             v = source(G, e)
