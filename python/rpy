@@ -1,4 +1,5 @@
 #!/bin/bash
 file=$1
 shift
+export ARGV0=$file
 gcc -E -x c -nostdinc $file | grep -v "^#"  | python - $*

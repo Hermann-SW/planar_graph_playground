@@ -1969,6 +1969,451 @@ poly stroke
 0 0 (15) 296.0 359.1 txtdistdeg
 0 0 (16) 296.0 139.6 txtdistdeg
 showpage
+%!
+1 setlinewidth
+/Times-Roman findfont 12 scalefont setfont
+2 99 translate
+newpath 0 0 moveto 591 0 lineto 591 591 lineto 0 591 lineto closepath stroke
+/vertex { 2 copy 5 4 roll dup 4 1 roll
+  newpath 0 360 arc closepath
+  gsave 1.0 setgray fill grestore
+  stroke
+  12 ge { 
+    newpath moveto
+    gsave dup false charpath flattenpath pathbbox grestore
+    exch 4 1 roll exch sub -.5 mul 3 1 roll sub -.5 mul exch
+    rmoveto show
+  } { pop pop pop } ifelse
+} def
+/txtdistdeg {
+  newpath moveto
+  gsave dup false charpath flattenpath pathbbox grestore
+  exch 4 1 roll exch sub -.5 mul 3 1 roll sub -.5 mul exch
+  5 3 roll gsave
+  rotate 0 exch rmoveto
+  rmoveto show
+  grestore
+} def
+/poly {
+  newpath
+  moveto
+  {
+    count 0 eq { exit } if
+    lineto
+  } loop
+} def
+%% http://computer-programming-forum.com/36-postscript/3d1b79b93a578811.htm
+/arrow          %% angle /arrow -- draws arrowhead
+{
+gsave
+  currentpoint translate 90 sub rotate .5 .5 scale
+  newpath
+  0.1 setlinewidth
+  0 -15 moveto
+  -6 -18 lineto
+  -4 -15 -1 -9 0 0 curveto
+  1 -9 4 -15 6 -18 curveto
+  0 -15 lineto
+  fill
+grestore
+} def
+/arrowto        %% x1 y1 arrowto -- draws line with arrowhead
+{
+  2 copy                  % x1 y1 x1 y1
+  currentpoint            % x1 y1 x1 y1 x0 y0
+  3 -1 roll exch          % x1 y1 x1 x0 y1 y0
+  sub                     % x1 y1 x1 x0 y1-y0
+  3 1 roll                % x1 y1 y1-y0 x1 x0
+  sub                     % x1 y1 y1-y0 x1-x0
+  atan                    % x1 y1 theta
+  3 1 roll                % theta x1 y1
+  2 copy lineto           % theta x1 y1
+  2 copy stroke moveto    % theta x1 y1
+  3 -1 roll arrow         % x1 y1
+  moveto
+} def
+/rarrowto {     %%  dx dy rarrowto --
+  exch currentpoint       % dy dx x0 y0
+  4 1 roll                % y0 dy dx x0
+  add 3 1 roll            % x0+dx y0 dy
+  add arrowto
+} def
+%% len dist cr cg cb angle x1 y1
+/parrow {
+  gsave
+  newpath translate 0 0 moveto
+  rotate
+  setrgbcolor
+  0 exch rmoveto
+  0 rarrowto 
+  grestore
+} def
+.75 setgray
+ 148.9 331.7
+ 29.5 382.6
+ 131.3 69.3
+ 196.7 182.9
+ 194.9 262.3
+poly fill
+.75 setgray
+ 239.3 272.2
+ 194.9 262.3
+ 196.7 182.9
+ 263.8 217.2
+ 266.3 251.5
+poly fill
+.75 setgray
+ 296.0 265.1
+ 266.3 251.5
+ 263.8 217.2
+ 328.2 217.2
+ 325.7 251.5
+poly fill
+.75 setgray
+ 352.7 272.2
+ 325.7 251.5
+ 328.2 217.2
+ 395.3 182.9
+ 397.1 262.3
+poly fill
+.75 setgray
+ 443.1 331.7
+ 397.1 262.3
+ 395.3 182.9
+ 460.7 69.3
+ 562.5 382.6
+poly fill
+.75 setgray
+ 324.9 388.1
+ 296.0 450.8
+ 267.1 388.1
+ 283.1 363.5
+ 308.9 363.5
+poly fill
+.75 setgray
+ 369.8 350.1
+ 324.9 388.1
+ 308.9 363.5
+ 318.6 338.8
+ 341.3 330.6
+poly fill
+.75 setgray
+ 335.5 302.9
+ 341.3 330.6
+ 318.6 338.8
+ 305.8 322.3
+ 312.4 305.8
+poly fill
+.75 setgray
+ 296.0 292.2
+ 312.4 305.8
+ 305.8 322.3
+ 286.2 322.3
+ 279.6 305.8
+poly fill
+.75 setgray
+ 256.5 302.9
+ 279.6 305.8
+ 286.2 322.3
+ 273.4 338.8
+ 250.7 330.6
+poly fill
+.75 setgray
+ 222.2 350.1
+ 250.7 330.6
+ 273.4 338.8
+ 283.1 363.5
+ 267.1 388.1
+poly fill
+0.75 0.75 0.75 setrgbcolor
+ 0 592
+ 296.0 576.2
+ 562.5 382.6
+ 460.7 69.3
+ 131.3 69.3
+ 29.5 382.6
+ 0 582
+ 0 0
+ 592 0
+ 592 592
+poly fill
+  0 592
+ 0 582
+ 29.5 382.6
+ 296.0 576.2
+poly fill
+0 setgray
+ 296.0 576.2
+ 562.5 382.6
+poly stroke
+0 setgray
+ 296.0 576.2
+ 296.0 450.8
+poly stroke
+0 setgray
+ 296.0 576.2
+ 29.5 382.6
+poly stroke
+0 setgray
+ 29.5 382.6
+ 148.9 331.7
+poly stroke
+0 setgray
+ 29.5 382.6
+ 131.3 69.3
+poly stroke
+0 setgray
+ 148.9 331.7
+ 222.2 350.1
+poly stroke
+0 setgray
+ 148.9 331.7
+ 194.9 262.3
+poly stroke
+0 setgray
+ 194.9 262.3
+ 239.3 272.2
+poly stroke
+0 setgray
+ 194.9 262.3
+ 196.7 182.9
+poly stroke
+0 setgray
+ 239.3 272.2
+ 256.5 302.9
+poly stroke
+0 setgray
+ 239.3 272.2
+ 266.3 251.5
+poly stroke
+0 setgray
+ 266.3 251.5
+ 296.0 265.1
+poly stroke
+0 setgray
+ 266.3 251.5
+ 263.8 217.2
+poly stroke
+0 setgray
+ 296.0 265.1
+ 296.0 292.2
+poly stroke
+0 setgray
+ 296.0 265.1
+ 325.7 251.5
+poly stroke
+0 setgray
+ 325.7 251.5
+ 352.7 272.2
+poly stroke
+0 setgray
+ 325.7 251.5
+ 328.2 217.2
+poly stroke
+0 setgray
+ 352.7 272.2
+ 335.5 302.9
+poly stroke
+0 setgray
+ 352.7 272.2
+ 397.1 262.3
+poly stroke
+0 setgray
+ 397.1 262.3
+ 443.1 331.7
+poly stroke
+0 setgray
+ 397.1 262.3
+ 395.3 182.9
+poly stroke
+0 setgray
+ 443.1 331.7
+ 369.8 350.1
+poly stroke
+0 setgray
+ 443.1 331.7
+ 562.5 382.6
+poly stroke
+0 setgray
+ 562.5 382.6
+ 460.7 69.3
+poly stroke
+0 setgray
+ 296.0 450.8
+ 324.9 388.1
+poly stroke
+0 setgray
+ 296.0 450.8
+ 267.1 388.1
+poly stroke
+0 setgray
+ 324.9 388.1
+ 369.8 350.1
+poly stroke
+0 setgray
+ 324.9 388.1
+ 308.9 363.5
+poly stroke
+0 setgray
+ 369.8 350.1
+ 341.3 330.6
+poly stroke
+0 setgray
+ 341.3 330.6
+ 335.5 302.9
+poly stroke
+0 setgray
+ 341.3 330.6
+ 318.6 338.8
+poly stroke
+0 setgray
+ 335.5 302.9
+ 312.4 305.8
+poly stroke
+0 setgray
+ 312.4 305.8
+ 296.0 292.2
+poly stroke
+0 setgray
+ 312.4 305.8
+ 305.8 322.3
+poly stroke
+0 setgray
+ 296.0 292.2
+ 279.6 305.8
+poly stroke
+0 setgray
+ 279.6 305.8
+ 256.5 302.9
+poly stroke
+0 setgray
+ 279.6 305.8
+ 286.2 322.3
+poly stroke
+0 setgray
+ 256.5 302.9
+ 250.7 330.6
+poly stroke
+0 setgray
+ 250.7 330.6
+ 222.2 350.1
+poly stroke
+0 setgray
+ 250.7 330.6
+ 273.4 338.8
+poly stroke
+0 setgray
+ 222.2 350.1
+ 267.1 388.1
+poly stroke
+0 setgray
+ 267.1 388.1
+ 283.1 363.5
+poly stroke
+0 setgray
+ 283.1 363.5
+ 308.9 363.5
+poly stroke
+0 setgray
+ 283.1 363.5
+ 273.4 338.8
+poly stroke
+0 setgray
+ 308.9 363.5
+ 318.6 338.8
+poly stroke
+0 setgray
+ 318.6 338.8
+ 305.8 322.3
+poly stroke
+0 setgray
+ 305.8 322.3
+ 286.2 322.3
+poly stroke
+0 setgray
+ 286.2 322.3
+ 273.4 338.8
+poly stroke
+0 setgray
+ 131.3 69.3
+ 196.7 182.9
+poly stroke
+0 setgray
+ 131.3 69.3
+ 460.7 69.3
+poly stroke
+0 setgray
+ 196.7 182.9
+ 263.8 217.2
+poly stroke
+0 setgray
+ 263.8 217.2
+ 328.2 217.2
+poly stroke
+0 setgray
+ 328.2 217.2
+ 395.3 182.9
+poly stroke
+0 setgray
+ 395.3 182.9
+ 460.7 69.3
+poly stroke
+(0) 5.8 296.0 576.2 vertex
+(1) 5.8 29.5 382.6 vertex
+(2) 5.8 148.9 331.7 vertex
+(3) 5.8 194.9 262.3 vertex
+(4) 5.8 239.3 272.2 vertex
+(5) 5.8 266.3 251.5 vertex
+(6) 5.8 296.0 265.1 vertex
+(7) 5.8 325.7 251.5 vertex
+(8) 5.8 352.7 272.2 vertex
+(9) 5.8 397.1 262.3 vertex
+(10) 5.8 443.1 331.7 vertex
+(11) 5.8 562.5 382.6 vertex
+(12) 5.8 296.0 450.8 vertex
+(13) 5.8 324.9 388.1 vertex
+(14) 5.8 369.8 350.1 vertex
+(15) 5.8 341.3 330.6 vertex
+(16) 5.8 335.5 302.9 vertex
+(17) 5.8 312.4 305.8 vertex
+(18) 5.8 296.0 292.2 vertex
+(19) 5.8 279.6 305.8 vertex
+(20) 5.8 256.5 302.9 vertex
+(21) 5.8 250.7 330.6 vertex
+(22) 5.8 222.2 350.1 vertex
+(23) 5.8 267.1 388.1 vertex
+(24) 5.8 283.1 363.5 vertex
+(25) 5.8 308.9 363.5 vertex
+(26) 5.8 318.6 338.8 vertex
+(27) 5.8 305.8 322.3 vertex
+(28) 5.8 286.2 322.3 vertex
+(29) 5.8 273.4 338.8 vertex
+(30) 5.8 131.3 69.3 vertex
+(31) 5.8 196.7 182.9 vertex
+(32) 5.8 263.8 217.2 vertex
+(33) 5.8 328.2 217.2 vertex
+(34) 5.8 395.3 182.9 vertex
+(35) 5.8 460.7 69.3 vertex
+0 0 (1) 382.0 413.3 txtdistdeg
+0 0 (2) 210.0 413.3 txtdistdeg
+0 0 (3) 140.3 245.8 txtdistdeg
+0 0 (4) 218.8 308.3 txtdistdeg
+0 0 (5) 232.2 237.2 txtdistdeg
+0 0 (6) 272.3 281.6 txtdistdeg
+0 0 (7) 296.0 240.5 txtdistdeg
+0 0 (8) 319.7 281.6 txtdistdeg
+0 0 (9) 359.8 237.2 txtdistdeg
+0 0 (10) 373.2 308.3 txtdistdeg
+0 0 (11) 451.7 245.8 txtdistdeg
+0 0 (12) 296.0 390.8 txtdistdeg
+0 0 (13) 332.7 354.2 txtdistdeg
+0 0 (14) 322.7 320.1 txtdistdeg
+0 0 (15) 296.0 309.7 txtdistdeg
+0 0 (16) 269.3 320.1 txtdistdeg
+0 0 (17) 259.3 354.2 txtdistdeg
+0 0 (18) 296.0 341.5 txtdistdeg
+0 0 (19) 296.0 156.5 txtdistdeg
+showpage
 0 pentagons for graph
 2162 pentagons for dual graph
 6-coloring of  graph

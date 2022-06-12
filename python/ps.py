@@ -15,13 +15,16 @@ class ps:
     def scry (self, v):
         return self._length / 2 - (self._length / 2 - self._r - 10) * v
 
-    def frm (self, f):
+    @staticmethod
+    def frm (f):
         return format(f, ".1f")
 
-    def r2d (self, r):
+    @staticmethod
+    def r2d (r):
         return r / math.pi * 180
 
-    def d2r (self, d):
+    @staticmethod
+    def d2r (d):
         return d / 180 *  math.pi
 
     def fill_outer_face (self, face, coords, rgb):
@@ -70,7 +73,7 @@ class ps:
                 print('poly fill')
 
             if len(pent) != 12:
-                self.fill_outer_face(outer, coords, "0.75 0.75 0.75");
+                self.fill_outer_face(outer, coords, "0.75 0.75 0.75")
 
         def draw_edge(G, e, coords):
             v = source(G, e)
@@ -203,14 +206,25 @@ class ps:
         print("0 0 1 setrgbcolor")
 
         if t > 2*da:
-            print("newpath " + frm(scrx(coords[0][v])) + " " + frm(scry(coords[1][v])) + " " + frm(r) + " " + frm(deg2 + da) + " " + frm(deg -180 - da) + " arc stroke")
-            print("gsave " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg - 180 - da))) + " " + frm(scry(coords[1][v]) + R * math.sin(d2r(deg - 180 - da))) + " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) + " 0 lineto stroke grestore")
-            print(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg2 + da))) + " " + frm(scry(coords[1][v]) + R * math.sin(d2r(deg2 + da))) + " parrow")
+            print("newpath " + frm(scrx(coords[0][v])) + " " + frm(scry(coords[1][v])) + " " +
+                  frm(r) + " " + frm(deg2 + da) + " " + frm(deg -180 - da) + " arc stroke")
+            print("gsave " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg - 180 - da))) + " " +
+                  frm(scry(coords[1][v]) + R * math.sin(d2r(deg - 180 - da))) +
+                  " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) +
+                  " 0 lineto stroke grestore")
+            print(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " +
+                  frm(scrx(coords[0][v]) + R*math.cos(d2r(deg2 + da))) + " " +
+                  frm(scry(coords[1][v]) + R * math.sin(d2r(deg2 + da))) + " parrow")
         else:
             R = r*f
 
-            print("gsave " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg - 180 - t/2))) + " " + frm(scry(coords[1][v]) + R * math.sin(d2r(deg - 180 - t/2))) + " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) + " 0 lineto stroke grestore")
-            print(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg2 + t/2))) + " " + frm(scry(coords[1][v]) + R * math.sin(d2r(deg2 + t/2))) + " parrow")
+            print("gsave " + frm(scrx(coords[0][v]) + R*math.cos(d2r(deg - 180 - t/2))) + " " +
+                  frm(scry(coords[1][v]) + R * math.sin(d2r(deg - 180 - t/2))) +
+                  " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) +
+                  " 0 lineto stroke grestore")
+            print(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " +
+                  frm(scrx(coords[0][v]) + R*math.cos(d2r(deg2 + t/2))) + " " +
+                  frm(scry(coords[1][v]) + R * math.sin(d2r(deg2 + t/2))) + " parrow")
 
         print("grestore")
 

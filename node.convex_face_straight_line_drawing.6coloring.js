@@ -13,6 +13,8 @@ var sel = (
     : "graphs/C30.a"
 );
 
+var do_pent = process.env.ARGV0.includes("pent");
+
 function doi(x, dual) {
     var e;
     var L;
@@ -48,6 +50,9 @@ function doit(G, v, e) {
 
     var visited = filled_array(n_edges(G), 2, false);
     var face = [];
+    var pent = [];
+    var tst;
+    var spl;
     var last_face;
     var D;
     var col;
@@ -90,32 +95,57 @@ function doit(G, v, e) {
     }
 
 
-    D = dual_graph(G);
-    col = six_coloring(D);
-
-
-    ps.fill_outer_face(face, coords, rgb[col[0]]);
-
-
-    last_face = -1;
-    planar_face_traversal(G, {begin_face: function () {
-        last_face += 1;
-        w = rgb[col[last_face]];
-        if (last_face) {
-            console.log(w + " setrgbcolor");
+    if (do_pent) {
+        pent = pentagons(G);
+        if (face.length === 5) {
+            tst = filled_array(n_vertices(G), 1, false);
+            face.forEach(function (v) {
+                tst[v] = true;
+            });
+            pent.forEach(function (c, i) {
+                var good = true;
+                c.forEach(function (v) {
+                    if (!tst[v]) {
+                        good = false;
+                    }
+                });
+                if (good) {
+                    spl = i;
+                }
+            });
+            if (spl !== -1) {
+                pent.splice(spl, 1);
+            }
         }
-    }, end_face: function () {
-        if (last_face) {
-            console.log('poly fill');
-        }
-    }, next_vertex: function (v) {
-        if (last_face) {
-            console.log(" " + frm(scrx(coords[0][v])) + " " + frm(scry(coords[1][v])));
-        }
-    }});
+    } else {
+        D = dual_graph(G);
+        col = six_coloring(D);
 
+        ps.fill_outer_face(face, coords, rgb[col[0]]);
 
-    ps.straight_line_drawing(G, coords, [], size, r, [], false);
+        last_face = -1;
+        planar_face_traversal(G, {begin_face: function () {
+            last_face += 1;
+            w = rgb[col[last_face]];
+            if (last_face) {
+                console.log(w + " setrgbcolor");
+            }
+        }, end_face: function () {
+            if (last_face) {
+                console.log('poly fill');
+            }
+        }, next_vertex: function (v) {
+            if (last_face) {
+                console.log(" " + frm(scrx(coords[0][v])) + " " + frm(scry(coords[1][v])));
+            }
+        }});
+    }
+
+    ps.straight_line_drawing(G, coords, pent, size, r, (
+        (face.length === 5)
+        ? face
+        : []
+    ), false);
 
 
     last_face = -1;
@@ -138,4 +168,4 @@ function doit(G, v, e) {
     console.log("showpage");
 }
 
-doi(sel, (process.argv.length > 3) && (process.argv[3] === "-dual"))
+doi(sel, (process.argv.length > 3) && (process.argv[3] === "-dual"));

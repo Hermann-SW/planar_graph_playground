@@ -28,5 +28,6 @@ verify:
 	./rpy python_compact5.py 2>err >> out
 	./rpy python.convex_face_straight_line_drawing.2.py >> out
 	./rpy python.convex_face_straight_line_drawing.6coloring.py >> out
+	./rpy python.convex_face_straight_line_drawing.pentagons.py ../graphs/C36.1.a >> out
 	./rpy python_6coloring.py ../graphs/10000.a 2>err >> out
 	diff out good 

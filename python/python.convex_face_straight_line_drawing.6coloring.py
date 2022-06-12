@@ -1,5 +1,6 @@
 ''' python.convex_face_straight_line_drawing.6coloring.py '''
 from sys import argv
+from os import environ
 
 #include "util.py"
 #include "undirected_graph.py"
@@ -11,6 +12,8 @@ tutte = tutte()
 ps = ps()
 
 sel = argv[1] if len(argv) > 1 else "../graphs/C30.a"
+
+do_pent = "pent" in environ["ARGV0"]
 
 def doi(x, dual):
     L = parse2file(x)
@@ -36,6 +39,7 @@ def doit(G, v, e):
     visited = filled_array(n_edges(G), 2, False)
     face = []
     rgb = ["0 0 1", "0 1 0", "1 0 0", "0 1 1", "1 0.5 0", "0 0.5 1"]
+    pent = []
 
     pftv             = planar_face_traversal_visitor()
     pftv.next_vertex = face.append
@@ -71,36 +75,55 @@ def doit(G, v, e):
         ps.set_(size, r)
 
 
-    D = dual_graph(G)
-    col = six_coloring(D)
+    if do_pent:
+        pent = pentagons(G)
+        if len(face) == 5:
+            tst = filled_array(n_vertices(G), 1, False)
+            spl = -1
+            for w in face:
+                tst[w] = True
+            for (i, c) in enumerate(pent):
+                good = True
+                for w in c:
+                    if not tst[w]:
+                        good = False
+
+                if good:
+                    spl = i
+
+            if spl != -1:
+                del pent[spl] 
+    else:
+        D = dual_graph(G)
+        col = six_coloring(D)
 
 
-    ps.fill_outer_face(face, coords, rgb[col[0]])
+        ps.fill_outer_face(face, coords, rgb[col[0]])
 
 
-    def bf(last_face):
-        last_face[0] += 1
-        w = rgb[col[last_face[0]]]
-        if last_face[0]:
-            print(w + " setrgbcolor")
+        def bf(last_face):
+            last_face[0] += 1
+            w = rgb[col[last_face[0]]]
+            if last_face[0]:
+                print(w + " setrgbcolor")
 
-    def ef(last_face):
-        if last_face:
-            print("poly fill")
+        def ef(last_face):
+            if last_face:
+                print("poly fill")
 
-    def nv(v, last_face):
-        if last_face:
-            print(" " + ps.frm(ps.scrx(coords[0][v])) + " " + ps.frm(ps.scry(coords[1][v])))
+        def nv(v, last_face):
+            if last_face:
+                print(" " + ps.frm(ps.scrx(coords[0][v])) + " " + ps.frm(ps.scry(coords[1][v])))
 
-    last_face = [-1]
-    pftv                  = planar_face_traversal_visitor()
-    pftv.begin_face       = lambda: bf(last_face)
-    pftv.end_face         = lambda: ef(last_face[0])
-    pftv.next_vertex      = lambda v: nv(v, last_face[0])
-    planar_face_traversal(G, pftv)
+        last_face = [-1]
+        pftv                  = planar_face_traversal_visitor()
+        pftv.begin_face       = lambda: bf(last_face)
+        pftv.end_face         = lambda: ef(last_face[0])
+        pftv.next_vertex      = lambda v: nv(v, last_face[0])
+        planar_face_traversal(G, pftv)
 
 
-    ps.straight_line_drawing(G, coords, [], size, r, [], False)
+    ps.straight_line_drawing(G, coords, pent, size, r, face if len(face) == 5 else [], False)
 
 
     last_face = [-1]
