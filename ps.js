@@ -250,14 +250,26 @@ if (true) {
         console.log("0 0 1 setrgbcolor");
 
         if (t > 2*da) {
-            console.log("newpath " + frm(scrx(coords[0][v])) + " " + frm(scry(coords[1][v])) + " " + frm(r) + " " + frm(deg2 + da) + " " + frm(deg -180 - da) + " arc stroke");
-            console.log("gsave " + frm(scrx(coords[0][v]) + R*Math.cos(d2r(deg - 180 - da))) + " " + frm(scry(coords[1][v]) + R * Math.sin(d2r(deg - 180 - da))) + " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) + " 0 lineto stroke grestore");
-            console.log(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " + frm(scrx(coords[0][v]) + R*Math.cos(d2r(deg2 + da))) + " " + frm(scry(coords[1][v]) + R * Math.sin(d2r(deg2 + da))) + " parrow");
+            console.log("newpath " + frm(scrx(coords[0][v])) + " " + frm(scry(coords[1][v])) +
+                        " " + frm(r) + " " + frm(deg2 + da) + " " + frm(deg -180 - da) +
+                        " arc stroke");
+            console.log("gsave " + frm(scrx(coords[0][v]) + R*Math.cos(d2r(deg - 180 - da))) +
+                        " " + frm(scry(coords[1][v]) + R * Math.sin(d2r(deg - 180 - da))) +
+                        " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) +
+                        " 0 lineto stroke grestore");
+            console.log(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " +
+                        frm(scrx(coords[0][v]) + R*Math.cos(d2r(deg2 + da))) + " " +
+                        frm(scry(coords[1][v]) + R * Math.sin(d2r(deg2 + da))) + " parrow");
         } else {
             R = r*f;
 
-            console.log("gsave " + frm(scrx(coords[0][v]) + R*Math.cos(d2r(deg - 180 - t/2))) + " " + frm(scry(coords[1][v]) + R * Math.sin(d2r(deg - 180 - t/2))) + " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) + " 0 lineto stroke grestore");
-            console.log(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " + frm(scrx(coords[0][v]) + R*Math.cos(d2r(deg2 + t/2))) + " " + frm(scry(coords[1][v]) + R * Math.sin(d2r(deg2 + t/2))) + " parrow");
+            console.log("gsave " + frm(scrx(coords[0][v]) + R*Math.cos(d2r(deg - 180 - t/2))) +
+                        " " + frm(scry(coords[1][v]) + R * Math.sin(d2r(deg - 180 - t/2))) +
+                        " translate 0 0 moveto " + frm(deg - 180) + " rotate " + frm(r) +
+                        " 0 lineto stroke grestore");
+            console.log(frm(2*r) + " 0 0 0 1 " + frm(deg2) + " " +
+                        frm(scrx(coords[0][v]) + R*Math.cos(d2r(deg2 + t/2))) + " " +
+                        frm(scry(coords[1][v]) + R * Math.sin(d2r(deg2 + t/2))) + " parrow");
         }
 
         console.log("grestore");
