@@ -137,6 +137,10 @@ edge next_incident_edge(const graph& G, vertex v, edge e) {
     return G.V[v][(G.E[e][ind(G, v, e)][1] + 1) % degree(G, v)];
 }
 
+edge prev_incident_edge(const graph& G, vertex v, edge e) {
+    return G.V[v][(G.E[e][ind(G, v, e)][1] + degree(G, v) - 1) % degree(G, v)];
+}
+
 vertex new_vertex(graph& G) {
     vertex v = n_vertices(G);
     G.V.push_back({});

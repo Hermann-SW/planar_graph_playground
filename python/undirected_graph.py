@@ -97,6 +97,10 @@ def next_incident_edge(G, v, e):
     j = ind(G, v, e)
     return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)]
 
+def prev_incident_edge(G, v, e):
+    j = ind(G, v, e)
+    return G.V[v][(G.E[e][j][1] + degree(G, v) - 1) % degree(G, v)]
+
 def new_vertex(G):
     v = n_vertices(G)
     G.V.append([])

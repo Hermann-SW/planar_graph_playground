@@ -121,6 +121,11 @@ function next_incident_edge(G, v, e) {
     return G.V[v][(G.E[e][j][1] + 1) % degree(G, v)];
 }
 
+function prev_incident_edge(G, v, e) {
+    var j = ind(G, v, e);
+    return G.V[v][(G.E[e][j][1] + degree(G, v) - 1) % degree(G, v)];
+}
+
 function new_vertex(G) {
     var v = n_vertices(G);
     G.V.push([]);
