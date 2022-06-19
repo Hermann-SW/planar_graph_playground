@@ -9,6 +9,7 @@ var sel = (
     ? process.argv[2]
     : "graphs/C20.a"
 );
+var white = (process.argv.length > 3);
 var L = parse2file(sel);
 var G = from_adjacency_list(L);
 var coords = filled_array(n_vertices(G), 3, -1);
@@ -49,6 +50,10 @@ function straight_line_drawing_3D(G) {
     forall_vertices(G, function (v) {
         console.log("vertex(", coords[v], ");");
     });
+
+    if (white) {
+        console.log("color([1,1,1]) translate([0,0,0]) sphere(", Math.sqrt(n_vertices(G)) - 1, ");");
+    }
 }
 
 
