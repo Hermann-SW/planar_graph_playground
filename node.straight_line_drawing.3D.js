@@ -18,6 +18,11 @@ var face = [];
 var e = any_edge(G);
 var v = source(G, e);
 var coords2D;
+var V = (process.argv.length > 4) ? parseInt(process.argv[4]) : 0;
+
+function rad2deg(r) {
+    return r / Math.PI * 180;
+}
 
 function length_2D(x, y) {
     return Math.hypot(x, y);
@@ -35,20 +40,21 @@ function map_3D(x, y) {
 
 function straight_line_drawing_3D(G) {
     console.log("$fn = 25;");
+    console.log("$vpt = [0,0,0];");
     console.log("module edge(v,w) {");
     console.log("    w = w - v;");
     console.log("    translate(v)");
     console.log("    rotate([0, acos(w[2]/norm(w)), atan2(w[1], w[0])])");
     console.log("    cylinder(norm(w),0.1,0.1);");
     console.log("}");
-    console.log("module vertex(v) { translate(v) sphere(0.5); }");
+    console.log("module vertex(v, c) { color(c) translate(v) sphere(0.5); }");
 
     forall_edges(G, function (e) {
         console.log("edge(", coords[source(G, e)], ",", coords[target(G, e)], ");");
     });
 
     forall_vertices(G, function (v) {
-        console.log("vertex(", coords[v], ");");
+        console.log("vertex(", coords[v], ",", (v==V) ? [1,0,0] : [0,1,0], ");");
     });
 
     if (white) {
@@ -71,6 +77,8 @@ forall_vertices(G, function (v) {
     coords[v] = map_3D(coords2D[0][v], coords2D[1][v]);
 });
 
+console.log("$vpr = [",-rad2deg(Math.acos(coords[V][2])),",0,",
+                       -rad2deg(Math.atan2(coords[V][0], coords[V][1])),"];");
 
 forall_vertices(G, function (v) {
     coords[v] = scale_3D(coords[v], Math.sqrt(n_vertices(G)));
