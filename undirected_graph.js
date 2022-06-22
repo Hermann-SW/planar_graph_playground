@@ -87,7 +87,7 @@ function forall_incident_edges(G, v, f) {
 function forall_incident2_edges(G, a, f) {
     a.forEach(function (v) {
         G.V[v].forEach(function (e) {
-            f(e, v);
+            f(v, e);
         });
     });
 }

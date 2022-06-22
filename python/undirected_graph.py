@@ -79,7 +79,7 @@ def forall_incident_edges(G, v, f):
 def forall_incident2_edges(G, a, f):
     for v in a:
         for e in G.V[v]:
-            f(e, v)
+            f(v, e)
 
 def source(G, e):
     return G.E[e][0][0]
