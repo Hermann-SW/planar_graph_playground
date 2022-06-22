@@ -322,6 +322,7 @@ std::vector<int> six_coloring(graph& G) {
         forall_incident_edges(G, v, [&G, &col, v, &bs](edge e) {
             bs |= 1 << col[opposite(G, v, e)];
         });
+	assert(bs < static_cast<int>(mc.size()));
         col[v] = mc[bs];
     }
     return col;
