@@ -23,6 +23,7 @@ var V;
 var sum;
 var nor;
 
+
 function rad2deg(r) {
     return r / Math.PI * 180;
 }
