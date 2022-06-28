@@ -51,6 +51,10 @@ def forall_vertices(G, f):
     for v in range(n_vertices(G)):
         f(v)
 
+def forall_vertices_after(G, u, f):
+    for v in range(u+1, n_vertices(G)):
+        f(v)
+
 def max_degree(G):
     mdeg = [-1]
 
@@ -351,4 +355,30 @@ def is_identical_graph(G, H):
                     return False
     return True
 
+def floyd_warshall(G):
+    dist = [filled_array(n_vertices(G), n_vertices(G), math.inf)]
 
+    def update2(d, i, j, k):
+        if  d[0][i][j] > d[0][i][k] + d[0][k][j]:
+            d[0][i][j] = d[0][i][k] + d[0][k][j]
+
+    def init2(d, s, t, v):
+        d[0][s][t] = v
+        d[0][t][s] = v
+
+    forall_edges(G, lambda e:
+        init2(dist, source(G, e), target(G, e), 1)
+    )
+    forall_vertices(G, lambda v:
+        init2(dist, v, v, 0)
+    )
+
+    forall_vertices(G, lambda k:
+        forall_vertices(G, lambda i:
+            forall_vertices(G, lambda j:
+                update2(dist, i, j, k)
+            )
+        )
+    )
+
+    return dist[0]

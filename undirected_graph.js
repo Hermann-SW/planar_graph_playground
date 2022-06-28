@@ -43,6 +43,13 @@ function forall_vertices(G, f) {
     }
 }
 
+function forall_vertices_after(G, u, f) {
+    var v;
+    for (v = u+1; v < n_vertices(G); v += 1) {
+        f(v);
+    }
+}
+
 function max_degree(G) {
     var mdeg = -1;
 
@@ -437,4 +444,28 @@ function is_identical_graph(G, H) {
         return false;
     }
     return true;
+}
+
+function floyd_warshall(G) {
+    var dist = filled_array(n_vertices(G), n_vertices(G), Infinity);
+
+    forall_edges(G, function(e) {
+        dist[source(G, e)][target(G, e)] = 1;
+        dist[target(G, e)][source(G, e)] = 1;
+    });
+    forall_vertices(G, function(v) {
+        dist[v][v] = 0;
+    });
+
+    forall_vertices(G, function(k) {
+        forall_vertices(G, function(i) {
+            forall_vertices(G, function(j) {
+                if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            });
+        });
+    });
+
+    return dist;
 }
