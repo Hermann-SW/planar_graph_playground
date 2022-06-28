@@ -24,7 +24,7 @@ var s;
 var V;
 var sum;
 var nor;
-var bucket = Array.from(Array(2001), () => []);
+var bucket = Array.from(Array(2001), function() {return [];});
 var bucketm = -1;
 var writer;
 var old;
@@ -42,7 +42,7 @@ function wlog(...s) {
 }
 
 function wait(ms) {
-  return new Promise(resolve => {
+  return new Promise(function(resolve) {
     setTimeout(resolve, ms);
   });
 }
