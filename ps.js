@@ -69,7 +69,7 @@ if (true) {
         console.log('poly fill');
     }
 
-    exports.straight_line_drawing = function (G, coords, pent, length, r, outer, showpage) {
+    exports.straight_line_drawing = function (G, coords, pent, length, r, outer, showpage, vcol = []) {
         var bx;
         var by;
         var cx;
@@ -109,6 +109,9 @@ if (true) {
 
         forall_vertices(G, function (v) {
             console.log('(' + v + ') ' + frm(r) + ' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' vertex');
+            if (vcol.includes(v)) {
+                console.log(frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' ' + frm(r) + ' vmark');
+            }
         });
 
         if ((pent.length > 0) && (pent[0].length === 2)) {
@@ -159,6 +162,12 @@ if (true) {
         console.log("    exch 4 1 roll exch sub -.5 mul 3 1 roll sub -.5 mul exch");
         console.log("    rmoveto show");
         console.log("  } { pop pop pop } ifelse");
+        console.log("} def");
+
+        console.log("/vmark {");
+        console.log("  newpath 0 360 arc closepath");
+        console.log("  gsave 0.25 setgray fill grestore");
+        console.log("  stroke");
         console.log("} def");
 
         console.log("/txtdistdeg {");

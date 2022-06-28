@@ -57,7 +57,7 @@ class ps:
 
 
 
-    def straight_line_drawing (self, G, coords, pent, length, r, outer, showpage=True):
+    def straight_line_drawing (self, G, coords, pent, length, r, outer, showpage=True, vcol=[]):
         self.set_(length, r)
 
         scrx = self.scrx
@@ -89,6 +89,9 @@ class ps:
         forall_vertices(G, lambda v: print('(' + str(v) + ') ' + 
             frm(r) + ' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' vertex'))
 
+        for v in vcol:
+            print(frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' ' + frm(r) + ' vmark')
+
         if showpage:
             print('showpage')
 
@@ -112,6 +115,12 @@ class ps:
         print("    rmoveto show")
         print("  } { pop pop pop } ifelse")
         print("} def")
+
+        print("/vmark {")
+        print("  newpath 0 360 arc closepath")
+        print("  gsave 0.25 setgray fill grestore")
+        print("  stroke")
+        print("} def");
 
         print("/txtdistdeg {")
         print("  newpath moveto")

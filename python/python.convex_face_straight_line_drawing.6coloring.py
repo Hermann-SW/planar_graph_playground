@@ -15,6 +15,10 @@ sel = argv[1] if len(argv) > 1 else "../graphs/C30.a"
 
 do_pent = "pent" in environ["ARGV0"]
 
+vtcs = [];
+for i in range(2, len(argv)):
+    vtcs.append(int(argv[i]));
+
 def doi(x, dual):
     L = parse2file(x)
     G = from_adjacency_list(L)
@@ -123,7 +127,7 @@ def doit(G, v, e):
         planar_face_traversal(G, pftv)
 
 
-    ps.straight_line_drawing(G, coords, pent, size, r, face if len(face) == 5 else [], False)
+    ps.straight_line_drawing(G, coords, pent, size, r, face if len(face) == 5 else [], False, vtcs)
 
 
     last_face = [-1]

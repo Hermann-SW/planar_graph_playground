@@ -15,6 +15,12 @@ var sel = (
 
 var do_pent = process.env.ARGV0.includes("pent");
 
+var vtcs = [];
+var i;
+for(i = 3; i < process.argv.length; ++i) {
+    vtcs.push(parseInt(process.argv[i]));
+}
+
 function doi(x, dual) {
     var e;
     var L;
@@ -59,7 +65,6 @@ function doit(G, v, e) {
     var rgb = ["0 0 1", "0 1 0", "1 0 0", "0 1 1", "1 0.5 0", "0 0.5 1"];
     var scrx = ps.scrx;
     var scry = ps.scry;
-
 
     traverse_face(G, visited, v, e, ind(G, v, e), {next_vertex: function (v) {
         face.push(v);
@@ -145,7 +150,7 @@ function doit(G, v, e) {
         (face.length === 5)
         ? face
         : []
-    ), false);
+    ), false, vtcs);
 
 
     last_face = -1;
