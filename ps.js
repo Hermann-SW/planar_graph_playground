@@ -69,7 +69,7 @@ if (true) {
         console.log('poly fill');
     }
 
-    exports.straight_line_drawing = function (G, coords, pent, length, r, outer, showpage, vcol = []) {
+    exports.straight_line_drawing = function (G, coords, pent, length, r, outer, showpage, vcol = [], ecol = []) {
         var bx;
         var by;
         var cx;
@@ -100,12 +100,15 @@ if (true) {
             v = source(G, e);
             w = target(G, e);
             if (v < w) {
+                console.log(ecol.includes(e) ? "3 setlinewidth" : "1 setlinewidth");
                 console.log("0 setgray");
                 console.log(' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])));
                 console.log(' ' + frm(scrx(coords[0][w])) + ' ' + frm(scry(coords[1][w])));
                 console.log('poly stroke');
             }
         });
+
+        console.log("0 setgray 1 setlinewidth");
 
         forall_vertices(G, function (v) {
             console.log('(' + v + ') ' + frm(r) + ' ' + frm(scrx(coords[0][v])) + ' ' + frm(scry(coords[1][v])) + ' vertex');

@@ -22,7 +22,9 @@ var pent = pentagons(G);
 console.log(pent.length + " pentagons for graph");
 console.log(n_faces_planar(G) - pent.length + " non-pentagons for graph");
 
-var dist = floyd_warshall(G);
+var dist;
+var next;
+[dist, next] = floyd_warshall_path(G);
 
 var max = 0;
 var M = [0,0,0,0];
@@ -46,7 +48,14 @@ forall_vertices(G, function(a) {
     });
 });
 
-console.log("vertices:", M);
+console.log("vertices:", String(M));
 console.log("max:", max);
 console.log("dists:", dist[M[0]][M[1]], dist[M[0]][M[2]], dist[M[0]][M[3]],
                       dist[M[1]][M[2]], dist[M[1]][M[3]], dist[M[2]][M[3]]);
+var edges = [].concat(fw_path(next, M[0], M[1]),
+                      fw_path(next, M[0], M[2]),
+                      fw_path(next, M[0], M[3]),
+                      fw_path(next, M[1], M[2]),
+                      fw_path(next, M[1], M[3]),
+                      fw_path(next, M[2], M[3]));
+console.log("edges:", String(edges));

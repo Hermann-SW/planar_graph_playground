@@ -16,9 +16,16 @@ var sel = (
 var do_pent = process.env.ARGV0.includes("pent");
 
 var vtcs = [];
-var i;
-for(i = 3; i < process.argv.length; ++i) {
-    vtcs.push(parseInt(process.argv[i]));
+var edgs = [];
+if (process.argv.length > 3) {
+    process.argv[3].split(",").forEach(function(v) {
+        vtcs.push(parseInt(v));
+    });
+}
+if (process.argv.length > 4) {
+    process.argv[4].split(",").forEach(function(e) {
+        edgs.push(parseInt(e));
+    });
 }
 
 function doi(x, dual) {
@@ -150,7 +157,7 @@ function doit(G, v, e) {
         (face.length === 5)
         ? face
         : []
-    ), false, vtcs);
+    ), false, vtcs, edgs);
 
 
     last_face = -1;

@@ -469,3 +469,45 @@ function floyd_warshall(G) {
 
     return dist;
 }
+
+function floyd_warshall_path(G) {
+    var dist = filled_array(n_vertices(G), n_vertices(G), Infinity);
+    var next = filled_array(n_vertices(G), n_vertices(G), -1);
+
+    forall_edges(G, function(e) {
+        dist[source(G, e)][target(G, e)] = 1;
+        next[source(G, e)][target(G, e)] = e;
+        dist[target(G, e)][source(G, e)] = 1;
+        next[target(G, e)][source(G, e)] = e;
+    });
+    forall_vertices(G, function(v) {
+        dist[v][v] = 0;
+        next[v][v] = v;
+    });
+
+    forall_vertices(G, function(k) {
+        forall_vertices(G, function(i) {
+            forall_vertices(G, function(j) {
+                if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                    next[i][j] = next[i][k];
+                }
+            });
+        });
+    });
+
+    return [dist, next];
+}
+
+function fw_path(next, u, v) {
+    var path = [];
+    if (next[u][v] == -1) {
+        return path;
+    }
+    while (u !== v) {
+        var e = next[u][v];
+        path.push(e);
+        u = opposite(G, u, e);
+    }
+    return path;
+}
