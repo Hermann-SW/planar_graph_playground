@@ -499,7 +499,7 @@ function floyd_warshall_path(G) {
     return [dist, next];
 }
 
-function fw_path(next, u, v) {
+function fw_path(G, next, u, v) {
     var path = [];
     if (next[u][v] == -1) {
         return path;

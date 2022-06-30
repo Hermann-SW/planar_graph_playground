@@ -52,10 +52,10 @@ console.log("vertices:", String(M));
 console.log("max:", max);
 console.log("dists:", dist[M[0]][M[1]], dist[M[0]][M[2]], dist[M[0]][M[3]],
                       dist[M[1]][M[2]], dist[M[1]][M[3]], dist[M[2]][M[3]]);
-var edges = [].concat(fw_path(next, M[0], M[1]),
-                      fw_path(next, M[0], M[2]),
-                      fw_path(next, M[0], M[3]),
-                      fw_path(next, M[1], M[2]),
-                      fw_path(next, M[1], M[3]),
-                      fw_path(next, M[2], M[3]));
+var edges = [].concat(fw_path(G, next, M[0], M[1]),
+                      fw_path(G, next, M[0], M[2]),
+                      fw_path(G, next, M[0], M[3]),
+                      fw_path(G, next, M[1], M[2]),
+                      fw_path(G, next, M[1], M[3]),
+                      fw_path(G, next, M[2], M[3]));
 console.log("edges:", String(edges));
