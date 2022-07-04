@@ -28,6 +28,8 @@ var next;
 
 var max = 0;
 var M = [0,0,0,0];
+var i;
+var j;
 
 forall_vertices(G, function(a) {
     forall_vertices_after(G, a, function(b) {
@@ -53,9 +55,55 @@ console.log("max:", max);
 console.log("dists:", dist[M[0]][M[1]], dist[M[0]][M[2]], dist[M[0]][M[3]],
                       dist[M[1]][M[2]], dist[M[1]][M[3]], dist[M[2]][M[3]]);
 var edges = [].concat(fw_path(G, next, M[0], M[1]),
-                      fw_path(G, next, M[0], M[2]),
+//                      fw_path(G, next, M[0], M[2]),
                       fw_path(G, next, M[0], M[3]),
                       fw_path(G, next, M[1], M[2]),
-                      fw_path(G, next, M[1], M[3]),
+//                      fw_path(G, next, M[1], M[3]),
                       fw_path(G, next, M[2], M[3]));
 console.log("edges:", String(edges));
+
+for(i=0; i<4; i=i+1) {
+    for(j=i+1; j<4; j=j+1) {
+        if (new Set(fw_path(G, next, M[i], M[j]).concat(fw_path(G, next, M[j], M[i]))).size !== dist[M[i]][M[j]]) {
+            console.log("edges2:", fw_path(G, next, M[i], M[j]), fw_path(G, next, M[j], M[i]));
+            process.exit(1);
+        }
+    }
+}
+
+function mark(G, visited, v, w) {
+    var e;
+    e = next[v][w];
+    while (v != w) {
+        v = opposite(G, v, e);
+        e = next[v][w];
+        assert.assert(!visited[v]);
+        visited[v] = true;
+    }
+}
+
+function srch(G, visited, v) {
+    if (!visited[v]) {
+        visited[v] = true;
+        M.push(v);
+        forall_incident_edges(G, v, function(e) {
+            srch(G, visited, opposite(G, v, e));
+        });
+    }
+}
+
+var visited = filled_array(n_vertices(G), 1, false);
+
+mark(G, visited, M[0], M[1]);
+mark(G, visited, M[1], M[2]);
+mark(G, visited, M[2], M[3]);
+mark(G, visited, M[3], M[0]);
+
+var e;
+e = next_incident_edge(G, M[0], next[M[0]][M[1]]);
+if (e == next[M[0]][M[3]]) {
+    e = next_incident_edge(G, M[0], e);
+}
+srch(G, visited, opposite(G, M[0], e));
+
+console.log("vertices:", String(M));
