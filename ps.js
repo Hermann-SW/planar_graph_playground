@@ -91,7 +91,7 @@ if (true) {
                 console.log('poly fill');
             });
 
-            if (pent.length !== 12) {
+            if (outer.length === 5) {
                 exports.fill_outer_face(outer, coords, "0.75 0.75 0.75");
             }
         }
