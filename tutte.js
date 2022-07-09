@@ -14,15 +14,23 @@ if (true) {
         var x = zero(n, 1);
         var y = zero(n, 1);
 
-        var angle = Math.PI;
-        var delta = factor * (2 * Math.PI) / face.length;
+        if (typeof(factor) === "number") {
+            var angle = Math.PI;
+            var delta = factor * (2 * Math.PI) / face.length;
 
-        assert.assert(is_embedding(Emb));
-        face.forEach(function (v) {
-            x[v] = Math.sin(angle);
-            y[v] = Math.cos(angle);
-            angle -= delta;
-        });
+            assert.assert(is_embedding(Emb));
+            face.forEach(function (v) {
+                x[v] = Math.sin(angle);
+                y[v] = Math.cos(angle);
+                angle -= delta;
+            });
+        } else {
+            var coords = factor;
+            face.forEach(function(v) {
+                x[v] = coords[v][0];
+                y[v] = coords[v][1];
+            });
+        }
 
         for (v = 0; v < n; v += 1) {
             if (face.includes(v)) {
