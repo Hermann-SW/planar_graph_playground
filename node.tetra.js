@@ -38,27 +38,34 @@ function srad2deg(p) {
     return [rad2deg(p[0]), rad2deg(p[1])];
 }
 
-function scale_3D(v, f) {
-    return [f * v[0], f * v[1], f * v[2]];
-}
-
-function map_3D(p, t) {
-    return [Math.cos(p) * Math.sin(t), Math.sin(p) * Math.sin(t), Math.cos(t)];
-}
-
 function tetra(G, M, sc = 1, edges, visited) {
     var vec = [0,0,1];
     wlog("$vpr = [",-rad2deg(Math.acos(vec[2])),",0,",
                     -rad2deg(Math.atan2(vec[0], vec[1])),"];");
     wlog("$fn = 25;");
     wlog("$vpt = [0,0,0];");
-    wlog("module edge(v,w) {");
-    wlog("    w = w - v;");
+
+    wlog("function scale_3D(v, f) = [f * v[0], f * v[1], f * v[2]];");
+    wlog("function map_3D(c) = [cos(c[0])*sin(c[1]), sin(c[0])*sin(c[1]), cos(c[1])];");
+
+    wlog("sc =", sc,";");
+    wlog("coords =[");
+    wlog(srad2deg(coords[0]));
+    forall_vertices_after(G, 0, function(v) {
+        wlog(",", srad2deg(coords[v]));
+    });
+    wlog("];");
+
+    wlog("module edge(_v,_w) {");
+    wlog("    v = scale_3D(map_3D(coords[_v]), sc);");
+    wlog("    w = scale_3D(map_3D(coords[_w]), sc) - v;");
     wlog("    translate(v)");
     wlog("    rotate([0, acos(w[2]/norm(w)), atan2(w[1], w[0])])");
     wlog("    cylinder(norm(w),0.1,0.1);");
     wlog("}");
-    wlog("module edge2(p1,p2,sc) {");
+    wlog("module edge2(_p1,_p2) {");
+    wlog("    p1 = coords[_p1];");
+    wlog("    p2 = coords[_p2];");
     wlog("    // al/la/ph: alpha/lambda/phi | lxy/sxy: delta lambda_xy/sigma_xy");
     wlog("    // https://en.wikipedia.org/wiki/Great-circle_navigation#Course");
     wlog("    la1 = p1[0];");
@@ -79,21 +86,24 @@ function tetra(G, M, sc = 1, edges, visited) {
     wlog("        rotate_extrude(angle=s12, convexity=10, $fn=100)");
     wlog("            translate([sc, 0]) circle(0.1, $fn=25);");
     wlog("}");
-    wlog("module vertex(v, c) { color(c) translate(v) sphere(0.5); }");
+    wlog("module vertex(_v, c) {");
+    wlog("    v = scale_3D(map_3D(coords[_v]), sc);");
+    wlog("    color(c) translate(v) sphere(0.5);");
+    wlog("}");
 
     forall_edges(G, function(e) {
         if (visited[source(G, e)] && visited[target(G, e)]) {
             if (e===sele) { wlog("color([1,0,0])"); } else { wlog("color([0,1,0])"); }
-            wlog("edge(", scale_3D(map_3D(coords[source(G, e)][0], coords[source(G, e)][1]), sc), ",", scale_3D(map_3D(coords[target(G, e)][0], coords[target(G, e)][1]), sc), ");");
+            wlog("edge(", source(G, e), ",", target(G, e), ");");
             if (e===sele) { wlog("color([1,0,0])"); } else { wlog("color([0,0,1])"); }
-            wlog("edge2(", srad2deg(coords[source(G, e)]), ",", srad2deg(coords[target(G, e)]), ",", sc, ");");
+            wlog("edge2(", source(G, e), ",", target(G, e), ");");
 
         }
     });
     console.log("M.length:", M.length);
 
     M.forEach(function(v) {
-        wlog( "vertex(", scale_3D(map_3D(coords[v][0], coords[v][1]), sc), ",", (sele !== -1 && v===source(G, sele)) ? [1,0,0] : [0,1,0], ");");
+        wlog( "vertex(", v, ",", (sele !== -1 && v===source(G, sele)) ? [1,0,0] : [0,1,0], ");");
     });
 
     if (white) {
