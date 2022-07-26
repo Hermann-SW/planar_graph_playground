@@ -41,10 +41,9 @@ function srad2deg(p) {
 
 function tetra(G, M, sc = 1, visited) {
     var vec = [0,0,1];
-//    wlog("$vpr = [",-rad2deg(Math.acos(vec[2])),",0,",
-//                    -rad2deg(Math.atan2(vec[0], vec[1])),"];");
+    wlog("$vpr = [",-rad2deg(Math.acos(vec[2])),",0,",
+                    -rad2deg(Math.atan2(vec[0], vec[1])),"];");
     wlog("$fn = 25;");
-    wlog("$vpr = [333,0,12];");
     wlog("$vpt = [0,0,0];");
 
     wlog("function scale_3D(v, f) = [f * v[0], f * v[1], f * v[2]];");
@@ -65,7 +64,7 @@ function tetra(G, M, sc = 1, visited) {
     wlog("    rotate([0, acos(w[2]/norm(w)), atan2(w[1], w[0])])");
     wlog("    cylinder(norm(w),0.1,0.1);");
     wlog("}");
-    wlog("module edge2(_p1,_p2) {");
+    wlog("module edge2(_p1,_p2,_e) {");
     wlog("    p1 = coords[_p1];");
     wlog("    p2 = coords[_p2];");
     wlog("    // al/la/ph: alpha/lambda/phi | lxy/sxy: delta lambda_xy/sigma_xy");
@@ -114,6 +113,8 @@ function tetra(G, M, sc = 1, visited) {
     wlog("    p1 = coords[_p1];");
     wlog("    p2 = coords[_p2];");
     wlog("    p3 = coords[_p3];");
+    wlog("    // al/la/ph: alpha/lambda/phi | lxy/sxy: delta lambda_xy/sigma_xy");
+    wlog("    // https://en.wikipedia.org/wiki/Great-circle_navigation#Course");
     wlog("    la1 = p1[0];");
     wlog("    la2 = p2[0];");
     wlog("    la3 = p3[0];");
@@ -129,29 +130,74 @@ function tetra(G, M, sc = 1, visited) {
     wlog("    al13 = atan2(cos(ph3)*sin(l13), cos(ph1)*sin(ph3)-sin(ph1)*cos(ph3)*cos(l13));");
     wlog("    al31 = atan2(cos(ph1)*sin(l31), cos(ph3)*sin(ph1)-sin(ph3)*cos(ph1)*cos(l31));");
     wlog("    al32 = atan2(cos(ph2)*sin(l32), cos(ph3)*sin(ph2)-sin(ph3)*cos(ph2)*cos(l32));");
+    wlog("    // delta sigma_xy");
+    wlog("    // https://en.wikipedia.org/wiki/Great-circle_distance#Formulae");
     wlog("    s12 = acos(sin(ph1)*sin(ph2)+cos(ph1)*cos(ph2)*cos(l12));");
     wlog("    s23 = acos(sin(ph2)*sin(ph3)+cos(ph2)*cos(ph3)*cos(l23));");
     wlog("    s13 = acos(sin(ph1)*sin(ph3)+cos(ph1)*cos(ph3)*cos(l13));");
-    wlog("    echo(al13,al12,s12);");
 
-    wlog("    color([0.5,0.5,0.5]) translate([0,0,0])");
-    wlog("        rotate([0,0,la1-180])");
-    wlog("        rotate([0,ph1-90,0])");
-    wlog("        rotate([0,0,-al13])");
-    wlog("        sp_tria2(sc, s12, al13-al12, 0.1, 40, 40);");
+    wlog("    if (s13 < s12) {");
+    wlog("        if (s12 >= s23) {");
+    wlog("            sp_tria(_p1, _p3, _p2);");
+    wlog("        } else {");
+    wlog("            sp_tria(_p2, _p1, _p3);");
+    wlog("        }");
+    wlog("    } else {");
+    wlog("        if (s13 < s23) {");
+    wlog("            sp_tria(_p2, _p1, _p3);");
+    wlog("        }");
+    wlog("    }");
 
-    wlog("    color([0.5,0.5,0.5]) translate([0,0,0])");
-    wlog("        rotate([0,0,la3-180])");
-    wlog("        rotate([0,ph3-90,0])");
-    wlog("        rotate([0,0,-al31])");
-    wlog("        sp_tria2(sc, s23, al31-al32, 0.1, 40, 40);");
+    wlog("    function m180(ang) =  (ang < -180) ? 360 + ang : ((ang > 180) ? ang - 360 :ang);");
 
+    wlog("    if ((s13 >= s12) && (s13 >= s23)) {");
+    wlog("        v1 = map_3D(p1);");
+    wlog("        v2 = map_3D(p2);");
+    wlog("        v3 = map_3D(p3);");
+
+    wlog("        ms = v1+v2+v3;");
+    wlog("        ms2 = scale_3D(ms, 1/sqrt(ms*ms));");
+    wlog("        mi = min(v1*ms2, v2*ms2, v3*ms2)-0.1;");
+
+    wlog("        sv1 = scale_3D(v1, sc);");
+    wlog("        sv2 = scale_3D(v2, sc);");
+    wlog("        sv3 = scale_3D(v3, sc);");
+    wlog("        s1 = scale_3D(sv1, 1/mi);");
+    wlog("        s2 = scale_3D(sv2, 1/mi);");
+    wlog("        s3 = scale_3D(sv3, 1/mi);");
+
+    wlog("        intersection() {");
+    wlog("            union() {");
+    wlog("                color([0.5,0.5,0.5]) translate([0,0,0])");
+    wlog("                    rotate([0,0,la1-180])");
+    wlog("                    rotate([0,ph1-90,0])");
+    wlog("                    rotate([0,0,-al13])");
+    wlog("                    sp_tria2(sc, s12, m180(al13-al12), 0.1, 40, 40);");
+
+    wlog("                color([0.5,0.5,0.5]) translate([0,0,0])");
+    wlog("                    rotate([0,0,la3-180])");
+    wlog("                    rotate([0,ph3-90,0])");
+    wlog("                    rotate([0,0,-al31])");
+    wlog("                    sp_tria2(sc, s23, m180(al31-al32), 0.1, 40, 40);");
+    wlog("            }");
+
+    wlog("            hull() {");
+    wlog("                translate(sv1) cube(0.01);");
+    wlog("                translate(sv2) cube(0.01);");
+    wlog("                translate(sv3) cube(0.01);");
+    wlog("                translate(s1) cube(0.01);");
+    wlog("                translate(s2) cube(0.01);");
+    wlog("                translate(s3) cube(0.01);");
+    wlog("            }");
+    wlog("        }");
+
+    wlog("    }");
     wlog("}");
 
     forall_edges(G, function(e) {
         if (evisited[e]) {
             if (e===sele) { wlog("color([1,0,0])"); } else { wlog("color([0,0,1])"); }
-            wlog("edge2(", source(G, e), ",", target(G, e), ");");
+            wlog("edge2(", source(G, e), ",", target(G, e), ",", e, ");");
         }
     });
     console.log("M.length:", M.length);
@@ -161,22 +207,29 @@ function tetra(G, M, sc = 1, visited) {
         wlog( "vertex(", v, ",", Ms.includes(v) ? [1,0,0] : [0,1,0], ");");
     });
 
+    pentagons(G).forEach(function(face) {
+        var doit = face.every(function(v) {
+            return visited[v];
+        });
+
+        if (doit) {
+            wlog("echo(",face,");");
+            face.forEach(function(v) {
+                wlog("vtxt(", v, ");");
+            });
+
+            wlog("sp_tria(", face[0], ",", face[1], ",", face[2], ");");
+            wlog("sp_tria(", face[0], ",", face[2], ",", face[3], ");");
+            wlog("sp_tria(", face[0], ",", face[3], ",", face[4], ");");
+        }
+    });
+
     if (white) {
-        wlog("color([1,1,1, 0.5]) translate([0,0,0]) sphere(sc);");
+        wlog("difference() {");
+        wlog("    color([1,1,1, 0.5]) translate([0,0,0]) sphere(sc);");
+        wlog("    translate([0,0,0]) sphere(sc-0.1);");
+        wlog("}");
     }
-
-    var v = 40;
-    var e = 65;
-    var w = opposite(G, v, e);
-    e = next_incident_edge(G, w, e);
-    var x = opposite(G, w, e);
-    console.log(v, w, x);
-
-    wlog("vtxt(", v, ");");
-    wlog("vtxt(", w, ");");
-    wlog("vtxt(", x, ");");
-
-    wlog("sp_tria(", v, ",", w, ",", x, ");");
 }
 
 function ok(a,b,c,d,e,f) {
