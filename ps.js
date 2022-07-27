@@ -25,15 +25,15 @@ if (true) {
     };
 
     exports.frm = function (d) {
-	return d.toFixed(1);
+        return d.toFixed(1);
     }
 
     exports.r2d = function (r) {
-	return r / Math.PI * 180;
+        return r / Math.PI * 180;
     }
 
     exports.d2r = function (d) {
-	return d / 180 * Math.PI;
+        return d / 180 * Math.PI;
     }
 
     scrx = exports.scrx;
