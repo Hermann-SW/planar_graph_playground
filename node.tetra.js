@@ -225,7 +225,7 @@ function tetra(G, M, sc = 1, visited) {
 
     if (white) {
         var alpha = parseInt((process.argv[3] + ".100").substring(6)) / 100;
-        wlog("color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc, $fn=72);");
+        wlog("color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc, $fn=180);");
     }
 }
 
