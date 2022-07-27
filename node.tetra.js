@@ -46,7 +46,6 @@ function tetra(G, M, sc = 1, visited) {
     wlog("$fn = 25;");
     wlog("$vpt = [0,0,0];");
 
-    wlog("function scale_3D(v, f) = [f * v[0], f * v[1], f * v[2]];");
     wlog("function map_3D(c) = [cos(c[0])*sin(c[1]), sin(c[0])*sin(c[1]), cos(c[1])];");
 
     wlog("sc =", sc,";");
@@ -58,8 +57,8 @@ function tetra(G, M, sc = 1, visited) {
     wlog("];");
 
     wlog("module edge(_v,_w) {");
-    wlog("    v = scale_3D(map_3D(coords[_v]), sc);");
-    wlog("    w = scale_3D(map_3D(coords[_w]), sc) - v;");
+    wlog("    v = map_3D(coords[_v]) * sc;");
+    wlog("    w = map_3D(coords[_w]) * sc - v;");
     wlog("    translate(v)");
     wlog("    rotate([0, acos(w[2]/norm(w)), atan2(w[1], w[0])])");
     wlog("    cylinder(norm(w),0.1,0.1);");
@@ -88,7 +87,7 @@ function tetra(G, M, sc = 1, visited) {
     wlog("            translate([sc, 0]) circle(0.1, $fn=25);");
     wlog("}");
     wlog("module vertex(_v, c) {");
-    wlog("    v = scale_3D(map_3D(coords[_v]), sc);");
+    wlog("    v = map_3D(coords[_v]) * sc;");
     wlog("    color(c) translate(v) sphere(0.5);");
     wlog("}");
     wlog("module vtxt(_p1) {");
@@ -156,15 +155,15 @@ function tetra(G, M, sc = 1, visited) {
     wlog("        v3 = map_3D(p3);");
 
     wlog("        ms = v1+v2+v3;");
-    wlog("        ms2 = scale_3D(ms, 1/sqrt(ms*ms));");
+    wlog("        ms2 = ms / sqrt(ms*ms);");
     wlog("        mi = min(v1*ms2, v2*ms2, v3*ms2)-0.1;");
 
-    wlog("        sv1 = scale_3D(v1, sc);");
-    wlog("        sv2 = scale_3D(v2, sc);");
-    wlog("        sv3 = scale_3D(v3, sc);");
-    wlog("        s1 = scale_3D(sv1, 1/mi);");
-    wlog("        s2 = scale_3D(sv2, 1/mi);");
-    wlog("        s3 = scale_3D(sv3, 1/mi);");
+    wlog("        sv1 = v1 * sc;");
+    wlog("        sv2 = v2 * sc;");
+    wlog("        sv3 = v3 * sc;");
+    wlog("        s1 = sv1 / mi;");
+    wlog("        s2 = sv2 / mi;");
+    wlog("        s3 = sv3 / mi;");
 
     wlog("        intersection() {");
     wlog("            union() {");
