@@ -224,10 +224,8 @@ function tetra(G, M, sc = 1, visited) {
     });
 
     if (white) {
-        wlog("difference() {");
-        wlog("    color([1,1,1, 0.5]) translate([0,0,0]) sphere(sc);");
-        wlog("    translate([0,0,0]) sphere(sc-0.1);");
-        wlog("}");
+        var alpha = parseInt((process.argv[3] + ".100").substring(6)) / 100;
+        wlog("color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc);");
     }
 }
 
