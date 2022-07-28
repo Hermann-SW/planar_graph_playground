@@ -49,9 +49,10 @@ if (true) {
         wlog("coords =[");
         coords.forEach(function (p, i) {
             if (i > 0) {
-                wlog(",");
+                wlog(",", srad2deg(p));
+            } else {
+                wlog(srad2deg(p));
             }
-            wlog(srad2deg(p));
         });
         wlog("];");
 
@@ -91,10 +92,6 @@ if (true) {
         wlog("    ph1 = 90 - p1[1];");
         wlog("    ph2 = 90 - p2[1];");
         wlog("    al1 = atan2(cos(ph2)*sin(l12), cos(ph1)*sin(ph2)-sin(ph1)*cos(ph2)*cos(l12));");
-        wlog("    al0 = atan2(sin(al1)*cos(ph1), sqrt(cos(al1)*cos(al1)+sin(al1)*sin(al1)*sin(ph1)*sin(ph1)));");
-        wlog("    s01 = atan2(tan(ph1), cos(al1));");
-        wlog("    l01 = atan2(sin(al0)*sin(s01), cos(s01));");
-        wlog("    la0 = la1 - l01;");
         wlog("    // delta sigma_12");
         wlog("    // https://en.wikipedia.org/wiki/Great-circle_distance#Formulae");
         wlog("    s12 = acos(sin(ph1)*sin(ph2)+cos(ph1)*cos(ph2)*cos(l12));");
