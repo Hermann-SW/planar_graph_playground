@@ -15,6 +15,13 @@ var coords3;
 var white = (process.argv.length > 3);
 var sele = (process.argv.length > 4) ? parseInt(process.argv[4]) : -1;
 
+var side = (sele !== -2) && (sele !== -4);
+var dotxt = (sele !== -2) && (sele !== -3);
+
+if (sele < 0) {
+    sele = -1;
+}
+
 var V = 0;
 var i;
 
@@ -43,9 +50,11 @@ function tetra(G, M, sc = 1, visited) {
 
         if (doit) {
             scad.wlog("echo(",face,");");
+          if (dotxt) {
             face.forEach(function(v) {
                 scad.wlog("vtxt(", v, ");");
             });
+          }
 
             scad.wlog("sp_tria(", face[0], ",", face[1], ",", face[2], ");");
             scad.wlog("sp_tria(", face[0], ",", face[2], ",", face[3], ");");
@@ -231,7 +240,7 @@ assert.assert(orient === false); // for now
     mark2(G, visited, evisited, M[0], M[1]);
     mark2(G, visited, evisited, M[1], M[0]);
 
-if (true){
+if (side){
     esrch(G, visited, evisited, M[1], M[3]);
     esrch(G, visited, evisited, M[3], M[0]);
     esrch(G, visited, evisited, M[0], M[1]);
@@ -246,7 +255,7 @@ if (true){
 
     mark(G, visited, evisited, M[0], M[2]);
 
-if(true)
+if(side)
 forall_vertices(G, function(v) {
     if (!visited[v]) {
         coords[v][0] = 4 * Math.PI;
@@ -255,7 +264,9 @@ forall_vertices(G, function(v) {
     }
 });
 
+if (side) {
     coords2 = tutte.convex_face_coordinates(G, M, coords);
+}
 
 if (true)
 forall_vertices(G, function(v) {
@@ -263,7 +274,7 @@ forall_vertices(G, function(v) {
         coords[v][0] = coords[v][0] + 2 * Math.PI;
     }
 });
-if (false) {
+if (!side) {
     esrch(G, visited, evisited, M[2], M[0]);
     esrch(G, visited, evisited, M[0], M[3]);
     esrch(G, visited, evisited, M[3], M[2]);
@@ -273,7 +284,7 @@ if (false) {
     esrch(G, visited, evisited, M[1], M[0]);
 }
 
-if(false)
+if (!side)
 forall_vertices(G, function(v) {
     if (!visited[v]) {
         coords[v][0] = 4 * Math.PI;
@@ -281,8 +292,10 @@ forall_vertices(G, function(v) {
         M.push(v);
     }
 });
-    coords3 = tutte.convex_face_coordinates(G, M, coords);
 
+if (!side) {
+    coords2 = tutte.convex_face_coordinates(G, M, coords);
+}
 
 
 
