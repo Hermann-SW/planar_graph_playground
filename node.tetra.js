@@ -30,11 +30,11 @@ function tetra(G, M, sc = 1, visited) {
     scad.header(coords, sc);
     scad.header2();
 
+    wlog("rotate([0,-$t*360,9]) union(){");
+
     forall_edges(G, function(e) {
-        if (evisited[e]) {
             if (e===sele) { scad.wlog("color([1,0,0])"); } else { scad.wlog("color([0,0,1])"); }
             scad.wlog("edge2(", source(G, e), ",", target(G, e), ",", e, ");");
-        }
     });
     console.log("M.length:", M.length);
 
@@ -44,11 +44,6 @@ function tetra(G, M, sc = 1, visited) {
     });
 
     pentagons(G).forEach(function(face) {
-        var doit = face.every(function(v) {
-            return visited[v];
-        });
-
-        if (doit) {
             scad.wlog("echo(",face,");");
           if (dotxt) {
             face.forEach(function(v) {
@@ -59,7 +54,6 @@ function tetra(G, M, sc = 1, visited) {
             scad.wlog("sp_tria(", face[0], ",", face[1], ",", face[2], ");");
             scad.wlog("sp_tria(", face[0], ",", face[2], ",", face[3], ");");
             scad.wlog("sp_tria(", face[0], ",", face[3], ",", face[4], ");");
-        }
     });
 
     if (white) {
@@ -67,6 +61,7 @@ function tetra(G, M, sc = 1, visited) {
         scad.wlog("color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc, $fn=180);");
     }
 
+    wlog("}");
     scad.close();
 }
 
@@ -210,11 +205,15 @@ function esrch(G, visited, evisited, v, w) {
 
 coords = filled_array(n_vertices(G), 2, -1);
 
+var visited;
+var evisited;
+
+function doit(side) {
 coords[M[0]] = [3*Math.PI/2, Math.acos(+Math.sqrt(1/3))];
 coords[M[1]] = [  Math.PI/2, Math.acos(+Math.sqrt(1/3))];
 
-var visited = filled_array(n_vertices(G), 1, false);
-var evisited = filled_array(n_edges(G), 1, false);
+visited = filled_array(n_vertices(G), 1, false);
+evisited = filled_array(n_edges(G), 1, false);
 
 var e;
 var orient;
@@ -265,7 +264,7 @@ forall_vertices(G, function(v) {
 });
 
 if (side) {
-    coords2 = tutte.convex_face_coordinates(G, M, coords);
+    return tutte.convex_face_coordinates(G, M, coords);
 }
 
 if (true)
@@ -294,16 +293,25 @@ forall_vertices(G, function(v) {
 });
 
 if (!side) {
-    coords2 = tutte.convex_face_coordinates(G, M, coords);
+    return tutte.convex_face_coordinates(G, M, coords);
 }
 
+}
 
+coords2 = doit(false);
+M = M.slice(0,4);
+coords3 = doit(true);
 
 console.log("vertices:", String(M));
 
 forall_vertices(G, function(v) {
+    if (coords2[0][v] == 4 * Math.PI) {
+        coords[v][0] = coords3[0][v];
+        coords[v][1] = coords3[1][v];
+    } else {
         coords[v][0] = coords2[0][v];
         coords[v][1] = coords2[1][v];
+    }
 });
 
 V = M[0];

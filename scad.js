@@ -37,9 +37,7 @@ if (true) {
     };
 
     exports.header = function (coords, sc) {
-        var vec = [0,0,1];
-        wlog("$vpr = [",-rad2deg(Math.acos(vec[2])),",0,",
-                        -rad2deg(Math.atan2(vec[0], vec[1])),"];");
+        wlog("$vpr = [340, 45, 0];");
         wlog("$fn = 25;");
         wlog("$vpt = [0,0,0];");
 
