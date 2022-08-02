@@ -30,10 +30,11 @@ function tetra(G, M, sc = 1, visited) {
     scad.header(coords, sc);
     scad.header2();
 
-    wlog("rotate([0,-$t*360,9]) union(){");
+    wlog("rotate([0,-$t*360,0]) union(){");
 
     forall_edges(G, function(e) {
-            if (e===sele) { scad.wlog("color([1,0,0])"); } else { scad.wlog("color([0,0,1])"); }
+            //if (evisited[e]) { scad.wlog("color([0,1,1])"); } else { scad.wlog("color([0,0,1])"); }
+            if (evisited[e]) { scad.wlog("color([1,0.66666,0])"); } else { scad.wlog("color([0,0,1])"); }
             scad.wlog("edge2(", source(G, e), ",", target(G, e), ",", e, ");");
     });
     console.log("M.length:", M.length);
@@ -233,18 +234,17 @@ assert.assert(orient === false); // for now
     mark2(G, visited, evisited, M[3], M[2]);
 
     mark(G, visited, evisited, M[2], M[1]);
-    mark(G, visited, evisited, M[1], M[3]);
+    assert.assert(!visited[M[3]]);
+    visited[M[3]] = true;
 
     mark(G, visited, evisited, M[3], M[0]);
     mark2(G, visited, evisited, M[0], M[1]);
     mark2(G, visited, evisited, M[1], M[0]);
 
 if (side){
-    esrch(G, visited, evisited, M[1], M[3]);
     esrch(G, visited, evisited, M[3], M[0]);
     esrch(G, visited, evisited, M[0], M[1]);
 
-    esrch(G, visited, evisited, M[3], M[1]);
     esrch(G, visited, evisited, M[1], M[2]);
     esrch(G, visited, evisited, M[2], M[3]);
 }
@@ -252,7 +252,8 @@ if (side){
     coords[M[2]] = [2*Math.PI, Math.acos(-Math.sqrt(1/3))];
 
 
-    mark(G, visited, evisited, M[0], M[2]);
+    assert.assert(!visited[M[2]]);
+    visited[M[2]] = true;
 
 if(side)
 forall_vertices(G, function(v) {
@@ -274,11 +275,9 @@ forall_vertices(G, function(v) {
     }
 });
 if (!side) {
-    esrch(G, visited, evisited, M[2], M[0]);
     esrch(G, visited, evisited, M[0], M[3]);
     esrch(G, visited, evisited, M[3], M[2]);
 
-    esrch(G, visited, evisited, M[0], M[2]);
     esrch(G, visited, evisited, M[2], M[1]);
     esrch(G, visited, evisited, M[1], M[0]);
 }
@@ -299,8 +298,13 @@ if (!side) {
 }
 
 coords2 = doit(false);
+var evisited_ = evisited;
 M = M.slice(0,4);
 coords3 = doit(true);
+
+forall_edges(G, function(e) {
+    evisited[e] = (evisited[e] && evisited_[e]);
+});
 
 console.log("vertices:", String(M));
 
