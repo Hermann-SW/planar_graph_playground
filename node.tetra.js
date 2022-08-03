@@ -27,9 +27,12 @@ var i;
 
 function tetra(G, M, sc = 1, visited) {
     scad.open('x.scad');
+    scad.wlog("look_inside=false;");
+    scad.wlog("diff_last=false;");
     scad.header(coords, sc);
     scad.header2();
 
+    wlog("difference(){");
     wlog("rotate([0,-$t*360,0]) union(){");
 
     forall_edges(G, function(e) {
@@ -59,10 +62,17 @@ function tetra(G, M, sc = 1, visited) {
 
     if (white) {
         var alpha = parseInt((process.argv[3] + ".100").substring(6)) / 100;
+        wlog("difference(){");
         scad.wlog("color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc, $fn=180);");
+        wlog("if (!diff_last) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
+        wlog("}");
     }
 
     wlog("}");
+    wlog("if (diff_last) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
+    wlog("if (look_inside) translate([0,0,0]) cube([",sc,",",sc,",",sc,"]);");
+    wlog("}");
+
     scad.close();
 }
 
