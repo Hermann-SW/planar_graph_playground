@@ -15,9 +15,9 @@ var coords3;
 var white = (process.argv.length > 3);
 var sele = (process.argv.length > 4) ? parseInt(process.argv[4]) : -1;
 
-var dopent = (sele !== -2) && (sele !== -4);
-var dotxt = (sele !== -2) && (sele !== -3);
-
+var dopent = (sele === -3) || (sele === -5);
+var dotxt = (sele === -4) || (sele === -5);
+var vhalf = (sele < -5);
 if (sele < 0) {
     sele = -1;
 }
@@ -44,7 +44,7 @@ function tetra(G, M, sc = 1, visited) {
 
     var Ms = [M[0], M[1], M[2], M[3]];
     forall_vertices(G, function(v) {
-        scad.wlog( "vertex(", v, ",", Ms.includes(v) ? [1,0,0] : [0,1,0], ");");
+        scad.wlog( "vertex(", v, ",", Ms.includes(v) ? [1,0,0] : [0,1,0], ",", vhalf, ");");
     });
   if (dopent)
     pentagons(G).forEach(function(face) {

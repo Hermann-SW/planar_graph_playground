@@ -54,9 +54,19 @@ if (true) {
         });
         wlog("];");
 
-        wlog("module vertex(_v, c) {");
-        wlog("    v = map_3D(coords[_v]) * sc;");
-        wlog("    color(c) translate(v) sphere(0.5);");
+        wlog("module vertex(_v, c, half=false) {");
+        wlog("    p = coords[_v];");
+        wlog("    v = map_3D(p) * sc;");
+        wlog("    difference(){");
+        wlog("        color(c) translate(v) sphere(0.5);");
+        wlog("        if (half) {");
+        wlog("            la1 = p[0];");
+        wlog("            ph1 = 90 - p[1];");
+        wlog("            translate([0, 0, 0]) rotate([0, 0, la1]) rotate([0, -ph1, 0])");
+        wlog("                translate([sc+0.5, 0]) rotate([90,0,90]) color([0,0,0])");
+        wlog("            translate([-0.5,-0.5,-1]) cube([1,1,0.4]);");
+        wlog("        }");
+        wlog("    }");
         wlog("}");
 
         wlog("module vtxt(_p1) {");
