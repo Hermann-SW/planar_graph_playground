@@ -14,10 +14,13 @@ var coords3;
 
 var white = (process.argv.length > 3);
 var sele = (process.argv.length > 4) ? parseInt(process.argv[4]) : -1;
-
+var no_e21 = (sele === -9);
 var dopent = (sele === -3) || (sele === -5);
-var dotxt = (sele === -4) || (sele === -5);
+var dotxt = (sele === -4) || (sele === -5) || (sele < -6);
 var vhalf = (sele < -5);
+var Mc20 = [];
+if (sele === -8)  Mc20 = [10, 2, 1, 0];
+if (sele === -9)  Mc20 = [0, 11, 13, 2];
 if (sele < 0) {
     sele = -1;
 }
@@ -32,28 +35,27 @@ function tetra(G, M, sc = 1, visited) {
     scad.header(coords, sc);
     scad.header2();
 
-    wlog("difference(){");
-    wlog("rotate([0,-$t*360,0]) union(){");
+    scad.wlog("difference(){");
+    scad.wlog("rotate([0,-$t*360,0]) union(){");
 
     forall_edges(G, function(e) {
-            //if (evisited[e]) { scad.wlog("color([0,1,1])"); } else { scad.wlog("color([0,0,1])"); }
+        if (!no_e21 || (e !== 21)) {
             if (evisited[e]) { scad.wlog("color([1,0.66666,0])"); } else { scad.wlog("color([0,0,1])"); }
             scad.wlog("edge2(", source(G, e), ",", target(G, e), ",", e, ");");
+        }
     });
     console.log("M.length:", M.length);
 
     var Ms = [M[0], M[1], M[2], M[3]];
     forall_vertices(G, function(v) {
         scad.wlog( "vertex(", v, ",", Ms.includes(v) ? [1,0,0] : [0,1,0], ",", vhalf, ");");
+        if (dotxt) {
+            scad.wlog("vtxt(", v, ");");
+        }
     });
   if (dopent)
     pentagons(G).forEach(function(face) {
             scad.wlog("echo(",face,");");
-          if (dotxt) {
-            face.forEach(function(v) {
-                scad.wlog("vtxt(", v, ");");
-            });
-          }
 
             scad.wlog("sp_tria(", face[0], ",", face[1], ",", face[2], ");");
             scad.wlog("sp_tria(", face[0], ",", face[2], ",", face[3], ");");
@@ -62,16 +64,16 @@ function tetra(G, M, sc = 1, visited) {
 
     if (white) {
         var alpha = parseInt((process.argv[3] + ".100").substring(6)) / 100;
-        wlog("difference(){");
+        scad.wlog("difference(){");
         scad.wlog("color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc, $fn=180);");
-        wlog("if (!diff_last) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
-        wlog("}");
+        scad.wlog("if (!diff_last) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
+        scad.wlog("}");
     }
 
-    wlog("}");
-    wlog("if (diff_last) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
-    wlog("if (look_inside) translate([0,0,0]) cube([",sc,",",sc,",",sc,"]);");
-    wlog("}");
+    scad.wlog("}");
+    scad.wlog("if (diff_last) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
+    scad.wlog("if (look_inside) translate([0,0,0]) cube([",sc,",",sc,",",sc,"]);");
+    scad.wlog("}");
 
     scad.close();
 }
@@ -121,6 +123,8 @@ forall_vertices(G, function(a) {
         });
     });
 });
+
+if (Mc20.length > 0)  M = Mc20;
 
 console.log("vertices:", String(M));
 console.log("max:", max);
