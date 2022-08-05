@@ -37,7 +37,7 @@ if (true) {
     };
 
     exports.header = function (coords, sc) {
-        wlog("$vpr = [355, 45, 0];");
+        wlog("$vpr = [310, 10, 0];");
         wlog("$fn = 25;");
         wlog("$vpt = [0,0,0];");
 

@@ -15,13 +15,13 @@ var coords3;
 var white = (process.argv.length > 3);
 var sele = (process.argv.length > 4) ? parseInt(process.argv[4]) : -1;
 var vtype = false;
+var dopent = (sele === -3) || (sele === -5) || (sele === -10);
 var vhalf = (sele < -5);
 if (sele === -10) {
     vtype = true;
     sele = -1;
 }
 var no_e21 = (sele === -9);
-var dopent = (sele === -3) || (sele === -5);
 var dotxt = (sele === -4) || (sele === -5) || (sele < -6);
 var Mc20 = [];
 if (sele === -8)  Mc20 = [10, 2, 1, 0];
