@@ -14,10 +14,15 @@ var coords3;
 
 var white = (process.argv.length > 3);
 var sele = (process.argv.length > 4) ? parseInt(process.argv[4]) : -1;
+var vtype = false;
+var vhalf = (sele < -5);
+if (sele === -10) {
+    vtype = true;
+    sele = -1;
+}
 var no_e21 = (sele === -9);
 var dopent = (sele === -3) || (sele === -5);
 var dotxt = (sele === -4) || (sele === -5) || (sele < -6);
-var vhalf = (sele < -5);
 var Mc20 = [];
 if (sele === -8)  Mc20 = [10, 2, 1, 0];
 if (sele === -9)  Mc20 = [0, 11, 13, 2];
@@ -25,7 +30,6 @@ if (sele < 0) {
     sele = -1;
 }
 
-var V = 0;
 var i;
 
 function tetra(G, M, sc = 1, visited) {
@@ -50,7 +54,7 @@ function tetra(G, M, sc = 1, visited) {
     forall_vertices(G, function(v) {
         scad.wlog( "vertex(", v, ",", Ms.includes(v) ? [1,0,0] : [0,1,0], ",", vhalf, ");");
         if (dotxt) {
-            scad.wlog("vtxt(", v, ");");
+            scad.wlog("vtxt(", v, ",", v, ");");
         }
     });
   if (dopent)
@@ -68,6 +72,12 @@ function tetra(G, M, sc = 1, visited) {
         scad.wlog("color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc, $fn=180);");
         scad.wlog("if (!diff_last) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
         scad.wlog("}");
+    }
+
+    if (vtype.length > 0) {
+        forall_vertices(G, function(v) {
+            scad.wlog("vtxt(", v, ",", vtype[v], ");");
+        });
     }
 
     scad.wlog("}");
@@ -224,22 +234,22 @@ var visited;
 var evisited;
 
 function doit(side) {
-coords[M[0]] = [3*Math.PI/2, Math.acos(+Math.sqrt(1/3))];
-coords[M[1]] = [  Math.PI/2, Math.acos(+Math.sqrt(1/3))];
+    coords[M[0]] = [3*Math.PI/2, Math.acos(+Math.sqrt(1/3))];
+    coords[M[1]] = [  Math.PI/2, Math.acos(+Math.sqrt(1/3))];
 
-visited = filled_array(n_vertices(G), 1, false);
-evisited = filled_array(n_edges(G), 1, false);
+    visited = filled_array(n_vertices(G), 1, false);
+    evisited = filled_array(n_edges(G), 1, false);
 
-var e;
-var orient;
-e = next_incident_edge(G, M[3], next[M[3]][M[2]]);
-while ((e !== next[M[3]][M[1]]) && (e !== next[M[3]][M[0]])) {
-    e = next_incident_edge(G, M[3], e);
-}
-orient = (e === next[M[3]][M[1]]);
+    var e;
+    var orient;
+    e = next_incident_edge(G, M[3], next[M[3]][M[2]]);
+    while ((e !== next[M[3]][M[1]]) && (e !== next[M[3]][M[0]])) {
+        e = next_incident_edge(G, M[3], e);
+    }
+    orient = (e === next[M[3]][M[1]]);
 
-console.log(orient);
-assert.assert(orient === false); // for now
+    console.log(orient);
+    assert.assert(orient === false); // for now
 
     coords[M[3]] = [    Math.PI, Math.acos(-Math.sqrt(1/3))];
     coords[M[2]] = [          0, Math.acos(-Math.sqrt(1/3))];
@@ -255,84 +265,80 @@ assert.assert(orient === false); // for now
     mark2(G, visited, evisited, M[0], M[1]);
     mark2(G, visited, evisited, M[1], M[0]);
 
-if (side){
-    esrch(G, visited, evisited, M[3], M[0]);
-    esrch(G, visited, evisited, M[0], M[1]);
-
-    esrch(G, visited, evisited, M[1], M[2]);
-    esrch(G, visited, evisited, M[2], M[3]);
-}
     assert.assert(visited[M[2]] === false);
     coords[M[2]] = [2*Math.PI, Math.acos(-Math.sqrt(1/3))];
-
 
     assert.assert(!visited[M[2]]);
     visited[M[2]] = true;
 
-if(side)
-forall_vertices(G, function(v) {
-    if (!visited[v]) {
-        coords[v][0] = 4 * Math.PI;
-        coords[v][1] = Math.PI / 2;
-        M.push(v);
-    }
-});
 
-if (side) {
+    if (side){
+        esrch(G, visited, evisited, M[3], M[0]);
+        esrch(G, visited, evisited, M[0], M[1]);
+
+        esrch(G, visited, evisited, M[1], M[2]);
+        esrch(G, visited, evisited, M[2], M[3]);
+    } else {
+        forall_vertices(G, function(v) {
+            if (coords[v][0] < Math.PI) {
+                coords[v][0] = coords[v][0] + 2 * Math.PI;
+            }
+        });
+
+        esrch(G, visited, evisited, M[0], M[3]);
+        esrch(G, visited, evisited, M[3], M[2]);
+
+        esrch(G, visited, evisited, M[2], M[1]);
+        esrch(G, visited, evisited, M[1], M[0]);
+    }
+
+    forall_vertices(G, function(v) {
+        if (!visited[v]) {
+            coords[v][0] = 4 * Math.PI;
+            coords[v][1] = Math.PI / 2;
+            M.push(v);
+        }
+    });
+
     return tutte.convex_face_coordinates(G, M, coords);
 }
 
-if (true)
-forall_vertices(G, function(v) {
-    if (coords[v][0] < Math.PI) {
-        coords[v][0] = coords[v][0] + 2 * Math.PI;
-    }
-});
-if (!side) {
-    esrch(G, visited, evisited, M[0], M[3]);
-    esrch(G, visited, evisited, M[3], M[2]);
-
-    esrch(G, visited, evisited, M[2], M[1]);
-    esrch(G, visited, evisited, M[1], M[0]);
-}
-
-if (!side)
-forall_vertices(G, function(v) {
-    if (!visited[v]) {
-        coords[v][0] = 4 * Math.PI;
-        coords[v][1] = Math.PI / 2;
-        M.push(v);
-    }
-});
-
-if (!side) {
-    return tutte.convex_face_coordinates(G, M, coords);
-}
-
-}
-
-coords2 = doit(false);
+coords2 = doit(true);
 var evisited_ = evisited;
 M = M.slice(0,4);
-coords3 = doit(true);
-
-forall_edges(G, function(e) {
-    evisited[e] = (evisited[e] && evisited_[e]);
-});
+coords3 = doit(false);
 
 console.log("vertices:", String(M));
+
+vtype = vtype ? filled_array(n_vertices(G), 1, 0) : [];
 
 forall_vertices(G, function(v) {
     if (coords2[0][v] == 4 * Math.PI) {
         coords[v][0] = coords3[0][v];
         coords[v][1] = coords3[1][v];
+        if (vtype.length > 0)  vtype[v] = 2;
     } else {
         coords[v][0] = coords2[0][v];
         coords[v][1] = coords2[1][v];
+        if (vtype.length > 0)  vtype[v] = 1;
     }
 });
 
-V = M[0];
 
+forall_edges(G, function(e) {
+    evisited[e] = (evisited[e] && evisited_[e]);
+    if (evisited[e] && (vtype.length > 0)) {
+        vtype[source(G, e)] = 0;
+        vtype[target(G, e)] = 0;
+    }
+});
+
+if (vtype.length > 0) {
+    var c=[0,0,0];
+    forall_vertices(G, function(v) {
+        c[vtype[v]] = c[vtype[v]] + 1;
+    });
+    console.log(c);
+}
 
 tetra(G, M, Math.sqrt(n_vertices(G)), visited);

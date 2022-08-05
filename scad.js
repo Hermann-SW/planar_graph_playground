@@ -69,14 +69,14 @@ if (true) {
         wlog("    }");
         wlog("}");
 
-        wlog("module vtxt(_p1) {");
+        wlog("module vtxt(_p1, num) {");
         wlog("    p1 = coords[_p1];");
         wlog("    la1 = p1[0];");
         wlog("    ph1 = 90 - p1[1];");
         wlog("    translate([0, 0, 0]) rotate([0, 0, la1]) rotate([0, -ph1, 0])");
         wlog("        translate([sc+0.5, 0]) rotate([90,0,90]) color([0,0,0])");
         wlog("            linear_extrude(0.01)");
-        wlog("    text(str(_p1), size=0.5, halign=\"center\", valign=\"center\");");
+        wlog("    text(str(num), size=0.5, halign=\"center\", valign=\"center\");");
         wlog("}");
 
         wlog("module edge(_v,_w) {");
