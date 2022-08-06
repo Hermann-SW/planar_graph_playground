@@ -17,9 +17,11 @@ var sele = (process.argv.length > 4) ? parseInt(process.argv[4]) : -1;
 var vtype = false;
 var dopent = (sele === -3) || (sele === -5) || (sele === -10);
 var vhalf = (sele < -5);
+var half0 = true;
 if (sele === -10) {
     vtype = true;
     sele = -1;
+    half0 = false;
 }
 var no_e21 = (sele === -9);
 var dotxt = (sele === -4) || (sele === -5) || (sele < -6);
@@ -52,7 +54,7 @@ function tetra(G, M, sc = 1, visited) {
 
     var Ms = [M[0], M[1], M[2], M[3]];
     forall_vertices(G, function(v) {
-        scad.wlog( "vertex(", v, ",", Ms.includes(v) ? [1,0,0] : [0,1,0], ",", vhalf, ");");
+        scad.wlog( "vertex(", v, ",", Ms.includes(v) ? [1,0,0] : [0,1,0], ",", vhalf && ((vtype[v] !== 0) || half0), ");");
         if (dotxt) {
             scad.wlog("vtxt(", v, ",", v, ");");
         }
