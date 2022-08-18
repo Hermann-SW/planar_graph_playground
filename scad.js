@@ -6,6 +6,7 @@ var scad = exports;
 if (true) {
     var fs = require("fs");
     var writer;
+    var eps = 1e-6;
 
     function rad2deg(r) {
         return r / Math.PI * 180;
@@ -161,6 +162,7 @@ if (true) {
         wlog("    function m180(ang) =  (ang < -180) ? 360 + ang : ((ang > 180) ? ang - 360 :ang);");
 
         wlog("    if ((s13 >= s12) && (s13 >= s23)) {");
+        wlog("      if (abs(s13-s12-s23) >=", eps, ") {");
         wlog("        v1 = map_3D(p1);");
         wlog("        v2 = map_3D(p2);");
         wlog("        v3 = map_3D(p3);");
@@ -200,6 +202,7 @@ if (true) {
         wlog("                translate(s3) cube(0.01);");
         wlog("            }");
         wlog("        }");
+        wlog("      }");
 
         wlog("    }");
         wlog("}");
