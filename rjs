@@ -1,5 +1,11 @@
 #!/bin/bash
 file=$1
 shift
+if [[ $file == "-"* ]]
+then
+  opt=$file
+  file=$1
+  shift
+fi
 export ARGV0=$file
-gcc -E -x c -nostdinc $file | grep -v "^#"  | nodejs - $*
+gcc $opt -E -x c -nostdinc $file | grep -v "^#"  | nodejs - $*

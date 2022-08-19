@@ -6,7 +6,11 @@
 #include "tutte.js"
 #include "undirected_graph.js"
 
+#ifndef JSCAD
 #include "scad.js"
+#else
+#include "jscad.js"
+#endif
 
 var coords;
 var coords2;
@@ -32,49 +36,40 @@ if (sele < 0) {
     sele = -1;
 }
 
-var i;
-
-function tetra(G, M, sc = 1, visited) {
-    scad.open('x.scad');
+function tetra(G, M, sc = 1, visited, pent) {
+    scad.open();
     scad.wlog("look_inside=false;");
-    scad.wlog("diff_last=false;");
     scad.header(coords, sc);
     scad.header2();
 
-    scad.wlog("difference(){");
+    scad.wlog("module cut(li){");
+    scad.wlog("   difference(){");
+    scad.wlog("      children();");
+    scad.wlog("      if (li) { translate([0,0,0]) color([0,0,0]) cube([sc+0.1,sc+0.1,sc+0.1]); }");
+    scad.wlog("   }");
+    scad.wlog("}");
+
     scad.wlog("rotate([0,-$t*360,0]) union(){");
 
-    forall_edges(G, function(e) {
-        if (!no_e21 || (e !== 21)) {
-            if (evisited[e]) { scad.wlog("color([1,0.66666,0])"); } else { scad.wlog("color([0,0,1])"); }
-            scad.wlog("edge2(", source(G, e), ",", target(G, e), ",", e, ");");
-        }
-    });
     console.log("M.length:", M.length);
 
     var Ms = [M[0], M[1], M[2], M[3]];
     forall_vertices(G, function(v) {
-        scad.wlog( "vertex(", v, ",", Ms.includes(v) ? [1,0,0] : [0,1,0], ",", vhalf && ((vtype[v] !== 0) || half0), ");");
+	if (Ms.includes(v)) {
+	    scad.wlog("color([1, 0, 0])");
+	}
+        scad.wlog( "vertex(", v, ",", vhalf && ((vtype[v] !== 0) || half0), ");");
         if (dotxt) {
             scad.wlog("vtxt(", v, ",", v, ");");
         }
     });
-  if (dopent)
-    pentagons(G).forEach(function(face) {
-            scad.wlog("echo(",face,");");
 
-            scad.wlog("sp_tria(", face[0], ",", face[1], ",", face[2], ");");
-            scad.wlog("sp_tria(", face[0], ",", face[2], ",", face[3], ");");
-            scad.wlog("sp_tria(", face[0], ",", face[3], ",", face[4], ");");
+    forall_edges(G, function(e) {
+        if (!no_e21 || (e !== 21)) {
+            if (evisited[e]) { scad.wlog("color([1,0.66666,0])"); }
+            scad.wlog("edge2(", source(G, e), ",", target(G, e), ",", e, ");");
+        }
     });
-
-    if (white) {
-        var alpha = parseInt((process.argv[3] + ".100").substring(6)) / 100;
-        scad.wlog("difference(){");
-        scad.wlog("color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc, $fn=180);");
-        scad.wlog("if (!diff_last) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
-        scad.wlog("}");
-    }
 
     if (vtype.length > 0) {
         forall_vertices(G, function(v) {
@@ -82,10 +77,93 @@ function tetra(G, M, sc = 1, visited) {
         });
     }
 
+    pent.forEach(function(face) {
+        scad.wlog("echo(",face,");");
+
+        scad.wlog("cut(look_inside) {");
+	scad.wlog("  sp_tria(", face[0], ",", face[1], ",", face[2], ");");
+        scad.wlog("  sp_tria(", face[0], ",", face[2], ",", face[3], ");");
+        scad.wlog("  sp_tria(", face[0], ",", face[3], ",", face[4], ");");
+        scad.wlog("}");
+    });
+
+    if (white) {
+        var alpha = parseInt((process.argv[3] + ".100").substring(6)) / 100;
+        scad.wlog("cut(look_inside) difference(){");
+        scad.wlog("  color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc, $fn=180);");
+        scad.wlog("  color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
+        scad.wlog("}");
+    }
+
     scad.wlog("}");
-    scad.wlog("if (diff_last) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
-    scad.wlog("if (look_inside) translate([0,0,0]) cube([",sc,",",sc,",",sc,"]);");
-    scad.wlog("}");
+
+    scad.close();
+}
+
+function jtetra(G, M, sc = 1, visited, pent) {
+    scad.open();
+    scad.header(coords, sc);
+    scad.header2();
+
+    scad.wlog("function main(params) {");
+    scad.wlog("    sub = [cube({size: params.look_inside?sc+0.1:0.01, center: [sc/2,-sc/2,sc/2]})]");
+    scad.wlog("    return[");
+
+
+    console.log("M.length:", M.length);
+
+    var Ms = [M[0], M[1], M[2], M[3]];
+    forall_vertices(G, function(v) {
+	scad.wlog_(",");
+	if (Ms.includes(v)) {
+	    scad.wlog_("colorize([0.7, 0, 0], ");
+	}
+        scad.wlog_("vertex(", v, ",",  vhalf && ((vtype[v] !== 0) || half0), ")");
+	if (Ms.includes(v)) {
+	    scad.wlog(")");
+	} else {
+	    scad.wlog("");
+	}
+        if (dotxt) {
+            scad.wlog(", vtxt(", v, ",", v, ")");
+        }
+    });
+
+    forall_edges(G, function(e) {
+        if (!no_e21 || (e !== 21)) {
+	    scad.wlog_(",");
+            if (evisited[e]) { scad.wlog_("colorize([1,0.66666,0],"); }
+            scad.wlog_("edge2(", source(G, e), ",", target(G, e), ",", e, ")");
+            if (evisited[e]) { scad.wlog(")"); } else { scad.wlog(""); }
+        }
+    });
+
+    if (vtype.length > 0) {
+        forall_vertices(G, function(v) {
+            scad.wlog(",vtxt(", v, ",", vtype[v], ")");
+        });
+    }
+
+    pent.forEach(function(face) {
+        console.log(face);
+
+	scad.wlog(",sp_tria(", face[0], ",", face[1], ",", face[2], ", sub)");
+        scad.wlog(",sp_tria(", face[0], ",", face[2], ",", face[3], ", sub)");
+        scad.wlog(",sp_tria(", face[0], ",", face[3], ",", face[4], ", sub)");
+    });
+
+    if (white) {
+        scad.wlog(", colorize([1,1,1],"); 
+        scad.wlog("      subtract(");
+        scad.wlog("          sphere({radius: sc, segments: 30})");
+        scad.wlog("          ,sphere({radius: sc-0.1, segments: 30})");
+        scad.wlog("          ,sub ");
+        scad.wlog("      )");
+        scad.wlog("  )");  
+    }
+
+    scad.wlog("] }");
+    scad.wlog("module.exports = { main, getParameterDefinitions }");
 
     scad.close();
 }
@@ -326,7 +404,6 @@ forall_vertices(G, function(v) {
     }
 });
 
-
 forall_edges(G, function(e) {
     evisited[e] = (evisited[e] && evisited_[e]);
     if (evisited[e] && (vtype.length > 0)) {
@@ -343,4 +420,26 @@ if (vtype.length > 0) {
     console.log(c);
 }
 
-tetra(G, M, Math.sqrt(n_vertices(G)), visited);
+var V12 = [];
+forall_vertices(G, function(v) {
+    if ((v < 3) || (v > 2)) {
+        V12.push(v);
+    }
+});
+var coords4 = tutte.convex_face_coordinates(G, V12, coords);
+
+forall_vertices(G, function(v) {
+    if (vtype[v] === 0) {
+        coords[v][0] = coords4[0][v];
+        coords[v][1] = coords4[1][v];
+    }
+});
+
+if (!dopent) {
+  pent = [];
+}
+#ifndef JSCAD
+tetra(G, M, Math.sqrt(n_vertices(G)), visited, pent);
+#else
+jtetra(G, M, Math.sqrt(n_vertices(G)), visited, pent);
+#endif

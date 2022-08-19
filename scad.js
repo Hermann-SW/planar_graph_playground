@@ -55,11 +55,11 @@ if (true) {
         });
         wlog("];");
 
-        wlog("module vertex(_v, c, half=false) {");
+        wlog("module vertex(_v, half=false) {");
         wlog("    p = coords[_v];");
         wlog("    v = map_3D(p) * sc;");
         wlog("    difference(){");
-        wlog("        color(c) translate(v) sphere(0.5);");
+        wlog("        color([0, 0.7, 0]) translate(v) sphere(0.5);");
         wlog("        if (half) {");
         wlog("            la1 = p[0];");
         wlog("            ph1 = 90 - p[1];");
@@ -85,6 +85,7 @@ if (true) {
         wlog("    w = map_3D(coords[_w]) * sc - v;");
         wlog("    translate(v)");
         wlog("    rotate([0, acos(w[2]/norm(w)), atan2(w[1], w[0])])");
+        wlog("    color([0,0,1])");
         wlog("    cylinder(norm(w),0.1,0.1);");
         wlog("}");
     };
@@ -106,7 +107,8 @@ if (true) {
         wlog("    s12 = acos(sin(ph1)*sin(ph2)+cos(ph1)*cos(ph2)*cos(l12));");
         wlog("    translate([0, 0, 0]) rotate([0, 0, la1]) rotate([0, -ph1, 0])");
         wlog("      rotate([90 - al1, 0, 0])");
-        wlog("        rotate_extrude(angle=s12, convexity=10, $fn=100)");
+        wlog("        color([0,0,1])");
+        wlog("          rotate_extrude(angle=s12, convexity=10, $fn=100)");
         wlog("            translate([sc, 0]) circle(0.1, $fn=25);");
         wlog("}");
 
@@ -180,13 +182,13 @@ if (true) {
 
         wlog("        intersection() {");
         wlog("            union() {");
-        wlog("                color([0.5,0.5,0.5]) translate([0,0,0])");
+        wlog("                color([0.6,0.6,0.6]) translate([0,0,0])");
         wlog("                    rotate([0,0,la1-180])");
         wlog("                    rotate([0,ph1-90,0])");
         wlog("                    rotate([0,0,-al13])");
         wlog("                    sp_tria2(sc, s12, m180(al13-al12), 0.1, 40, 40);");
 
-        wlog("                color([0.5,0.5,0.5]) translate([0,0,0])");
+        wlog("                color([0.6,0.6,0.6]) translate([0,0,0])");
         wlog("                    rotate([0,0,la3-180])");
         wlog("                    rotate([0,ph3-90,0])");
         wlog("                    rotate([0,0,-al31])");
@@ -201,8 +203,8 @@ if (true) {
         wlog("                translate(s2) cube(0.01);");
         wlog("                translate(s3) cube(0.01);");
         wlog("            }");
+        wlog("          }");
         wlog("        }");
-        wlog("      }");
 
         wlog("    }");
         wlog("}");
