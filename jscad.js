@@ -58,7 +58,11 @@ if (true) {
 
         wlog("function getParameterDefinitions() {");
         wlog("  return [");
-        wlog("    { name: 'look_inside', type: 'checkbox', caption: 'look_inside:', initial: '20', checked: true }");
+        wlog("     { name: 'faces', type: 'choice', values: ['Pentagons', '6coloring', 'None'], initial: 'Pentagons', caption: 'face coloring:' },");
+        wlog("    ,{ name: 'white', type: 'checkbox', checked: true, initial: '20', caption: 'surface of sphere:' },");
+        wlog("    ,{ name: 'half', type: 'checkbox', checked: true, initial: '20', caption: 'half vertex:' },");
+        wlog("    ,{ name: 'vtxt', type: 'choice', values: ['Id', 'Type', 'None'], initial: 'Type', caption: 'vtxt:' },");
+        wlog("    ,{ name: 'look_inside', type: 'choice', values: ['no', 'yes'], initial: 'no', caption: 'look_inside:' }");
         wlog("  ];");
         wlog("}");
 
@@ -82,17 +86,20 @@ if (true) {
         wlog("function vertex(_v, half=false) {");
         wlog("    p = coords[_v] ");
         wlog("    v = map_3D(p,sc)");
-        wlog("    la1 = degToRad(p[0])");
-        wlog("    ph1 = degToRad(90 - p[1])");
-        wlog("    return colorize([0, 0.7, 0],");
-        wlog("        subtract(sphere({radius: 0.5, center: v}),");
-        wlog("            translate([0, 0, 0],");
-        wlog("                rotate([0, 0, la1],");
-        wlog("                    rotate([0, -ph1, 0],");
-        wlog("                        translate([sc+0.5, 0],");
-        wlog("                            rotate([degToRad(90), 0, degToRad(90)],");
-        wlog("                                translate([-0, -0, -1],");
-        wlog("                                     cuboid({size: [1, 1, 0.8]})");
+	wlog("    s = sphere({radius: 0.5, center: v})");
+	wlog("    if (half) {");
+        wlog("        la1 = degToRad(p[0])");
+        wlog("        ph1 = degToRad(90 - p[1])");
+        wlog("        return colorize([0, 0.7, 0],");
+        wlog("            subtract(s,");
+        wlog("                translate([0, 0, 0],");
+        wlog("                    rotate([0, 0, la1],");
+        wlog("                        rotate([0, -ph1, 0],");
+        wlog("                            translate([sc+0.5, 0],");
+        wlog("                                rotate([degToRad(90), 0, degToRad(90)],");
+        wlog("                                    translate([-0, -0, -1],");
+        wlog("                                         cuboid({size: [1, 1, 0.8]})");
+        wlog("                                    )");
         wlog("                                )");
         wlog("                            )");
         wlog("                        )");
@@ -100,7 +107,9 @@ if (true) {
         wlog("                )");
         wlog("            )");
         wlog("        )");
-        wlog("    )");
+        wlog("    } else {");
+        wlog("        return colorize([0, 0.7, 0], s)");
+        wlog("    }");
         wlog("}");
 
         wlog("function txt(mesg, w) {");

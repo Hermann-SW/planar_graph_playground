@@ -106,7 +106,46 @@ function jtetra(G, M, sc = 1, visited, pent) {
     scad.header2();
 
     scad.wlog("function main(params) {");
-    scad.wlog("    sub = [cube({size: params.look_inside?sc+0.1:0.01, center: [sc/2,-sc/2,sc/2]})]");
+    scad.wlog("    sub = [cube({size: (params.look_inside === 'yes')?sc+0.1:0.01, center: [sc/2,-sc/2,sc/2]})]");
+
+    scad.wlog("pentagons = (params.faces !== 'Pentagons') ? [] : [[]");
+    pent.forEach(function(face) {
+        console.log(face);
+
+	scad.wlog(",sp_tria(", face[0], ",", face[1], ",", face[2], ", sub)");
+        scad.wlog(",sp_tria(", face[0], ",", face[2], ",", face[3], ", sub)");
+        scad.wlog(",sp_tria(", face[0], ",", face[3], ",", face[4], ", sub)");
+    });
+    scad.wlog("]");
+
+    scad.wlog("white = (!params.white) ? [] : [[]");
+    scad.wlog(", colorize([1,1,1],");
+    scad.wlog("      subtract(");
+    scad.wlog("          sphere({radius: sc, segments: 30})");
+    scad.wlog("          ,sphere({radius: sc-0.1, segments: 30})");
+    scad.wlog("          ,sub ");
+    scad.wlog("      )");
+    scad.wlog("  )");
+    scad.wlog("]");
+
+    scad.wlog_("vtype = [");
+    forall_vertices(G, function(v) {
+	scad.wlog_(v>0 ? "," : " ");
+	scad.wlog("[", v, ",", vtype[v].toString(), "]");
+    });
+    scad.wlog("]");
+
+    scad.wlog("tvtxt = (params.vtxt === 'Type') ? 1 : 0");
+
+    if (vtype.length > 0) {
+	scad.wlog("vtxts = (params.vtxt === 'None') ? [] : [");
+        forall_vertices(G, function(v) {
+	    scad.wlog_(v>0 ? "," : " ");
+            scad.wlog("vtxt(", v, ", vtype[", v, "][tvtxt])");
+        });
+        scad.wlog("]");
+    }
+
     scad.wlog("    return[");
 
 
@@ -118,15 +157,12 @@ function jtetra(G, M, sc = 1, visited, pent) {
 	if (Ms.includes(v)) {
 	    scad.wlog_("colorize([0.7, 0, 0], ");
 	}
-        scad.wlog_("vertex(", v, ",",  vhalf && ((vtype[v] !== 0) || half0), ")");
+        scad.wlog_("vertex(", v, ", params.half && ((tvtxt !== 1) || (vtype[", v, "][1] !== 0)))");
 	if (Ms.includes(v)) {
 	    scad.wlog(")");
 	} else {
 	    scad.wlog("");
 	}
-        if (dotxt) {
-            scad.wlog(", vtxt(", v, ",", v, ")");
-        }
     });
 
     forall_edges(G, function(e) {
@@ -138,29 +174,9 @@ function jtetra(G, M, sc = 1, visited, pent) {
         }
     });
 
-    if (vtype.length > 0) {
-        forall_vertices(G, function(v) {
-            scad.wlog(",vtxt(", v, ",", vtype[v], ")");
-        });
-    }
-
-    pent.forEach(function(face) {
-        console.log(face);
-
-	scad.wlog(",sp_tria(", face[0], ",", face[1], ",", face[2], ", sub)");
-        scad.wlog(",sp_tria(", face[0], ",", face[2], ",", face[3], ", sub)");
-        scad.wlog(",sp_tria(", face[0], ",", face[3], ",", face[4], ", sub)");
-    });
-
-    if (white) {
-        scad.wlog(", colorize([1,1,1],"); 
-        scad.wlog("      subtract(");
-        scad.wlog("          sphere({radius: sc, segments: 30})");
-        scad.wlog("          ,sphere({radius: sc-0.1, segments: 30})");
-        scad.wlog("          ,sub ");
-        scad.wlog("      )");
-        scad.wlog("  )");  
-    }
+    scad.wlog(",pentagons");
+    scad.wlog(",white");
+    scad.wlog(",vtxts");
 
     scad.wlog("] }");
     scad.wlog("module.exports = { main, getParameterDefinitions }");
