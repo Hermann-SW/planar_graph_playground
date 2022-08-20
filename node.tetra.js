@@ -362,7 +362,7 @@ function doit(side) {
     mark2(G, visited, evisited, M[1], M[0]);
 
     assert.assert(visited[M[2]] === false, "doit, visited M[2]");
-    coords[M[2]] = [2*Math.PI, Math.acos(-Math.sqrt(1/3))];
+//    coords[M[2]] = [2*Math.PI, Math.acos(-Math.sqrt(1/3))];
 
     visited[M[2]] = true;
 
@@ -398,10 +398,11 @@ function doit(side) {
     return tutte.convex_face_coordinates(G, M, coords);
 }
 
-coords2 = doit(true);
+var first = true;
+coords2 = doit(first);
 var evisited_ = evisited;
 M = M.slice(0,4);
-coords3 = doit(false);
+coords3 = doit(!first);
 
 console.log("vertices:", String(M));
 
