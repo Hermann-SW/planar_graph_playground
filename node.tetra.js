@@ -190,13 +190,13 @@ function ok(a,b,c,d,e,f) {
             ((m - d) <= 1) && ((m - e) <= 1) && ((m - f) <= 1));
 }
 
-assert.assert(process.argv.length > 2);
+assert.assert(process.argv.length > 2, "less than two args");
 
 var adj = parse2file(process.argv[2]);
 
 var G = from_adjacency_list(adj);
 
-assert.assert(is_embedding(G));
+assert.assert(is_embedding(G), "no embedding");
 
 var pent = pentagons(G);
 console.log(pent.length + " pentagons for graph");
@@ -257,7 +257,7 @@ function mark(G, visited, evisited, v, w) {
         o = v;
         v = opposite(G, v, e);
         e = next[v][w];
-        assert.assert(!visited[v]);
+        assert.assert(!visited[v], "mark, visited");
         visited[v] = true;
         if (v != w) {
             coords[v][0] = coords[o][0]+dp;
@@ -292,7 +292,7 @@ function mark2(G, visited, evisited, v, w) {
                 break;
             }
             M.push(v);
-            assert.assert(!visited[v]);
+            assert.assert(!visited[v], "mark2, visited");
             visited[v] = true;
         }
     }
@@ -345,7 +345,7 @@ function doit(side) {
     orient = (e === next[M[3]][M[1]]);
 
     console.log(orient);
-    assert.assert(orient === false); // for now
+    assert.assert(orient === false, "doit, wrong orient"); // for now
 
     coords[M[3]] = [    Math.PI, Math.acos(-Math.sqrt(1/3))];
     coords[M[2]] = [          0, Math.acos(-Math.sqrt(1/3))];
@@ -354,17 +354,16 @@ function doit(side) {
     mark2(G, visited, evisited, M[3], M[2]);
 
     mark(G, visited, evisited, M[2], M[1]);
-    assert.assert(!visited[M[3]]);
+    assert.assert(!visited[M[3]], "doit, visited M[3]");
     visited[M[3]] = true;
 
     mark(G, visited, evisited, M[3], M[0]);
     mark2(G, visited, evisited, M[0], M[1]);
     mark2(G, visited, evisited, M[1], M[0]);
 
-    assert.assert(visited[M[2]] === false);
+    assert.assert(visited[M[2]] === false, "doit, visited M[2]");
     coords[M[2]] = [2*Math.PI, Math.acos(-Math.sqrt(1/3))];
 
-    assert.assert(!visited[M[2]]);
     visited[M[2]] = true;
 
 
