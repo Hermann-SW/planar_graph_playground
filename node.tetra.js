@@ -131,11 +131,11 @@ function jtetra(G, M, sc = 1, visited, pent) {
     scad.wlog_("vtype = [");
     forall_vertices(G, function(v) {
 	scad.wlog_(v>0 ? "," : " ");
-	scad.wlog("[", v, ",", vtype[v].toString(), "]");
+	scad.wlog("[", v, ",", vtype[v].toString(), ", coords[", v, "][1].toFixed(1), coords[", v, "][0].toFixed(1)]");
     });
     scad.wlog("]");
 
-    scad.wlog("tvtxt = (params.vtxt === 'Type') ? 1 : 0");
+    scad.wlog("tvtxt = (params.vtxt === 'Type') ? 1 : (params.vtxt === 'theta') ? 2 : (params.vtxt === 'phi') ? 3 : 0");
 
     if (vtype.length > 0) {
 	scad.wlog("vtxts = (params.vtxt === 'None') ? [] : [");
