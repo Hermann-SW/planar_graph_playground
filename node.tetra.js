@@ -6,10 +6,26 @@
 #include "tutte.js"
 #include "undirected_graph.js"
 
+#ifdef JSCAD_
+if (process === undefined) {
+    var process = { "argv": [ "", "", "2", "white", "-10" ], "exit": function(){} };
+}
+
+var graphs = [
+#include "graphs/C20.a"
+,
+#include "graphs/C36.10.a"
+,
+#include "graphs/C36.14.r.a"
+,
+#include "graphs/C60.a"
+];
+#else
 #ifndef JSCAD
 #include "scad.js"
 #else
 #include "jscad.js"
+#endif
 #endif
 
 var coords;
@@ -36,6 +52,8 @@ if (sele < 0) {
     sele = -1;
 }
 
+#ifndef JSCAD_
+#ifndef JSCAD
 function tetra(G, M, sc = 1, visited, pent) {
     scad.open();
     scad.wlog("look_inside=false;");
@@ -99,8 +117,8 @@ function tetra(G, M, sc = 1, visited, pent) {
 
     scad.close();
 }
-
-function jtetra(G, M, sc = 1, visited, pent) {
+#else
+function tetra(G, M, sc = 1, visited, pent) {
     scad.open();
     scad.header(coords, sc);
     scad.header2();
@@ -183,6 +201,11 @@ function jtetra(G, M, sc = 1, visited, pent) {
 
     scad.close();
 }
+#endif
+#else
+#include "jscad_.js"
+
+#endif
 
 function ok(a,b,c,d,e,f) {
     var m = Math.max(a, b, c, d, e, f);
@@ -192,7 +215,11 @@ function ok(a,b,c,d,e,f) {
 
 assert.assert(process.argv.length > 2, "less than two args");
 
+#ifndef JSCAD_
 var adj = parse2file(process.argv[2]);
+#else
+var adj = graphs[parseInt(process.argv[2])];
+#endif
 
 var G = from_adjacency_list(adj);
 
@@ -454,8 +481,81 @@ forall_vertices(G, function(v) {
 if (!dopent) {
   pent = [];
 }
-#ifndef JSCAD
+
+#ifndef JSCAD_
 tetra(G, M, Math.sqrt(n_vertices(G)), visited, pent);
 #else
-jtetra(G, M, Math.sqrt(n_vertices(G)), visited, pent);
+
+var sc = Math.sqrt(n_vertices(G))
+
+function main(params) {
+    var tvtxt = (params.vtxt === 'Type') ? 1 : (params.vtxt === 'theta') ? 2 : (params.vtxt === 'phi') ? 3 : 0
+
+    var vtype_ = []
+    forall_vertices(G, function(v) {
+	vtype_.push([v, vtype[v].toString(), rad2deg(coords[v][1]).toFixed(1), rad2deg(coords[v][0]).toFixed(1)])
+    })
+
+    var sub = [cube({size: (params.look_inside === 'yes')?sc+0.1:0.01, center: [sc/2,-sc/2,sc/2]})]
+
+    var ret = []
+
+    console.log("M.length main:", M.length);
+
+    var Ms = [M[0], M[1], M[2], M[3]]
+
+    forall_vertices(G, function(v) {
+	if (Ms.includes(v)) {
+	    ret.push(colorize([0.7, 0, 0], 
+                         vertex(v, params.half && ((tvtxt !== 1) || (vtype[v] !== 0)))
+	             )
+            )
+        } else {
+	    ret.push(vertex(v, params.half && ((tvtxt !== 1) || (vtype[v] !== 0))))
+        }
+    });
+
+    forall_edges(G, function(e) {
+        if (!no_e21 || (e !== 21)) {
+            if (evisited[e]) {
+		ret.push(colorize([1,0.66666,0],
+                                  edge2(source(G, e), target(G, e), e)
+                         )
+                )
+            } else {
+		ret.push(edge2(source(G, e), target(G, e), e))
+            }
+        }
+    });
+
+    if (params.faces === 'Pentagons') {
+        pent.forEach(function(face) {
+            console.log(face)
+
+	    ret.push(sp_tria(face[0], face[1], face[2], sub))
+            ret.push(sp_tria(face[0], face[2], face[3], sub))
+            ret.push(sp_tria(face[0], face[3], face[4], sub))
+        })
+    }
+
+    if (params.white) {
+        ret.push(colorize([1,1,1],
+                     subtract(
+                         sphere({radius: sc, segments: 30})
+                         ,sphere({radius: sc-0.1, segments: 30})
+                         ,sub 
+                     )
+                 )
+        )
+    }
+
+    if (params.vtxt !== 'None') {
+        forall_vertices(G, function(v) {
+            ret.push(vtxt(v, vtype_[v][tvtxt]))
+        });
+    }
+
+    return ret
+}
+module.exports = { main, getParameterDefinitions }
 #endif

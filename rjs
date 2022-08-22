@@ -8,4 +8,9 @@ then
   shift
 fi
 export ARGV0=$file
-gcc $opt -E -x c -nostdinc $file | grep -v "^#"  | nodejs - $*
+if [[ $opt == "-DJSCAD_" ]]
+then
+  gcc $opt -E -x c -nostdinc $file | grep -v "^#"  > x.jscad
+else
+  gcc $opt -E -x c -nostdinc $file | grep -v "^#"  | nodejs - $*
+fi
