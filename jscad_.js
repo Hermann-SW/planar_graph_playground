@@ -261,6 +261,8 @@ function sp_tria(_p1, _p2, _p3, sub) {
                    )
                    ,sub)
                )
+        } else {
+            return cube({size: 0.01})
         }
     }
 }
