@@ -407,6 +407,21 @@ function pentagons(Emb) {
     return pent;
 }
 
+function faces(Emb) {
+    var ret = [];
+    var face;
+
+    planar_face_traversal(Emb, {begin_face: function () {
+        face = [];
+    }, end_face: function () {
+        ret.push(face);
+    }, next_vertex: function (v) {
+        face.push(v);
+    }});
+
+    return ret;
+}
+
 function dual_graph(G) {
     var last_face = -1;
     var D = new_graph(n_faces_planar(G), n_edges(G));
