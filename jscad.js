@@ -307,7 +307,9 @@ if (true) {
         wlog("                        )");
         wlog("                   )");
         wlog("                   ,sub)");
-        wlog("               )");
+        wlog("                )");
+        wlog("        } else {");
+        wlog("            return cube({size: 0.01})");
         wlog("        }");
         wlog("    }");
         wlog("}");

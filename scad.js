@@ -203,8 +203,10 @@ if (true) {
         wlog("                translate(s2) cube(0.01);");
         wlog("                translate(s3) cube(0.01);");
         wlog("            }");
-        wlog("          }");
         wlog("        }");
+        wlog("      } else {");
+        wlog("          translate([0,0,0]) cube([0.01,0.01,0.01]);");
+        wlog("      }");
 
         wlog("    }");
         wlog("}");
