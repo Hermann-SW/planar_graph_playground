@@ -8,7 +8,7 @@
 
 #ifdef JSCAD_
 if (process === undefined) {
-    var process = { "argv": [ "", "", "2", "white", "-10" ], "exit": function(){} };
+    var process = { "argv": [ "", "", "3", "white", "-11" ], "exit": function(){} };
 }
 
 var graphs = [
@@ -36,12 +36,14 @@ var white = (process.argv.length > 3);
 var sele = (process.argv.length > 4) ? parseInt(process.argv[4]) : -1;
 var vtype = false;
 var dopent = (sele === -3) || (sele === -5) || (sele === -10);
+var do6col = (sele === -11);
 var vhalf = (sele < -5);
 var half0 = true;
-if (sele === -10) {
+if ((sele === -10) || (sele === -11)) {
     vtype = true;
     sele = -1;
     half0 = false;
+    dopent = true;
 }
 var no_e21 = (sele === -9);
 var dotxt = (sele === -4) || (sele === -5) || (sele < -6);
@@ -54,7 +56,10 @@ if (sele < 0) {
 
 #ifndef JSCAD_
 #ifndef JSCAD
-function tetra(G, M, sc = 1, visited, pent) {
+function tetra(G, M, sc = 1, visited, pent, col = []) {
+    var pal = [ [0.9, 0.0, 0], [0, 0.7, 0.7], [0, 0.9, 0], [0.7, 0, 0.7], [0, 0, 0.9], [0.7, 0.7, 0] ]
+    console.log("pal:", pal)
+
     scad.open();
     scad.wlog("look_inside=false;");
     scad.header(coords, sc);
@@ -105,6 +110,16 @@ function tetra(G, M, sc = 1, visited, pent) {
         scad.wlog("}");
     });
 
+    if (col.length !== 0) {
+        faces(G).forEach(function(face, i) {
+            console.log(face, i, col[i])
+            while (face.length >= 3) {
+                scad.wlog("cut(look_inside) color(", pal[col[i]], ") sp_tria(", face[0],",", face[face.length-2], ",", face[face.length-1], ");");
+                face.pop()
+            }
+        })
+    }
+
     if (white) {
         var alpha = parseInt((process.argv[3] + ".100").substring(6)) / 100;
         scad.wlog("cut(look_inside) difference(){");
@@ -118,13 +133,15 @@ function tetra(G, M, sc = 1, visited, pent) {
     scad.close();
 }
 #else
-function tetra(G, M, sc = 1, visited, pent) {
+function tetra(G, M, sc = 1, visited, pent, col = []) {
     scad.open();
     scad.header(coords, sc);
     scad.header2();
 
     scad.wlog("function main(params) {");
     scad.wlog("    sub = [cube({size: (params.look_inside === 'yes')?sc+0.1:0.01, center: [sc/2,-sc/2,sc/2]})]");
+
+    var pal = [ [0.7, 0.0, 0], [0, 0.4, 0.4], [0, 0.7, 0], [0.4, 0, 0.4], [0, 0, 0.7], [0.4, 0.4, 0] ]
 
     scad.wlog("pentagons = (params.faces !== 'Pentagons') ? [] : [[]");
     pent.forEach(function(face) {
@@ -134,6 +151,16 @@ function tetra(G, M, sc = 1, visited, pent) {
         scad.wlog(",sp_tria(", face[0], ",", face[2], ",", face[3], ", sub)");
         scad.wlog(",sp_tria(", face[0], ",", face[3], ",", face[4], ", sub)");
     });
+    scad.wlog("]");
+
+    scad.wlog("sixcol = (params.faces !== '6coloring') ? [] : [[]");
+    faces(G).forEach(function(face, i) {
+        console.log(face, i, col[i])
+        while (face.length >= 3) {
+            scad.wlog(", colorize(", pal[col[i]], ", sp_tria(", face[0],",", face[face.length-2], ",", face[face.length-1], ", sub))");
+            face.pop()
+        }
+    })
     scad.wlog("]");
 
     scad.wlog("white = (!params.white) ? [] : [[]");
@@ -193,6 +220,7 @@ function tetra(G, M, sc = 1, visited, pent) {
     });
 
     scad.wlog(",pentagons");
+    scad.wlog(",sixcol");
     scad.wlog(",white");
     scad.wlog(",vtxts");
 
@@ -218,7 +246,15 @@ assert.assert(process.argv.length > 2, "less than two args");
 #ifndef JSCAD_
 var adj = parse2file(process.argv[2]);
 #else
-var adj = graphs[parseInt(process.argv[2])];
+var gnum = -1;
+if (gname === "graphs/C20.a")  { gnum = 0; }
+if (gname === "graphs/C36.10.a")  { gnum = 1; }
+if (gname === "graphs/C36.14.r.a")  { gnum = 2; }
+if (gname === "graphs/C60.a")  { gnum = 3; }
+console.log("gname:", gname)
+console.log("gnum:", gnum)
+assert.assert(gnum !== -1, "graph selected not incorporated");
+var adj = graphs[parseInt(gnum)];
 #endif
 
 var G = from_adjacency_list(adj);
@@ -229,6 +265,19 @@ var pent = pentagons(G);
 console.log(pent.length + " pentagons for graph");
 console.log(n_faces_planar(G) - pent.length + " non-pentagons for graph");
 
+var col = [];
+if (do6col) {
+    var D = dual_graph(G);
+    col = six_coloring(D);
+    var ma = -1;
+    col.forEach(function (c) {
+        if (c > ma)  { ma = c; }
+    });
+    console.log(ma+1, "colors used");
+#if !defined(JSCAD) && !defined(JSCAD_)
+    pent = [];
+#endif
+}
 var dist;
 var next;
 [dist, next] = floyd_warshall_path(G);
@@ -483,7 +532,7 @@ if (!dopent) {
 }
 
 #ifndef JSCAD_
-tetra(G, M, Math.sqrt(n_vertices(G)), visited, pent);
+tetra(G, M, Math.sqrt(n_vertices(G)), visited, pent, col);
 #else
 
 var sc = Math.sqrt(n_vertices(G))
@@ -497,6 +546,9 @@ function main(params) {
     })
 
     var sub = [cube({size: (params.look_inside === 'yes')?sc+0.1:0.01, center: [sc/2,-sc/2,sc/2]})]
+
+    var pal = [ [0.7, 0.0, 0], [0, 0.4, 0.4], [0, 0.7, 0], [0.4, 0, 0.4], [0, 0, 0.7], [0.4, 0.4, 0] ]
+    console.log("pal:", pal)
 
     var ret = []
 
@@ -536,6 +588,16 @@ function main(params) {
             ret.push(sp_tria(face[0], face[2], face[3], sub))
             ret.push(sp_tria(face[0], face[3], face[4], sub))
         })
+    }
+
+    if (params.faces === '6coloring') {
+        faces(G).forEach(function(face, i) {
+            console.log(face, i, col[i])
+            while (face.length >= 3) {
+                ret.push(colorize(pal[col[i]], sp_tria(face[0], face.at(-2), face.at(-1), sub)))
+                face.pop()
+            }
+	})
     }
 
     if (params.white) {
