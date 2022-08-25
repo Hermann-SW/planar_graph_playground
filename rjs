@@ -10,7 +10,7 @@ fi
 export ARGV0=$file
 if [[ $opt == "-DJSCAD_" ]]
 then
-  gcc $opt -E -x c -nostdinc $file | grep -v "^#"  > x.jscad
+  (echo "var gname=\"$1\";"; gcc $opt -E -x c -nostdinc $file) | grep -v "^#"  > x.jscad
 else
   gcc $opt -E -x c -nostdinc $file | grep -v "^#"  | nodejs - $*
 fi
