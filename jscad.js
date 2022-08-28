@@ -147,15 +147,15 @@ if (true) {
         wlog("    )");
         wlog("}");
 
-        wlog("/*");
-        wlog("function edge(_v, _w) {");
+        wlog("function edge(_v, _w, _e) {");
         wlog("    v = map_3D(coords[_v], sc)");
         wlog("    w = map_3D(coords[_w], sc)");
         wlog("    d = [0, 0, 0]");
         wlog("    x = [0, 0, 0]");
-        wlog("    subtract(d, w, v)");
+        wlog("    jscad.maths.vec3.subtract(d, w, v)");
         wlog("    add(x, v, w)");
         wlog("    scale(w, x, 0.5)");
+        wlog("  if (length(d) >= eps) {");
         wlog("    return colorize([0, 0, 1, 1], ");
         wlog("        translate(w, ");
         wlog("            rotate([0, Math.acos(d[2]/length(d)), Math.atan2(d[1], d[0])],");
@@ -163,8 +163,10 @@ if (true) {
         wlog("            )");
         wlog("        )");
         wlog("    )");
+        wlog("  } else {");
+        wlog("    return cube({size: 0.01})");
+        wlog("  }");
         wlog("}");
-        wlog("*/");
     };
 
     exports.header2 = function () {
