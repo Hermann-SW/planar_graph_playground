@@ -39,11 +39,19 @@ var dopent = (sele === -3) || (sele === -5) || (sele === -10);
 var do6col = (sele === -11);
 var vhalf = (sele < -5);
 var half0 = true;
+var dothe = false;
 if ((sele === -10) || (sele === -11)) {
     vtype = true;
     sele = -1;
     half0 = false;
     dopent = true;
+}
+if (sele === -12) {
+    vtype = false;
+    sele = -1;
+    half0 = true;
+    dopent = true;
+    dothe=true;
 }
 var no_e21 = (sele === -9);
 var dotxt = (sele === -4) || (sele === -5) || (sele < -6);
@@ -82,7 +90,10 @@ function tetra(G, M, sc = 1, visited, pent, col = []) {
 	    scad.wlog("color([1, 0, 0])");
 	}
         scad.wlog( "vertex(", v, ",", vhalf && ((vtype[v] !== 0) || half0), ");");
-        if (dotxt) {
+        if (dothe) {
+            scad.wlog("vtxt(", v, ",", (coords[v][1]/Math.PI*180).toFixed(1), ");");
+        }
+	else if (dotxt) {
             scad.wlog("vtxt(", v, ",", v, ");");
         }
     });
@@ -362,6 +373,12 @@ function mark2(G, visited, evisited, v, w) {
             coords[v][0] = coords[o][0];
             coords[v][1] = coords[o][1] + dt;
             if (coords[v][1] < 0 || coords[v][1] > Math.PI) {
+                coords[v][0] = coords[v][0] < Math.PI ? coords[v][0] + Math.PI : coords[o][0] - Math.PI;
+                if (coords[o][1] !== 0 && coords[o][1] !== Math.PI) {
+		    coords[v][1] = coords[o][1];
+		} else {
+		    coords[v][1] = coords[v][1] - 2*dt;
+		}
                 break;
             }
             if (dir && (coords[v][1] === 0 || coords[v][1] === Math.PI)) {
@@ -372,6 +389,17 @@ function mark2(G, visited, evisited, v, w) {
             visited[v] = true;
         }
     }
+}
+
+function rmark2(G, visited, evisited, v, w) {
+    var e;
+    e = next[v][w];
+    while (v != w) {
+	console.log(v, (coords[v][0]/Math.PI*180).toFixed(1), (coords[v][1]/Math.PI*180).toFixed(1), visited[v], evisited[e]);
+        v = opposite(G, v, e);
+        e = next[v][w];
+    }
+    console.log(v, (coords[v][0]/Math.PI*180).toFixed(1), (coords[v][1]/Math.PI*180).toFixed(1), visited[v]);
 }
 
 function srch(G, visited, evisited, v) {
@@ -428,6 +456,7 @@ function doit(side) {
 
     mark2(G, visited, evisited, M[2], M[3]);
     mark2(G, visited, evisited, M[3], M[2]);
+//    rmark2(G, visited, evisited, M[2], M[3]);
 
     mark(G, visited, evisited, M[2], M[1]);
     assert.assert(!visited[M[3]], "doit, visited M[3]");
@@ -436,6 +465,7 @@ function doit(side) {
     mark(G, visited, evisited, M[3], M[0]);
     mark2(G, visited, evisited, M[0], M[1]);
     mark2(G, visited, evisited, M[1], M[0]);
+//    rmark2(G, visited, evisited, M[0], M[1]);
 
     assert.assert(visited[M[2]] === false, "doit, visited M[2]");
 //    coords[M[2]] = [2*Math.PI, Math.acos(-Math.sqrt(1/3))];
