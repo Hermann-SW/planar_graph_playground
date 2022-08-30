@@ -40,6 +40,7 @@ var do6col = (sele === -11);
 var vhalf = (sele < -5);
 var half0 = true;
 var dothe = false;
+var dophi = false;
 if ((sele === -10) || (sele === -11)) {
     vtype = true;
     sele = -1;
@@ -52,6 +53,13 @@ if (sele === -12) {
     half0 = true;
     dopent = true;
     dothe=true;
+}
+if (sele === -13) {
+    vtype = false;
+    sele = -1;
+    half0 = true;
+    dopent = true;
+    dophi=true;
 }
 var no_e21 = (sele === -9);
 var dotxt = (sele === -4) || (sele === -5) || (sele < -6);
@@ -92,6 +100,9 @@ function tetra(G, M, sc = 1, visited, pent, col = []) {
         scad.wlog( "vertex(", v, ",", vhalf && ((vtype[v] !== 0) || half0), ");");
         if (dothe) {
             scad.wlog("vtxt(", v, ",", (coords[v][1]/Math.PI*180).toFixed(1), ");");
+        }
+	else if (dophi) {
+            scad.wlog("vtxt(", v, ",", (coords[v][0]/Math.PI*180).toFixed(1), ");");
         }
 	else if (dotxt) {
             scad.wlog("vtxt(", v, ",", v, ");");
