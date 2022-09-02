@@ -8,12 +8,12 @@ if (true) {
     var writer;
     var eps = 1e-6;
 
-    function rad2deg(r) {
+    exports.rad2deg = function (r) {
         return r / Math.PI * 180;
     }
 
-    function srad2deg(p) {
-        return [rad2deg(p[0]), rad2deg(p[1])];
+    exports.srad2deg = function (p) {
+        return [exports.rad2deg(p[0]), exports.rad2deg(p[1])];
     }
 
     function out(x) {
@@ -48,9 +48,9 @@ if (true) {
         wlog("coords =[");
         coords.forEach(function (p, i) {
             if (i > 0) {
-                wlog(",", srad2deg(p));
+                wlog(",", exports.srad2deg(p));
             } else {
-                wlog(srad2deg(p));
+                wlog(exports.srad2deg(p));
             }
         });
         wlog("];");
