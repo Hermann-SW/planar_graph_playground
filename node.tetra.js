@@ -613,7 +613,7 @@ if (vtype.length > 0) {
 
 var V12 = [];
 forall_vertices(G, function(v) {
-    if ((v < 3) || (v > 2)) {
+    if ((process.argv[2] !== "graphs/C36.10.a") || (v < 7) || (v > 7)) {
         V12.push(v);
     }
 });
