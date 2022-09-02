@@ -70,6 +70,38 @@ if (sele < 0) {
     sele = -1;
 }
 
+function alpha1(_p1,_p2) {
+    var p1 = coords[_p1];
+    var p2 = coords[_p2];
+    // al/la/ph: alpha/lambda/phi | lxy/sxy: delta lambda_xy/sigma_xy
+    // https://en.wikipedia.org/wiki/Great-circle_navigation#Course
+    var la1 = p1[0];
+    var la2 = p2[0];
+    var l12 = la2 - la1;
+    var ph1 = Math.PI/2 - p1[1];
+    var ph2 = Math.PI/2 - p2[1];
+    return scad.rad2deg(Math.atan2(Math.cos(ph2)*Math.sin(l12), Math.cos(ph1)*Math.sin(ph2)-Math.sin(ph1)*Math.cos(ph2)*Math.cos(l12)));
+}
+
+function find_concave(G) {
+    forall_edges(G, function(e) {
+        var s = source(G, e);
+        var t = target(G, e);
+
+        var f = next_incident_edge(G, t, e);
+        var u = opposite(G, t, f);
+        if ((alpha1(t, s) - alpha1(t, u) + 360) % 360 > 180+eps) {
+            console.log("concave", s, t, u, alpha1(t, s), alpha1(t, u), (alpha1(t, s) - alpha1(t, u) + 360) % 360);
+        }
+
+        f = next_incident_edge(G, s, e);
+        u = opposite(G, s, f);
+        if ((alpha1(s, t) - alpha1(s, u) + 360) % 360 > 180+eps) {
+            console.log("concave", t, s, u, alpha1(s, t), alpha1(s, u), (alpha1(s, t) - alpha1(s, u) + 360) % 360);
+        }
+    });
+}
+
 #ifndef JSCAD_
 #ifndef JSCAD
 function tetra(G, M, sc = 1, visited, pent, col = []) {
@@ -345,10 +377,33 @@ for(i=0; i<4; i=i+1) {
 }
 
 function mark(G, visited, evisited, v, w) {
+    var p1 = coords[v];
+    var p2 = coords[w];
+    // al/la/ph: alpha/lambda/phi | lxy/sxy: delta lambda_xy/sigma_xy
+    // https://en.wikipedia.org/wiki/Great-circle_navigation#Course
+    var la1 = p1[0];
+    var la2 = p2[0];
+    var l12 = la2 - la1;
+    var ph1 = Math.PI/2 - p1[1];
+    var ph2 = Math.PI/2 - p2[1];
+    var al1 = Math.atan2(Math.cos(ph2)*Math.sin(l12), Math.cos(ph1)*Math.sin(ph2)-Math.sin(ph1)*Math.cos(ph2)*Math.cos(l12));
+    // delta sigma_12
+    // https://en.wikipedia.org/wiki/Great-circle_distance#Formulae
+    var s12 = Math.acos(Math.sin(ph1)*Math.sin(ph2)+Math.cos(ph1)*Math.cos(ph2)*Math.cos(l12));
+    // https://en.wikipedia.org/wiki/Great-circle_navigation#Finding_way-points
+    var al0 = Math.atan2(Math.sin(al1)*Math.cos(ph1), Math.sqrt(Math.cos(al1)*Math.cos(al1)-Math.sin(al1)*Math.sin(al1)*Math.sin(ph1)*Math.sin(ph1)));
+
+    // Wikipedia forumula for al0 is wrong ?!?!?  quick "fix", set to 45°
+    al0 = Math.PI/4;
+
+    var s01 = Math.atan2(Math.tan(ph1), Math.cos(al1));
+    var l01 = Math.atan2(Math.sin(al0)*Math.sin(s01), Math.cos(s01));
+    var la0 = la1 - l01;
+
     var e;
     var o;
-    var dp = (coords[w][0] - coords[v][0]) / (dist[v][w]);
-    var dt = (coords[w][1] - coords[v][1]) / (dist[v][w]);
+    var ds = s12 / (dist[v][w]);
+    var s = s01;
     e = next[v][w];
     while (v != w) {
         evisited[e] = true;
@@ -358,8 +413,11 @@ function mark(G, visited, evisited, v, w) {
         assert.assert(!visited[v], "mark, visited");
         visited[v] = true;
         if (v != w) {
-            coords[v][0] = coords[o][0]+dp;
-            coords[v][1] = coords[o][1]+dt;
+            s = s + ds;
+            var ph = Math.atan2(Math.cos(al0)*Math.sin(s), Math.sqrt(Math.cos(s)*Math.cos(s)+Math.sin(al0)*Math.sin(al0)*Math.sin(s)*Math.sin(s)));
+            var la = la0 + Math.atan2(Math.sin(al0)*Math.sin(s), Math.cos(s));
+            coords[v][0] = la;
+            coords[v][1] = Math.PI/2 - ph;
             M.push(v);
         }
     }
@@ -571,6 +629,8 @@ forall_vertices(G, function(v) {
 if (!dopent) {
   pent = [];
 }
+
+find_concave(G);
 
 #ifndef JSCAD_
 tetra(G, M, Math.sqrt(n_vertices(G)), visited, pent, col);
