@@ -6,7 +6,7 @@ var scad = exports;
 if (true) {
     var fs = require("fs");
     var writer;
-    var eps = 1e-6;
+    var eps = 1e-5;
 
     exports.rad2deg = function (r) {
         return r / Math.PI * 180;
