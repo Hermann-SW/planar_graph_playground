@@ -169,16 +169,17 @@ if (true) {
         wlog("        v2 = map_3D(p2);");
         wlog("        v3 = map_3D(p3);");
 
-        wlog("        ms = v1+v2+v3;");
-        wlog("        ms2 = ms / sqrt(ms*ms);");
-        wlog("        mi = min(v1*ms2, v2*ms2, v3*ms2)-0.1;");
+        wlog("        n = cross(v2-v1, v3-v1);");
+        wlog("        a = n * v1;");
+        wlog("        mi = abs(a) / norm(n);");
+        wlog("        f = 1.01 / mi;");
 
         wlog("        sv1 = v1 * sc;");
         wlog("        sv2 = v2 * sc;");
         wlog("        sv3 = v3 * sc;");
-        wlog("        s1 = sv1 / mi;");
-        wlog("        s2 = sv2 / mi;");
-        wlog("        s3 = sv3 / mi;");
+        wlog("        s1 = sv1 * f;");
+        wlog("        s2 = sv2 * f;");
+        wlog("        s3 = sv3 * f;");
 
         wlog("        intersection() {");
         wlog("            union() {");
