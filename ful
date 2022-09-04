@@ -1,0 +1,18 @@
+#!/bin/bash
+sep=""
+if [[ `basename $0` == "ipr" ]]; then pre="I"; else pre="C"; fi
+fname=`dirname $0`/graphs/$pre$1.txt.gz
+if [[ "$2" == "" ]]
+then
+  zcat $fname | grep "^0$" | wc --lines
+  exit 0
+fi
+echo -n "["
+while read -ra arr; do
+    let a1=${arr[4]}-1
+    let a2=${arr[5]}-1
+    let a3=${arr[6]}-1
+    echo -n "$sep[$a1,$a2,$a3]"
+    sep="," 
+done < <(tail -n +2 <(zcat $fname) | sed "s/^0$//g" | sed '/./{H;d;};x;s/\n/={NL}=/g' | sed "${2}q;d" | sed '1s/={NL}=//;s/={NL}=/\n/g')
+echo "]"
