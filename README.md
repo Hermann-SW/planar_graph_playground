@@ -1,4 +1,7 @@
 # planar_graph_playground
+Lots of stuff has been implemented (JSCAD and OpenSCAD output for 3D), and this README.md needs to be updated. The forum threads give information of current development. Here is just a small example of C36.10 fullerene embedded onto sphere, animated by OpenSCAD:  
+![C36.10.anim.gif](res/C36.10.anim.gif)  
+
 JavaScript playground for drawing planar graphs (eg. fullerenes) in browser, or as eg. PostScript file with command line tool rjs (run nodejs script) and "JavaScript with C includes" script.  
 
 Subdirectory [python](python) contains port to Python, see its [README.md](python/README.md) for details. JavaScript and Python libs will be kept in sync.
