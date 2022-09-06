@@ -177,7 +177,7 @@ function tetra(G, M, sc = 1, visited, pent, col = []) {
     if (white) {
         var alpha = parseInt((process.argv[3] + ".100").substring(6)) / 100;
         scad.wlog("cut(look_inside) difference(){");
-        scad.wlog("  color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc, $fn=180);");
+        scad.wlog("  color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc-0.05, $fn=180);");
         scad.wlog("  color([1,1,1,", alpha, "]) translate([0,0,0]) sphere(sc-0.1, $fn=180);");
         scad.wlog("}");
     }
