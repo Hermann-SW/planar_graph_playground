@@ -1,6 +1,10 @@
 # planar_graph_playground
+
 Lots of stuff has been implemented (JSCAD and OpenSCAD output for 3D), and this README.md needs to be updated. The forum threads give information of current development. (Half-)sphere vertices, vertex text, spherical edges and spherical polygons are (JSCAD and OpenSCAD) modules implemented in this repo. Here is just a small example of C36.10 fullerene embedded onto sphere, animated by OpenSCAD:  
 ![C36.10.anim.gif](res/C36.10.anim.gif)  
+(planar graphs can be embedded onto sphere because of bijection of sphere minus north pole and plane)  
+
+---
 
 JavaScript playground for drawing planar graphs (eg. fullerenes) in browser, or as eg. PostScript file with command line tool rjs (run nodejs script) and "JavaScript with C includes" script.  
 
