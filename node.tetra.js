@@ -611,9 +611,19 @@ if (vtype.length > 0) {
     console.log(c);
 }
 
+forall_vertices(G, function(v) {
+    if (vtype[v] === 2) {
+        var sum = 0;
+        forall_incident_edges(G, v, function(e) {
+            sum += coords[opposite(G, v, e)][0];
+        });
+        console.log(v, sum - degree(G, v)*coords[v][0]);
+    }
+});
+
 var V12 = [];
 forall_vertices(G, function(v) {
-    if ((process.argv[2] !== "graphs/C36.10.a") || (v < 7) || (v > 7)) {
+    if ((v < 10) || (v > 9)) {
         V12.push(v);
     }
 });
