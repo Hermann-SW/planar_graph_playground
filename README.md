@@ -4,6 +4,8 @@ Lots of stuff has been implemented (JSCAD and OpenSCAD output for 3D), and this 
 ![C36.10.anim.gif](res/C36.10.anim.gif)  
 (planar graphs can be embedded onto sphere because of bijection of sphere minus north pole and plane)  
 
+More information here on 199x work [here](https://stamm-wilbrandt.de/en/#pgp)
+
 ---
 
 JavaScript playground for drawing planar graphs (eg. fullerenes) in browser, or as eg. PostScript file with command line tool rjs (run nodejs script) and "JavaScript with C includes" script.  
