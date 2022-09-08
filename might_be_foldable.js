@@ -35,8 +35,8 @@ forall_graphs(sel, function (G, i) {
     var good = true;
     forall_edges(D, function(e) {
         var v = source(D, e);
-        var w = target(D, e);
-        if (degree(D, v) === degree(D, w))
+        // var w = target(D, e);
+        // if (degree(D, v) === degree(D, w))
         {
             var f = next_incident_edge(D, v, e);
             var g = prev_incident_edge(D, v, e);
