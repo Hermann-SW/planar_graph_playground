@@ -308,6 +308,27 @@ function from_adjacency_list_lookup(L) {
     return G;
 }
 
+function forall_graphs(name, fil, f) {
+    var F = require('fs').readFileSync(name, 'utf8').split("\n");
+
+    var l = 1;
+    var i = 0;
+    while (l < F.length-1) {
+        var L = [];
+        while (F[l] !== "0") {
+            var v = F[l].trim().replace(/ +/g, " ").split(" ")
+            L.push([Number(v[4])-1, Number(v[5])-1, Number(v[6])-1]);
+            l = l + 1;
+        }
+        i = i + 1;
+        if ((fil === -1) || (fil === i)) {
+            var G = from_adjacency_list(L);
+            f(G, i);
+        }
+        l = l + 1;
+    }
+}
+
 function six_coloring(G) {
     var S = [];
     var col = filled_array(n_vertices(G), 1, -1);
