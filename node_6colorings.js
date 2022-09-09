@@ -10,7 +10,7 @@ var fil = (process.argv.length > 3 + dual) ? Number(process.argv[3]) : -1;
 
 var M = [-1, -1, -1, -1, -1, -1, -1];
 
-forall_graphs(sel, fil, function (G, i) {
+forall_plantri_fullerenes(sel, fil, function (G, i) {
 
     assert.assert(is_embedding(G));
     D = dual_graph(G);

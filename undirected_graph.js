@@ -308,7 +308,7 @@ function from_adjacency_list_lookup(L) {
     return G;
 }
 
-function forall_graphs(name, fil, f) {
+function forall_plantri_fullerenes(name, fil, f) {
     var F = require('fs').readFileSync(name, 'utf8').split("\n");
 
     var l = 1;

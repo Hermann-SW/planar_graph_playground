@@ -6,7 +6,7 @@ var D;
 assert.assert(process.argv.length > 2);
 var sel = process.argv[2];
 
-forall_graphs(sel, -1, function (G, i) {
+forall_plantri_fullerenes(sel, -1, function (G, i) {
 
     assert.assert(is_embedding(G));
     D = dual_graph(G);
