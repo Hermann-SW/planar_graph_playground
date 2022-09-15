@@ -1,0 +1,11 @@
+#!/bin/bash
+rm -f C* I*
+for((i=20; i<=70; i+=2))
+do
+  ../../rjs generate.100.js <(zcat ../C$i.txt.gz) C$i
+done
+for((i=60; i<=100; i+=2))
+do
+  ../../rjs generate.100.js <(zcat ../I$i.txt.gz) I$i
+done
+gzip C*js I*js

@@ -308,6 +308,18 @@ function from_adjacency_list_lookup(L) {
     return G;
 }
 
+function to_adjacency_lists(G) {
+    var L = [];
+    forall_vertices(G, function(v) {
+        var a = [];
+        forall_incident_edges(G, v, function(e) {
+            a.push(opposite(G, v, e));
+        });
+        L.push(a);
+    });
+    return L;
+}
+
 function forall_plantri_fullerenes(name, fil, f) {
     var F = require('fs').readFileSync(name, 'utf8').split("\n");
 
