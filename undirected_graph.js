@@ -158,6 +158,9 @@ function new_edge(G, v, w) {
 function new_graph(n, m) {
     if (m === undefined) {
         m = 0;
+        if (n === undefined) {
+            n = 0;
+        }
     }
     return {E: filled_array(m, 0), V: filled_array(n, 0)};
 }
@@ -494,12 +497,16 @@ function is_identical_graph(G, H) {
     return true;
 }
 
-function floyd_warshall(G) {
+function floyd_warshall(G, w=[]) {
     var dist = filled_array(n_vertices(G), n_vertices(G), Infinity);
 
+    if (w.length === 0) {
+        w = filled_array(n_edges(G), 1, 1);
+    }
+
     forall_edges(G, function(e) {
-        dist[source(G, e)][target(G, e)] = 1;
-        dist[target(G, e)][source(G, e)] = 1;
+        dist[source(G, e)][target(G, e)] = w[e];
+        dist[target(G, e)][source(G, e)] = w[e];
     });
     forall_vertices(G, function(v) {
         dist[v][v] = 0;
@@ -518,14 +525,18 @@ function floyd_warshall(G) {
     return dist;
 }
 
-function floyd_warshall_path(G) {
+function floyd_warshall_path(G, w=[]) {
     var dist = filled_array(n_vertices(G), n_vertices(G), Infinity);
     var next = filled_array(n_vertices(G), n_vertices(G), -1);
 
+    if (w.length === 0) {
+        w = filled_array(n_edges(G), 1, 1);
+    }
+
     forall_edges(G, function(e) {
-        dist[source(G, e)][target(G, e)] = 1;
+        dist[source(G, e)][target(G, e)] = w[e];
         next[source(G, e)][target(G, e)] = e;
-        dist[target(G, e)][source(G, e)] = 1;
+        dist[target(G, e)][source(G, e)] = w[e];
         next[target(G, e)][source(G, e)] = e;
     });
     forall_vertices(G, function(v) {
