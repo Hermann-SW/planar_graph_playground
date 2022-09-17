@@ -212,4 +212,43 @@ if (true) {
         wlog("    }");
         wlog("}");
     };
+
+    exports.header3 = function (coords, x, y, z) {
+        wlog("$vpr = [50,0,35+$t*360];");
+        wlog("$fn = 25;");
+        wlog("$vpd = 5;");
+        wlog("$vpt = [0,0,0];");
+        wlog("X = ",x,";");
+        wlog("Y = ",y,";");
+        wlog("Z = ",z,";");
+
+        wlog("coords =[");
+        coords.forEach(function (p, i) {
+            if (i > 0) {
+                wlog(",", p);
+            } else {
+                wlog(p);
+            }
+        });
+        wlog("];");
+
+        wlog("module white_cube() {");
+        wlog("  color([1,1,1,1]) translate([-0.5*X,-0.5*Y,-0.5*Z]) cube([X,Y,Z]);");
+        wlog("}");
+
+        wlog("module vertex(_v, r) {");
+        wlog("    p = coords[_v] - [0.5*X,0.5*Y,0.5*Z];");
+        wlog("    color([0, 0.7, 0]) translate(p) sphere(r);");
+        wlog("}");
+
+        wlog("module edge(_v,_w,r) {");
+        wlog("    v = coords[_v] - [0.5*X,0.5*Y,0.5*Z];");
+        wlog("    w = coords[_w] - [0.5*X,0.5*Y,0.5*Z] - v;");
+        wlog("    translate(v)");
+        wlog("    rotate([0, acos(w[2]/norm(w)), atan2(w[1], w[0])])");
+        wlog("    color([0,0,1])");
+        wlog("    cylinder(norm(w),r,r);");
+        wlog("}");
+    };
+
 }
