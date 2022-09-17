@@ -167,11 +167,14 @@ if (true) {
 
         document.write('<label for="myRange2">&nbsp;&nbsp;&nbsp;size: </label><input type="range" min="500" max="7000" value="' + slider2 + '" id="myRange2" onChange="javascript:doi(' + selInd + ')">');
 
-        document.write('<label for="myCheckbox">&nbsp;&nbsp;&nbsp;dual: </label><input type="checkbox" id="myCheckbox" onChange="javaScript:doi(' + selInd + ')"' + (
-            check
-            ? " checked"
-            : ""
-        ) + '></div>');
+        if (!hidden) {
+            document.write('<label for="myCheckbox">&nbsp;&nbsp;&nbsp;dual: </label><input type="checkbox" id="myCheckbox" onChange="javaScript:doi(' + selInd + ')"' + (
+                check
+                ? " checked"
+                : ""
+            ) + '>');
+        }
+        document.write("</div><p>");
     };
 
 }
