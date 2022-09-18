@@ -168,3 +168,5 @@ topc.forEach(function (v) {
 
 scad.wlog("}");
 scad.close();
+
+console.log(n_vertices(G), n_edges(G));
