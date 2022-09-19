@@ -134,9 +134,9 @@ topc.forEach(function (v) {
 
 
 scad.open();
-scad.header3(coords, X, Y, Z);
+scad.header3(coords, X, Y, Z, "", 7*Math.sqrt(Math.sqrt(X*X+Y*Y+Z*Z)));
 
-scad.wlog("rotate([0,0,0]) union(){");
+scad.wlog("module cuboid() {");
 
 scad.wlog("  white_cube();");
 
@@ -154,19 +154,31 @@ function nedges(v, w) {
     return cnt;
 }
 
+var maxcnt = 0;
 topc.forEach(function (v) {
     var cnt = nedges(v, s);
-    assert.assert( (cnt > 2) && (cnt < 5) );
-    var col = (cnt === 4) ? [0,0,1] : [1,0.666666,0];
+    assert.assert(cnt > 2);
+    if (cnt > maxcnt)  maxcnt = cnt;
+    var col = [[1,0.666666,0],[0,0,1],[1,1,0],[1,0,0]][cnt-3];
 
     while (v !== s) {
         var e = next[v][s];
-        scad.wlog("color(",col,") edge(",source(G, e),",",target(G, e),",",0.005,");");
+        scad.wlog("color(",col,") edge(",source(G, e),",",target(G, e),",",0.01,");");
         v = opposite(G, v, e);
     }
 });
 
 scad.wlog("}");
+
+scad.wlog("module zmirror() {");
+scad.wlog("  mirror([0,0,-1]) translate([0,0,1.5+Z]) children();");
+scad.wlog("  children();");
+scad.wlog("}");
+
+scad.wlog("zmirror()  cuboid();");
+scad.wlog("color([0.8,0.8,0.8,0.2]) translate([0,0,-2.25]) rotate([0,0,35+$t*360]) translate([-1.5,-2,0]) cube([3,3,0.001]);");
+        
 scad.close();
 
-console.log(n_vertices(G), n_edges(G));
+console.log("maximal path edges:", maxcnt);
+console.log("n:", n_vertices(G), "m:", n_edges(G));

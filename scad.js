@@ -213,10 +213,12 @@ if (true) {
         wlog("}");
     };
 
-    exports.header3 = function (coords, x, y, z) {
-        wlog("$vpr = [50,0,35+$t*360];");
+    exports.header3 = function (coords, x, y, z, vpr="", vpd=undefined) {
+        if (vpr.length === 0)  vpr = "[50,0,35+$t*360]";
+        if (vpd === undefined)  vpd = 5;
+        wlog("$vpr = ", vpr, ";");
         wlog("$fn = 25;");
-        wlog("$vpd = 5;");
+        wlog("$vpd = ", vpd, ";");
         wlog("$vpt = [0,0,0];");
         wlog("X = ",x,";");
         wlog("Y = ",y,";");
