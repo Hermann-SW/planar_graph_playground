@@ -102,7 +102,7 @@ var lft = [corner[0],corner[2],corner[4],corner[6]];
 mk_complete(lft.concat(edg[1][0],edg[1][1],edg[2][0],edg[2][2]));
 
 var rgt = [corner[1],corner[3],corner[5],corner[7]];
-mk_complete(rgt.concat(edg[1][2],edg[1][3],edg[2][2],edg[2][3]));
+mk_complete(rgt.concat(edg[1][2],edg[1][3],edg[2][1],edg[2][3]));
 
 var bck = [corner[2],corner[3],corner[6],corner[7]];
 mk_complete(bck.concat(edg[0][2],edg[0][3],edg[2][2],edg[2][3]));
