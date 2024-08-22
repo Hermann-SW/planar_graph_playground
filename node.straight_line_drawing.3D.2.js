@@ -155,63 +155,12 @@ forall_vertices(G, function (v) {
     }
 });
 
-async function amain() {
-    var face;
-    var ms = 1200;
-
-//    assert.assert(bucket[bucketm].length > 0);
-
-    while (true) {
         writer = fs.createWriteStream('x.scad') 
 
         V = bucket[bucketm].pop();
 
         wlog("$vpr = [",-rad2deg(Math.acos(coords[V][2])),",0,",
                         -rad2deg(Math.atan2(coords[V][0], coords[V][1])),"];");
-
-        old = coords[V];
-        coords[V] = nor[V];
-        bucket[0].push(V);
-
         straight_line_drawing_3D(G, Math.sqrt(n_vertices(G)));
 
         writer.close();
-
-        await wait(ms);
-
-        face = [];
-        forall_incident_edges(G, V, function(e) {
-            face = face.concat(face_vertices(G, V, e));
-        });
-        face.forEach(function (x) {
-            if (x !== V) {
-                var b = buc(dist_3D(nor[x], coords[x]));
-                var i = bucket[b].indexOf(x);
-                if (i === bucket[b].length - 1) {
-                    bucket[b].pop();
-                } else {
-                    bucket[b][i] = bucket[b].pop();
-                }
-
-                sum[x] = sub_3D(sum[x], old);
-                sum[x] = add_3D(sum[x], coords[V]);
-                nor[x] = norm_3D(sum[x]);
-
-                b = buc(dist_3D(nor[x], coords[x]));
-                bucket[b].push(x);
-                if (b > bucketm) {
-                    bucketm = b;
-                }
-            }
-        });
-        while (bucket[bucketm].length === 0) {
-            bucketm = bucketm - 1;
-        }
-        if (bucketm >= 0) {
-            console.log("foo");
-//            process.exit(1);
-        }
-    }
-}
-
-amain();
