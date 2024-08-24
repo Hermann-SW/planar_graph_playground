@@ -1,6 +1,7 @@
 "use strict"; // avoid module leak
 /**
- * Gauss-Jordan elimination
+ * Gauss-Jordan elimination, from:
+ * https://github.com/lovasoa/linear-solve
  */
 
 var exports = {};
