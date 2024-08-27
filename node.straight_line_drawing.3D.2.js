@@ -12,7 +12,15 @@ var sel = (
     ? process.argv[2]
     : "graphs/C20.a"
 );
-var white = (process.argv.length > 3);
+var sca = (
+    (process.argv.length > 3)
+    ? parseInt(process.argv[3])
+    : 3
+);
+var blue = (process.argv.length > 4) && process.argv[4].includes("b");
+
+var white = (process.argv.length > 4) && process.argv[4].includes("w");
+
 var L = parse2file(sel);
 var G = from_adjacency_list(L);
 var coords = filled_array(n_vertices(G), 3, -1);
@@ -82,8 +90,11 @@ function norm_3D(v) {
 
 function map_3D(x, y) {
     var a = Math.atan2(y, x);
-    var l = 0.9 * Math.PI * length_2D(x, y);
-    return [Math.sin(a) * Math.sin(l), Math.cos(a) * Math.sin(l), Math.cos(l)];
+    var l = sca*length_2D(x, y);
+    var X = l -l*(l*l/(4+l*l));
+    var Y = 2*(l*l/(4+l*l))- 1;
+//    return [Math.sin(a) * X, Math.cos(a) * X, Y];
+    return [Math.cos(a) * X, Math.sin(a) * X, Y];
 }
 
 function center_3D(p, q, r) {
@@ -97,21 +108,59 @@ function buc(d) {
 function straight_line_drawing_3D(G, sc) {
     wlog("$fn = 25;");
     wlog("$vpt = [0,0,0];");
+    wlog("sc_ = ", sc, ";");
     wlog("module edge(v,w) {");
     wlog("    w = w - v;");
     wlog("    translate(v)");
     wlog("    rotate([0, acos(w[2]/norm(w)), atan2(w[1], w[0])])");
     wlog("    cylinder(norm(w),0.1,0.1);");
     wlog("}");
+        wlog("function cart2pol(p) = [atan2(p[1],p[0]), acos(p[2]/sc_)];");
+        wlog("module edge2(_p1,_p2,_e) {");
+        wlog("    p1 = cart2pol(_p1);");
+        wlog("    p2 = cart2pol(_p2);");
+        wlog("    // al/la/ph: alpha/lambda/phi | lxy/sxy: delta lambda_xy/sigma_xy");
+        wlog("    // https://en.wikipedia.org/wiki/Great-circle_navigation#Course");
+        wlog("    la1 = p1[0];");
+        wlog("    la2 = p2[0];");
+        wlog("    l12 = la2 - la1;");
+        wlog("    ph1 = 90 - p1[1];");
+        wlog("    ph2 = 90 - p2[1];");
+        wlog("    al1 = atan2(cos(ph2)*sin(l12), cos(ph1)*sin(ph2)-sin(ph1)*cos(ph2)*cos(l12));");
+        wlog("    // delta sigma_12");
+        wlog("    // https://en.wikipedia.org/wiki/Great-circle_distance#Formulae");
+        wlog("    s12 = acos(sin(ph1)*sin(ph2)+cos(ph1)*cos(ph2)*cos(l12));");
+        wlog("    translate([0, 0, 0]) rotate([0, 0, la1]) rotate([0, -ph1, 0])");
+        wlog("      rotate([90 - al1, 0, 0])");
+        wlog("        color([0,0,1])");
+        wlog("          rotate_extrude(angle=s12, convexity=10, $fn=100)");
+        wlog("            translate([sc_, 0]) circle(0.1, $fn=25);");
+        wlog("}");
     wlog("module vertex(v, c) { color(c) translate(v) sphere(0.5); }");
 
     forall_edges(G, function (e) {
-        wlog("edge(", scale_3D(coords[source(G, e)], sc), ",", scale_3D(coords[target(G, e)], sc), ");");
+        wlog("edge2(", scale_3D(coords[source(G, e)], sc), ",", scale_3D(coords[target(G, e)], sc), ");");
     });
 
     forall_vertices(G, function (v) {
         wlog("vertex(", scale_3D(coords[v], sc), ",", (v==V) ? [1,0,0] : [0,1,0], ");");
     });
+
+    forall_edges(G, function (e) {
+        wlog("edge([", coords2D[0][source(G, e)]*sc,",",coords2D[1][source(G, e)]*sc,",",-sc, "],[", coords2D[0][target(G, e)]*sc,",",coords2D[1][target(G,e)]*sc,",",-sc, "]);");
+    });
+
+forall_vertices(G, function (v) {
+    var e = first_incident_edge(G, v);
+    var a = opposite(G, v, e);
+    e = next_incident_edge(G, v, e);
+    var b = opposite(G, v, e);
+    e = next_incident_edge(G, v, e);
+    var c = opposite(G, v, e);
+    console.log(coords[v], " ", center_3D(scale_3D(coords[a], sc), scale_3D(coords[b], sc), scale_3D(coords[c], sc)));
+//    wlog("vertex(", center_3D(scale_3D(coords[a], sc), scale_3D(coords[b], sc), scale_3D(coords[c], sc)),");");
+    if (blue) wlog("vertex(", scale_3D(norm_3D(center_3D(scale_3D(coords[a], sc), scale_3D(coords[b], sc), scale_3D(coords[c], sc))),sc),",",[0,0,1],");");
+});
 
     if (white) {
         wlog("color([1,1,1]) translate([0,0,0]) sphere(", sc - 1, ");");
@@ -159,8 +208,9 @@ forall_vertices(G, function (v) {
 
         V = bucket[bucketm].pop();
 
-        wlog("$vpr = [",-rad2deg(Math.acos(coords[V][2])),",0,",
+        wlog("// $vpr = [",-rad2deg(Math.acos(coords[V][2])),",0,",
                         -rad2deg(Math.atan2(coords[V][0], coords[V][1])),"];");
-        straight_line_drawing_3D(G, Math.sqrt(n_vertices(G)));
+        wlog("$vpr = [90,0,0];");
+        straight_line_drawing_3D(G, 10); //Math.sqrt(n_vertices(G)));
 
         writer.close();
