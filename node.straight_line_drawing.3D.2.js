@@ -211,7 +211,7 @@ V = bucket[bucketm].pop();
 
 async function amain() {
     var ms = 1000;
-    var fastforward = 690;
+    var fastforward = 0;
 
     for(var i=0;;++i) {
         writer = fs.createWriteStream('x.scad') 
