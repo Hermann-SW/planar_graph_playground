@@ -14,7 +14,7 @@ var sel = (
 );
 var sca = (
     (process.argv.length > 3)
-    ? parseInt(process.argv[3])
+    ? parseFloat(process.argv[3])
     : 3
 );
 var blue = (process.argv.length > 4) && process.argv[4].includes("b");
@@ -28,6 +28,7 @@ var face = [];
 var e = any_edge(G);
 var v = source(G, e);
 var coords2D;
+var coordsb;
 var s;
 var V;
 var sum;
@@ -93,7 +94,6 @@ function map_3D(x, y) {
     var l = sca*length_2D(x, y);
     var X = l -l*(l*l/(4+l*l));
     var Y = 2*(l*l/(4+l*l))- 1;
-//    return [Math.sin(a) * X, Math.cos(a) * X, Y];
     return [Math.cos(a) * X, Math.sin(a) * X, Y];
 }
 
@@ -147,23 +147,24 @@ function straight_line_drawing_3D(G, sc) {
     });
 
     forall_edges(G, function (e) {
-        wlog("edge([", coords2D[0][source(G, e)]*sc,",",coords2D[1][source(G, e)]*sc,",",-sc, "],[", coords2D[0][target(G, e)]*sc,",",coords2D[1][target(G,e)]*sc,",",-sc, "]);");
+        wlog("color([0,0,0]) edge([", coords2D[0][source(G, e)]*sc,",",coords2D[1][source(G, e)]*sc,",",-sc, "],[", coords2D[0][target(G, e)]*sc,",",coords2D[1][target(G,e)]*sc,",",-sc, "]);");
     });
 
-forall_vertices(G, function (v) {
-    var e = first_incident_edge(G, v);
-    var a = opposite(G, v, e);
-    e = next_incident_edge(G, v, e);
-    var b = opposite(G, v, e);
-    e = next_incident_edge(G, v, e);
-    var c = opposite(G, v, e);
-    console.log(coords[v], " ", center_3D(scale_3D(coords[a], sc), scale_3D(coords[b], sc), scale_3D(coords[c], sc)));
-//    wlog("vertex(", center_3D(scale_3D(coords[a], sc), scale_3D(coords[b], sc), scale_3D(coords[c], sc)),");");
-    if (blue) wlog("vertex(", scale_3D(norm_3D(center_3D(scale_3D(coords[a], sc), scale_3D(coords[b], sc), scale_3D(coords[c], sc))),sc),",",[0,0,1],");");
-});
+    forall_vertices(G, function (v) {
+        var cent = [0, 0, 0];
+        forall_incident_edges(G, v, function(e) {
+            var w = opposite(G, v, e);
+	    cent = add_3D(cent, coords[w]);
+        });
+        cent = norm_3D(cent);
+        // console.log(v,": ",coords[v],", ",cent);
+        coordsb[v] = cent;
+        cent = scale_3D(cent, sc);
+        if (blue) wlog("vertex(", cent,",",[0,0,1],");");
+    });
 
     if (white) {
-        wlog("color([1,1,1]) translate([0,0,0]) sphere(", sc - 1, ");");
+        wlog("color([1,1,1]) translate([0,0,0]) sphere(", sc - 1, ", $fn=360 );");
     }
 }
 
@@ -174,6 +175,7 @@ face = face_vertices(G, v, e);
 assert.assert(face.length > 0);
 
 coords2D = tutte.convex_face_coordinates(G, face, 1);
+coordsb = filled_array(n_vertices(G), 1, [0,0,0]);
 
 
 forall_vertices(G, function (v) {
@@ -204,13 +206,29 @@ forall_vertices(G, function (v) {
     }
 });
 
-        writer = fs.createWriteStream('x.scad') 
+V = bucket[bucketm].pop();
 
-        V = bucket[bucketm].pop();
+
+async function amain() {
+    var ms = 1000;
+
+    for(var i=0;;++i) {
+        writer = fs.createWriteStream('x.scad') 
 
         wlog("// $vpr = [",-rad2deg(Math.acos(coords[V][2])),",0,",
                         -rad2deg(Math.atan2(coords[V][0], coords[V][1])),"];");
-        wlog("$vpr = [90,0,0];");
+        wlog("$vpr = [90,0,10*"+i+"];");
+        //wlog("$vpr = [45,0,22.5];");
         straight_line_drawing_3D(G, 10); //Math.sqrt(n_vertices(G)));
 
         writer.close();
+
+        await wait(ms);
+
+        forall_vertices(G, function (v) {
+            coords[v] = coordsb[v];
+        });
+    }
+}
+
+amain();
