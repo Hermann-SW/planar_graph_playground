@@ -147,7 +147,7 @@ function straight_line_drawing_3D(G, sc) {
     });
 
     forall_edges(G, function (e) {
-        wlog("color([0,0,0]) edge([", coords2D[0][source(G, e)]*sc,",",coords2D[1][source(G, e)]*sc,",",-sc, "],[", coords2D[0][target(G, e)]*sc,",",coords2D[1][target(G,e)]*sc,",",-sc, "]);");
+        wlog("color([0,0,0]) edge([", coords2D[0][source(G, e)]*sc*sca,",",coords2D[1][source(G, e)]*sc*sca,",",-sc, "],[", coords2D[0][target(G, e)]*sc*sca,",",coords2D[1][target(G,e)]*sc*sca,",",-sc, "]);");
     });
 
     forall_vertices(G, function (v) {
@@ -211,6 +211,7 @@ V = bucket[bucketm].pop();
 
 async function amain() {
     var ms = 1000;
+    var fastforward = 690;
 
     for(var i=0;;++i) {
         writer = fs.createWriteStream('x.scad') 
@@ -223,7 +224,7 @@ async function amain() {
 
         writer.close();
 
-        await wait(ms);
+        if (i>=fastforward)  await wait(ms);
 
         forall_vertices(G, function (v) {
             coords[v] = coordsb[v];
