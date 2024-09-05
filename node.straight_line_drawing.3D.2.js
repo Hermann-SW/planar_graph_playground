@@ -21,6 +21,8 @@ var blue = (process.argv.length > 4) && process.argv[4].includes("b");
 
 var white = (process.argv.length > 4) && process.argv[4].includes("w");
 
+var esel = (process.argv.length > 5) ? parseInt(process.argv[5]) : -1;
+
 var L = parse2file(sel);
 var G = from_adjacency_list(L);
 var coords = filled_array(n_vertices(G), 3, -1);
@@ -80,6 +82,10 @@ function sub_3D(p, q) {
     return [p[0]-q[0],p[1]-q[1],p[2]-q[2]];
 }
 
+function mul_3D(p, q) {
+    return [p[0]*q[0],p[1]*q[1],p[2]*q[2]];
+}
+
 function scale_3D(v, f) {
     return [f * v[0], f * v[1], f * v[2]];
 }
@@ -87,6 +93,16 @@ function scale_3D(v, f) {
 
 function norm_3D(v) {
     return scale_3D(v, 1 / length_3D(v));
+}
+
+function cross_3D(v, w) {
+    return [v[1]*w[2]-v[2]*w[1], v[2]*w[0]-v[0]*w[2], v[0]*w[1]-v[1]*w[0]];
+}
+
+function plane_3D(u, v, w) {
+    var n = norm_3D(cross_3D(sub_3D(u, v), sub_3D(v, w)));
+    n.push(length_3D(mul_3D(u, n)));
+    return n;
 }
 
 function map_3D(x, y) {
@@ -139,6 +155,9 @@ function straight_line_drawing_3D(G, sc) {
     wlog("module vertex(v, c) { color(c) translate(v) sphere(0.5); }");
 
     forall_edges(G, function (e) {
+      if (e==esel)
+        wlog("color([0.7,0.7,0.7]) edge2(", scale_3D(coords[source(G, e)], sc), ",", scale_3D(coords[target(G, e)], sc), ");");
+      else
         wlog("edge2(", scale_3D(coords[source(G, e)], sc), ",", scale_3D(coords[target(G, e)], sc), ");");
     });
 
@@ -147,7 +166,43 @@ function straight_line_drawing_3D(G, sc) {
     });
 
     forall_edges(G, function (e) {
-        wlog("color([0,0,0]) edge([", coords2D[0][source(G, e)]*sc*sca,",",coords2D[1][source(G, e)]*sc*sca,",",-sc, "],[", coords2D[0][target(G, e)]*sc*sca,",",coords2D[1][target(G,e)]*sc*sca,",",-sc, "]);");
+        wlog("color(", e==esel ? [0.7,0.7,0.7] : [0,0,0], ") edge([", coords2D[0][source(G, e)]*sc*sca,",",coords2D[1][source(G, e)]*sc*sca,",",-sc, "],[", coords2D[0][target(G, e)]*sc*sca,",",coords2D[1][target(G,e)]*sc*sca,",",-sc, "]);");
+	if (e == esel) {
+	    var m = [(coords2D[0][source(G, e)] + coords2D[0][target(G, e)])/2,
+	             (coords2D[1][source(G, e)] + coords2D[1][target(G, e)])/2];
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
+            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7]);");
+	        m = [(2*coords2D[0][source(G, e)] + coords2D[0][target(G, e)])/3,
+	             (2*coords2D[1][source(G, e)] + coords2D[1][target(G, e)])/3];
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
+            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7]);");
+	        m = [(coords2D[0][source(G, e)] + 2*coords2D[0][target(G, e)])/3,
+	             (coords2D[1][source(G, e)] + 2*coords2D[1][target(G, e)])/3];
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
+            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7]);");
+	        m = [(coords2D[0][source(G, e)] + 3*coords2D[0][target(G, e)])/4,
+	             (coords2D[1][source(G, e)] + 3*coords2D[1][target(G, e)])/4];
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
+            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7]);");
+	        m = [(1*coords2D[0][source(G, e)] + 0*coords2D[0][target(G, e)])/1,
+	             (1*coords2D[1][source(G, e)] + 0*coords2D[1][target(G, e)])/1];
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
+	        m = [(0*coords2D[0][source(G, e)] + 1*coords2D[0][target(G, e)])/1,
+	             (0*coords2D[1][source(G, e)] + 1*coords2D[1][target(G, e)])/1];
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
+
+	        m = [(coords2D[0][source(G, e)] + coords2D[0][target(G, e)])/2,
+	             (coords2D[1][source(G, e)] + coords2D[1][target(G, e)])/2];
+            var M = scale_3D(map_3D(m[0], m[1]), sc);
+            var V = scale_3D(map_3D(coords2D[0][source(G, e)], coords2D[1][source(G, e)]), sc);
+            var W = scale_3D(map_3D(coords2D[0][target(G, e)], coords2D[1][target(G, e)]), sc);
+            console.log(M);
+            console.log(V);
+            console.log(W);
+            var pla = plane_3D(M, V, W);
+            console.log(pla);
+            wlog("vertex(", scale_3D(pla, pla[3]), ",[0,0,0]);");
+	}
     });
 
     forall_vertices(G, function (v) {
