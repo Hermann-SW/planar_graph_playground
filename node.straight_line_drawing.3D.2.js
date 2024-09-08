@@ -31,6 +31,8 @@ var e = any_edge(G);
 var v = source(G, e);
 var coords2D;
 var coordsb;
+var ecoords;
+var SC = 10;
 var s;
 var V;
 var sum;
@@ -86,6 +88,10 @@ function mul_3D(p, q) {
     return [p[0]*q[0],p[1]*q[1],p[2]*q[2]];
 }
 
+function dot_3D(p, q) {
+    return p[0]*q[0]+p[1]*q[1]+p[2]*q[2];
+}
+
 function scale_3D(v, f) {
     return [f * v[0], f * v[1], f * v[2]];
 }
@@ -99,9 +105,14 @@ function cross_3D(v, w) {
     return [v[1]*w[2]-v[2]*w[1], v[2]*w[0]-v[0]*w[2], v[0]*w[1]-v[1]*w[0]];
 }
 
+function angle_3D(v) {
+    s = (dot_3D([0,1,0], v) < 0) ? -1 : 1;
+    return s * Math.acos(dot_3D(norm_3D(v), [1,0,0]));;
+}
+
 function plane_3D(u, v, w) {
-    var n = norm_3D(cross_3D(sub_3D(u, v), sub_3D(v, w)));
-    n.push(length_3D(mul_3D(u, n)));
+    var n = norm_3D(cross_3D(sub_3D(v, u), sub_3D(w, u)));
+    n.push(dot_3D(u, n));
     return n;
 }
 
@@ -121,6 +132,14 @@ function buc(d) {
     return Math.floor(d * 1000);
 }
 
+function rotZ(v, a) {
+    return [v[0]*Math.cos(a)-v[1]*Math.sin(a),v[0]*Math.sin(a)+v[1]*Math.cos(a),v[2]];
+}
+
+function rotY(v, a) {
+   return [v[0]*Math.cos(a)-v[2]*Math.sin(a),v[1],v[0]*Math.sin(a)+v[2]*Math.cos(a)];
+}
+
 function straight_line_drawing_3D(G, sc) {
     wlog("$fn = 25;");
     wlog("$vpt = [0,0,0];");
@@ -131,7 +150,33 @@ function straight_line_drawing_3D(G, sc) {
     wlog("    rotate([0, acos(w[2]/norm(w)), atan2(w[1], w[0])])");
     wlog("    cylinder(norm(w),0.1,0.1);");
     wlog("}");
-        wlog("function cart2pol(p) = [atan2(p[1],p[0]), acos(p[2]/sc_)];");
+    wlog("function cart2pol(p) = [atan2(p[1],p[0]), acos(p[2]/sc_)];");
+    wlog("function cart2pol2(p) = [atan2(p[1],p[0]), acos(p[2]/norm(p))];");
+    wlog("function dot3D(v,w) = v[0]*w[0]+v[1]*w[1]+v[2]*w[2];");
+    wlog("function angle(v,w,c) = acos(dot3D((v-c)/norm(v-c),(w-c)/norm(w-c)));");
+    wlog("function rotZ(v, a) = [v[0]*cos(a)-v[1]*sin(a),v[0]*sin(a)+v[1]*cos(a),v[2]];");
+    wlog("function rotY(v, a) = [v[0]*cos(a)-v[2]*sin(a),v[1],v[0]*sin(a)+v[2]*cos(a)];");
+    wlog("function rotX(v, a) = [v[0],v[1]*cos(a)-v[2]*sin(a),v[1]*sin(a)+v[2]*cos(a)];");
+    wlog("function cross3D(v,w) = [v[1]*w[2]-v[2]*w[1], v[2]*w[0]-v[0]*w[2], v[0]*w[1]-v[1]*w[0]];");
+    wlog("module edge3(v,w,c) {");
+    wlog("    echo(\"angle \",angle(v,w,c));");
+    wlog("    p = cart2pol2(c);");
+    wlog("    r = norm(c  - v);");
+    wlog("    u = rotZ(rotY([1,0,0],-p[1]),p[0]);");
+    wlog("    d = rotZ(rotY([0,1,0],-p[1]),p[0]);");
+    wlog("    translate(c)");
+    wlog("    rotate([0,0,p[0]])");
+    wlog("    rotate([0,p[1],0])");
+    wlog("    {");
+    wlog("    rotate([0,0,30])");
+//    wlog("    rotate([0,0,angle(u,v,c)]);");
+    wlog("    rotate_extrude(angle=angle(v,w,c), convexity=10, $fn=100)");
+    wlog("    translate([r, 0, 0])");
+    wlog("    circle(r=0.1, $fn=100);");
+    wlog("    }");
+//    wlog("    edge(c,c+r*u);");
+//    wlog("    edge(c,c+r*d);");
+    wlog("}");
         wlog("module edge2(_p1,_p2,_e) {");
         wlog("    p1 = cart2pol(_p1);");
         wlog("    p2 = cart2pol(_p2);");
@@ -155,8 +200,15 @@ function straight_line_drawing_3D(G, sc) {
     wlog("module vertex(v, c) { color(c) translate(v) sphere(0.5); }");
 
     forall_edges(G, function (e) {
-      if (e==esel)
-        wlog("color([0.7,0.7,0.7]) edge2(", scale_3D(coords[source(G, e)], sc), ",", scale_3D(coords[target(G, e)], sc), ");");
+      if (e==esel) {
+            var M = scale_3D(ecoords[e], sc);
+            var V = scale_3D(coords[source(G, e)], sc);
+            var W = scale_3D(coords[target(G, e)], sc);
+            var pla = plane_3D(M, V, W);
+	    var C = scale_3D(pla, pla[3]);
+        wlog("color([0.7,0.7,0.7]) edge3(", W, ",", V, ",", C, ");");
+        wlog("color([1,1,1]) translate(", C, ") sphere(0.3);");
+      }
       else
         wlog("edge2(", scale_3D(coords[source(G, e)], sc), ",", scale_3D(coords[target(G, e)], sc), ");");
     });
@@ -196,12 +248,9 @@ function straight_line_drawing_3D(G, sc) {
             var M = scale_3D(map_3D(m[0], m[1]), sc);
             var V = scale_3D(map_3D(coords2D[0][source(G, e)], coords2D[1][source(G, e)]), sc);
             var W = scale_3D(map_3D(coords2D[0][target(G, e)], coords2D[1][target(G, e)]), sc);
-            console.log(M);
-            console.log(V);
-            console.log(W);
             var pla = plane_3D(M, V, W);
-            console.log(pla);
-            wlog("vertex(", scale_3D(pla, pla[3]), ",[0,0,0]);");
+	    var C = scale_3D(pla, pla[3]);
+//            wlog("color([250/255,165/255,0]) edge3(", V, ",", W, ",", C, ");");
 	}
     });
 
@@ -237,6 +286,15 @@ forall_vertices(G, function (v) {
     coords[v] = map_3D(coords2D[0][v], coords2D[1][v]);
 });
 
+ecoords = filled_array(n_edges(G), 1, [0,0]);
+
+forall_edges(G, function (e) {
+    v = coords2D[source(G, e)];
+    var w = coords2D[target(G, e)];
+    ecoords[e] = map_3D((coords2D[0][source(G, e)] + coords2D[0][target(G, e)])/2,
+	                (coords2D[1][source(G, e)] + coords2D[1][target(G, e)])/2);
+});
+
 sum = filled_array(n_vertices(G), 1, [0,0,0]);
 nor = filled_array(n_vertices(G), 1, [0,0,0]);
 
@@ -268,14 +326,14 @@ async function amain() {
     var ms = 1000;
     var fastforward = 0;
 
-    for(var i=0;;++i) {
+    for(var i=0;i<1;++i) {
         writer = fs.createWriteStream('x.scad') 
 
         wlog("// $vpr = [",-rad2deg(Math.acos(coords[V][2])),",0,",
                         -rad2deg(Math.atan2(coords[V][0], coords[V][1])),"];");
         wlog("$vpr = [90,0,10*"+i+"];");
         //wlog("$vpr = [45,0,22.5];");
-        straight_line_drawing_3D(G, 10); //Math.sqrt(n_vertices(G)));
+        straight_line_drawing_3D(G, SC); //Math.sqrt(n_vertices(G)));
 
         writer.close();
 
