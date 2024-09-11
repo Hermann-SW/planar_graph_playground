@@ -157,7 +157,7 @@ function straight_line_drawing_3D(G, sc) {
     wlog("function rotZ(v, a) = [v[0]*cos(a)-v[1]*sin(a),v[0]*sin(a)+v[1]*cos(a),v[2]];");
     wlog("function rotY(v, a) = [v[0]*cos(a)-v[2]*sin(a),v[1],v[0]*sin(a)+v[2]*cos(a)];");
     wlog("function rotX(v, a) = [v[0],v[1]*cos(a)-v[2]*sin(a),v[1]*sin(a)+v[2]*cos(a)];");
-    wlog("function cross3D(v,w) = [v[1]*w[2]-v[2]*w[1], v[2]*w[0]-v[0]*w[2], v[0]*w[1]-v[1]*w[0]];");
+    wlog("// function cross3D(v,w) = [v[1]*w[2]-v[2]*w[1], v[2]*w[0]-v[0]*w[2], v[0]*w[1]-v[1]*w[0]];");
     wlog("module edge3(v,w,c) {");
     wlog("    echo(\"angle \",angle(v,w,c));");
     wlog("    p = cart2pol2(c);");
@@ -168,14 +168,16 @@ function straight_line_drawing_3D(G, sc) {
     wlog("    rotate([0,0,p[0]])");
     wlog("    rotate([0,p[1],0])");
     wlog("    {");
-    wlog("    rotate([0,0,30])");
-//    wlog("    rotate([0,0,angle(u,v,c)]);");
+    wlog("    echo(angle(c+u,v,c));");
+    wlog("    echo(angle(c+u,w,c));");
+    wlog("    echo(angle(v,w,c));");
+    wlog("    rotate([0,0,angle(c+u,v,c)])");
     wlog("    rotate_extrude(angle=angle(v,w,c), convexity=10, $fn=100)");
     wlog("    translate([r, 0, 0])");
     wlog("    circle(r=0.1, $fn=100);");
     wlog("    }");
-//    wlog("    edge(c,c+r*u);");
-//    wlog("    edge(c,c+r*d);");
+    wlog("    edge(c,c+(r+1)*u);");
+    wlog("    edge(c,c+r*d);");
     wlog("}");
         wlog("module edge2(_p1,_p2,_e) {");
         wlog("    p1 = cart2pol(_p1);");
@@ -220,28 +222,29 @@ function straight_line_drawing_3D(G, sc) {
     forall_edges(G, function (e) {
         wlog("color(", e==esel ? [0.7,0.7,0.7] : [0,0,0], ") edge([", coords2D[0][source(G, e)]*sc*sca,",",coords2D[1][source(G, e)]*sc*sca,",",-sc, "],[", coords2D[0][target(G, e)]*sc*sca,",",coords2D[1][target(G,e)]*sc*sca,",",-sc, "]);");
 	if (e == esel) {
+            wlog("al = 0.5;");
 	    var m = [(coords2D[0][source(G, e)] + coords2D[0][target(G, e)])/2,
 	             (coords2D[1][source(G, e)] + coords2D[1][target(G, e)])/2];
-            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
-            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7]);");
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7,al]);");
+            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7,al]);");
 	        m = [(2*coords2D[0][source(G, e)] + coords2D[0][target(G, e)])/3,
 	             (2*coords2D[1][source(G, e)] + coords2D[1][target(G, e)])/3];
-            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
-            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7]);");
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7,al]);");
+            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7,al]);");
 	        m = [(coords2D[0][source(G, e)] + 2*coords2D[0][target(G, e)])/3,
 	             (coords2D[1][source(G, e)] + 2*coords2D[1][target(G, e)])/3];
-            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
-            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7]);");
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7,al]);");
+            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7,al]);");
 	        m = [(coords2D[0][source(G, e)] + 3*coords2D[0][target(G, e)])/4,
 	             (coords2D[1][source(G, e)] + 3*coords2D[1][target(G, e)])/4];
-            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
-            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7]);");
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7,al]);");
+            wlog("vertex([", m[0]*sc*sca, ",", m[1]*sc*sca, ",", -sc, "],[0.7,0.7,0.7,al]);");
 	        m = [(1*coords2D[0][source(G, e)] + 0*coords2D[0][target(G, e)])/1,
 	             (1*coords2D[1][source(G, e)] + 0*coords2D[1][target(G, e)])/1];
-            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.3,0.3,0.3,al]);");
 	        m = [(0*coords2D[0][source(G, e)] + 1*coords2D[0][target(G, e)])/1,
 	             (0*coords2D[1][source(G, e)] + 1*coords2D[1][target(G, e)])/1];
-            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7]);");
+            wlog("vertex(", scale_3D(map_3D(m[0], m[1]), sc), ",[0.7,0.7,0.7,al]);");
 
 	        m = [(coords2D[0][source(G, e)] + coords2D[0][target(G, e)])/2,
 	             (coords2D[1][source(G, e)] + coords2D[1][target(G, e)])/2];
