@@ -153,31 +153,30 @@ function straight_line_drawing_3D(G, sc) {
     wlog("function cart2pol(p) = [atan2(p[1],p[0]), acos(p[2]/sc_)];");
     wlog("function cart2pol2(p) = [atan2(p[1],p[0]), acos(p[2]/norm(p))];");
     wlog("function dot3D(v,w) = v[0]*w[0]+v[1]*w[1]+v[2]*w[2];");
-    wlog("function angle(v,w,c) = acos(dot3D((v-c)/norm(v-c),(w-c)/norm(w-c)));");
+    wlog("function angle(x,y,d) = (dot3D(y,d/norm(d))<0?-1:1)*acos(dot3D(x,d/norm(d)));");
     wlog("function rotZ(v, a) = [v[0]*cos(a)-v[1]*sin(a),v[0]*sin(a)+v[1]*cos(a),v[2]];");
     wlog("function rotY(v, a) = [v[0]*cos(a)-v[2]*sin(a),v[1],v[0]*sin(a)+v[2]*cos(a)];");
     wlog("function rotX(v, a) = [v[0],v[1]*cos(a)-v[2]*sin(a),v[1]*sin(a)+v[2]*cos(a)];");
     wlog("// function cross3D(v,w) = [v[1]*w[2]-v[2]*w[1], v[2]*w[0]-v[0]*w[2], v[0]*w[1]-v[1]*w[0]];");
-    wlog("module edge3(v,w,c) {");
-    wlog("    echo(\"angle \",angle(v,w,c));");
+    wlog("module edge3(v,w,c,m) {");
     wlog("    p = cart2pol2(c);");
     wlog("    r = norm(c  - v);");
-    wlog("    u = rotZ(rotY([1,0,0],-p[1]),p[0]);");
-    wlog("    d = rotZ(rotY([0,1,0],-p[1]),p[0]);");
+    wlog("    x = rotZ(rotY([1,0,0],-p[1]),p[0]);");
+    wlog("    y = rotZ(rotY([0,1,0],-p[1]),p[0]);");
     wlog("    translate(c)");
     wlog("    rotate([0,0,p[0]])");
     wlog("    rotate([0,p[1],0])");
     wlog("    {");
-    wlog("    echo(angle(c+u,v,c));");
-    wlog("    echo(angle(c+u,w,c));");
-    wlog("    echo(angle(v,w,c));");
-    wlog("    rotate([0,0,angle(c+u,v,c)])");
-    wlog("    rotate_extrude(angle=angle(v,w,c), convexity=10, $fn=100)");
+    wlog("    echo(angle(x,y,v-c));");
+    wlog("    echo(angle(x,y,w-c));");
+    wlog("    echo(angle(x,y,m-c));");
+    wlog("    rotate([0,0,angle(x,y,v-c)])");
+    wlog("    rotate_extrude(angle=angle(x,y,w-c)-angle(x,y,v-c), convexity=10, $fn=100)");
     wlog("    translate([r, 0, 0])");
     wlog("    circle(r=0.1, $fn=100);");
     wlog("    }");
-    wlog("    edge(c,c+(r+1)*u);");
-    wlog("    edge(c,c+r*d);");
+    wlog("    edge(c,c+(r+1)*x);");
+    wlog("    edge(c,c+r*y);");
     wlog("}");
         wlog("module edge2(_p1,_p2,_e) {");
         wlog("    p1 = cart2pol(_p1);");
@@ -208,7 +207,7 @@ function straight_line_drawing_3D(G, sc) {
             var W = scale_3D(coords[target(G, e)], sc);
             var pla = plane_3D(M, V, W);
 	    var C = scale_3D(pla, pla[3]);
-        wlog("color([0.7,0.7,0.7]) edge3(", W, ",", V, ",", C, ");");
+        wlog("color([0.7,0.7,0.7]) edge3(", V, ",", W, ",", C, ",", M, ");");
         wlog("color([1,1,1]) translate(", C, ") sphere(0.3);");
       }
       else
@@ -248,12 +247,6 @@ function straight_line_drawing_3D(G, sc) {
 
 	        m = [(coords2D[0][source(G, e)] + coords2D[0][target(G, e)])/2,
 	             (coords2D[1][source(G, e)] + coords2D[1][target(G, e)])/2];
-            var M = scale_3D(map_3D(m[0], m[1]), sc);
-            var V = scale_3D(map_3D(coords2D[0][source(G, e)], coords2D[1][source(G, e)]), sc);
-            var W = scale_3D(map_3D(coords2D[0][target(G, e)], coords2D[1][target(G, e)]), sc);
-            var pla = plane_3D(M, V, W);
-	    var C = scale_3D(pla, pla[3]);
-//            wlog("color([250/255,165/255,0]) edge3(", V, ",", W, ",", C, ");");
 	}
     });
 
