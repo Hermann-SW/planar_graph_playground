@@ -163,7 +163,7 @@ if (true) {
 
         if (!hidden) {
             document.write('Clicking on an edge redraws with that edge being top right edge. Its vertex closer to mouse pointer becomes top vertex.');
-        document.write("<div><a href=\"res/spherical_circle.todo.png\">spherical projection</a>&nbsp;&nbsp;");
+        document.write("<div><a href=\"https://jscad.app/#https://raw.githubusercontent.com/Hermann-SW/planar_graph_playground/main/sphere_draw.jscad\">stereographic projection</a>&nbsp;&nbsp;");
             document.write('<label for="myRange">factor: </label><input type="range" min="50" max="120" value="' + slider + '" id="myRange" name="myRangeN" onInput="javascript:doi(' + selInd + ')">');
         }
 
