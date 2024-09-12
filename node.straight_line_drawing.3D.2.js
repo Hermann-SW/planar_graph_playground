@@ -203,7 +203,7 @@ function straight_line_drawing_3D(G, sc) {
         var W = scale_3D(coords[target(G, e)], sc);
         var pla = plane_3D(M, V, W);
         var C = scale_3D(pla, pla[3]);
-        wlog("color([0.7,0.7,0.7]) edge3(", V, ",", W, ",", C, ");");
+        wlog("color([0,0,1]) edge3(", V, ",", W, ",", C, ");");
     });
 
     forall_vertices(G, function (v) {
