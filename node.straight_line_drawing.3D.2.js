@@ -144,11 +144,12 @@ function straight_line_drawing_3D(G, sc) {
     wlog("$fn = 25;");
     wlog("$vpt = [0,0,0];");
     wlog("sc_ = ", sc, ";");
+    wlog("er = sc_ / 200;");
     wlog("module edge(v,w) {");
     wlog("    w = w - v;");
     wlog("    translate(v)");
     wlog("    rotate([0, acos(w[2]/norm(w)), atan2(w[1], w[0])])");
-    wlog("    cylinder(norm(w),0.1,0.1);");
+    wlog("    cylinder(norm(w),er,er);");
     wlog("}");
     wlog("function cart2pol(p) = [atan2(p[1],p[0]), acos(p[2]/sc_)];");
     wlog("function cart2pol2(p) = [atan2(p[1],p[0]), acos(p[2]/norm(p))];");
@@ -172,7 +173,7 @@ function straight_line_drawing_3D(G, sc) {
     wlog("    rotate([0,0,angle(x,y,v-c)])");
     wlog("    rotate_extrude(angle=angle(x,y,w-c)-angle(x,y,v-c), convexity=10, $fn=100)");
     wlog("    translate([r, 0, 0])");
-    wlog("    circle(r=0.1, $fn=100);");
+    wlog("    circle(r=er, $fn=100);");
     wlog("    }");
     wlog("}");
         wlog("module edge2(_p1,_p2,_e) {");
@@ -193,14 +194,15 @@ function straight_line_drawing_3D(G, sc) {
         wlog("      rotate([90 - al1, 0, 0])");
         wlog("        color([0,0,1])");
         wlog("          rotate_extrude(angle=s12, convexity=10, $fn=100)");
-        wlog("            translate([sc_, 0]) circle(0.1, $fn=25);");
+        wlog("            translate([sc_, 0]) circle(er, $fn=25);");
         wlog("}");
-    wlog("module vertex(v, c) { color(c) translate(v) sphere(0.5); }");
+    wlog("module vertex(v, c) { color(c) translate(v) sphere(3*er); }");
 
     forall_edges(G, function (e) {
         var M = scale_3D(ecoords[e], sc);
         var V = scale_3D(coords[source(G, e)], sc);
         var W = scale_3D(coords[target(G, e)], sc);
+        assert.assert(dot_3D(sub_3D(M, V), sub_3D(W, V)) != 0);
         var pla = plane_3D(M, V, W);
         var C = scale_3D(pla, pla[3]);
         wlog("color([0,0,1]) edge3(", V, ",", W, ",", C, ");");
@@ -293,7 +295,7 @@ async function amain() {
                         -rad2deg(Math.atan2(coords[V][0], coords[V][1])),"];");
         wlog("$vpr = [90,0,10*"+i+"];");
         //wlog("$vpr = [45,0,22.5];");
-        straight_line_drawing_3D(G, SC); //Math.sqrt(n_vertices(G)));
+        straight_line_drawing_3D(G, Math.max(SC, Math.sqrt(n_vertices(G))));
 
         writer.close();
 
