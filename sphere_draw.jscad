@@ -4,58 +4,58 @@ const { cube, sphere, cylinder, circle } = jscad.primitives
 const { rotate, translate } = jscad.transforms
 const { degToRad } = jscad.utils
 const { add, normalize, length, scale, dot } = jscad.maths.vec3
+const { vec2 } = jscad.maths
 const { extrudeRotate } = require('@jscad/modeling').extrusions
 const { subtract } = require('@jscad/modeling').booleans
 
 function getParameterDefinitions() {
   return [
     { name: 'etype', type: 'int', initial: 2, min: 1, max: 2, step: 1, caption: 'etype:' },
-    { name: 'white', type: 'checkbox', checked: true, initial: '20', caption: 'surface of sphere:' }
+    { name: 'white', type: 'checkbox', checked: true, initial: '20', caption: 'surface of sphere:' },
+    { name: 'sca', type: 'slider', initial: 4, min: 0, max: 6, step: 0.2, fps: 10,
+      live: true, autostart: false, loop:'reverse', caption: 'scale:'} 
   ];
-}
-
-function map_3D(c, sc) {
-  return [Math.cos(degToRad(c[0]))*Math.sin(degToRad(c[1]))*sc, Math.sin(degToRad(c[0]))*Math.sin(degToRad(c[1]))*sc, Math.cos(degToRad(c[1]))*sc]
 }
 
 eps = 0.00001
 sc = 10
 er = sc / 200
+sca = 2
+
+function map_3D(x, y) {
+    var a = Math.atan2(y, x);
+    var l = sca*vec2.length([x, y]);
+    var X = l -l*(l*l/(4+l*l));
+    var Y = 2*(l*l/(4+l*l))- 1;
+    return [sc * Math.cos(a) * X, sc * Math.sin(a) * X, sc * Y];
+}
+
+function cart2pol(p) {
+    return [Math.atan2(p[1],p[0]), Math.acos(p[2]/sc)];
+}
 
 coords =[
-[270,54.735610317245346]
-, [270,18.24520343908178]
-, [90,18.24520343908178]
-, [90,54.735610317245346]
-, [58.12151774966443,77.20966313919999]
-, [62.04418827260525,114.64747531665705]
-, [0,161.7547965609182]
-, [180,161.7547965609182]
-, [242.04418827260523,114.64747531665704]
-, [238.12151774966446,77.20966313919999]
-, [321.98895293184864,75.02203375014706]
-, [308.0110470681513,104.97796624985293]
-, [0,125.26438968275465]
-, [31.878482250335562,102.79033686080001]
-, [387.9558117273947,65.35252468334295]
-, [207.95581172739477,65.35252468334296]
-, [141.9889529318487,75.02203375014707]
-, [128.0110470681513,104.97796624985293]
-, [180,125.26438968275465]
-, [211.87848225033554,102.79033686080001]
+  [ -0.8660254037844385, 0.5000000000000003 ],
+  [ 1.2246467991473532e-16, -1 ],
+  [ -0.1151363253586247, 0.4653179190751446 ],
+  [ -0.10011854379010833, 0.40462427745664753 ],
+  [ -0.36042675764439047, 0.45664739884393085 ],
+  [ 0.8660254037844387, 0.4999999999999999 ],
+  [ -0.02502963594752705, 0.10115606936416192 ]
 ]
-adj = [[9,10,1],[0,2,15],[1,14,3],[2,4,16],[3,13,5],[4,6,17],[5,12,7],[6,8,18],[7,11,9],[8,0,19],[0,11,14],[10,8,12],[11,6,13],[12,4,14],[13,2,10],[1,16,19],[15,3,17],[16,5,18],[17,7,19],[18,9,15]]
+
+adj = [[1,6,3,4,2,5],[0,5,6],[0,4,3,5],[5,2,4,0,6],[0,3,2],[1,0,2,3,6],[1,5,3,0]]
 
 function vertex(_v) {
     p = coords[_v] 
-    v = map_3D(p,sc)
+    v = map_3D(p[0],p[1])
     s = sphere({radius: 3*er, center: v})
     return colorize([0, 0.7, 0], s)
 }
 
 function edge(_v, _w) {
-    v = map_3D(coords[_v], sc)
-    w = map_3D(coords[_w], sc)
+    v = map_3D(coords[_v][0], coords[_v][1])
+    w = map_3D(coords[_w][0], coords[_w][1])
     d = [0, 0, 0]
     x = [0, 0, 0]
     jscad.maths.vec3.subtract(d, w, v)
@@ -75,15 +75,17 @@ function edge(_v, _w) {
 }
 
 function edge2(_p1, _p2) {
-    p1 = coords[_p1]
-    p2 = coords[_p2]
+    v = map_3D(coords[_p1][0], coords[_p1][1])
+    w = map_3D(coords[_p2][0], coords[_p2][1])
+    p1 = cart2pol(v)
+    p2 = cart2pol(w)
     // al/la/ph: alpha/lambda/phi | lxy/sxy: delta lambda_xy/sigma_xy
     // https://en.wikipedia.org/wiki/Great-circle_navigation#Course
-    la1 = degToRad(p1[0])
-    la2 = degToRad(p2[0])
+    la1 = p1[0]
+    la2 = p2[0]
     l12 = la2 - la1
-    ph1 = degToRad(90 - p1[1])
-    ph2 = degToRad(90 - p2[1])
+    ph1 = Math.PI/2 - p1[1]
+    ph2 = Math.PI/2 - p2[1]
     al1 = Math.atan2(Math.cos(ph2)*Math.sin(l12), Math.cos(ph1)*Math.sin(ph2)-Math.sin(ph1)*Math.cos(ph2)*Math.cos(l12))
     // delta sigma_12
     // https://en.wikipedia.org/wiki/Great-circle_distance#Formulae
@@ -102,6 +104,8 @@ function edge2(_p1, _p2) {
 }
 
 function main(params) {
+    sca = params.sca
+  
     white = (!params.white) ? [] : [
         colorize([1,1,1],
             sphere({radius: sc-1, segments: 30})
