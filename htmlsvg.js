@@ -311,32 +311,52 @@ module.exports = { main, getParameterDefinitions }
             (selInd === 0)
             ? "selected"
             : ""
-        ) + ' value="C20">C20</option>');
+        ) + ' value="mp7">mp7</option>');
         document.write('  <option ' + (
             (selInd === 1)
             ? "selected"
             : ""
-        ) + ' value="C30">C30</option>');
+        ) + ' value="C20">C20</option>');
         document.write('  <option ' + (
             (selInd === 2)
             ? "selected"
             : ""
-        ) + ' value="C40">C40</option>');
+        ) + ' value="C30">C30</option>');
         document.write('  <option ' + (
             (selInd === 3)
             ? "selected"
             : ""
-        ) + ' value="C50">C50</option>');
+        ) + ' value="C40">C40</option>');
         document.write('  <option ' + (
             (selInd === 4)
             ? "selected"
             : ""
-        ) + ' value="C60">C60</option>');
+        ) + ' value="C50">C50</option>');
         document.write('  <option ' + (
             (selInd === 5)
             ? "selected"
             : ""
-        ) + ' value="C60">C70</option>');
+        ) + ' value="C60">C60</option>');
+        document.write('  <option ' + (
+            (selInd === 6)
+            ? "selected"
+            : ""
+        ) + ' value="C70">C70</option>');
+        document.write('  <option ' + (
+            (selInd === 7)
+            ? "selected"
+            : ""
+        ) + ' value="D100">D100</option>');
+        document.write('  <option ' + (
+            (selInd === 8)
+            ? "selected"
+            : ""
+        ) + ' value="I100.1">I100.1</option>');
+        document.write('  <option ' + (
+            (selInd === 9)
+            ? "selected"
+            : ""
+        ) + ' value="100">100</option>');
 
         document.write('</select> <a href="https://github.com/Hermann-SW/planar_graph_playground#planar_graph_playground">planar_graph_playground github repo</a> hosting this "' + (
             hidden
