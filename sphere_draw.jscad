@@ -15,15 +15,16 @@ sorted.sort(function(a,b){return vec2.length(a)-vec2.length(b)})
 scini = 4 / (vec2.length(sorted[Math.floor((sorted.length-2)/2)]) +
              vec2.length(sorted[Math.ceil((sorted.length-1)/2)]))
 
-// round scini according slider step=0.2
-scini = Math.round(5 * scini) / 5
+// round scini according slider step
+scstep = 0.2
+scini = Math.round(scini * (1 / scstep)) / (1 / scstep)
 
 function getParameterDefinitions() {
   return [
     { name: 'etype', type: 'int', initial: 3, min: 1, max: 3, step: 1, caption: 'etype:' },
     { name: 'sphere', type: 'checkbox', checked: true, initial: 1, caption: 'show sphere:' },
     { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
-    { name: 'sca', type: 'slider', initial: scini, min: 0, max: 6, step: 0.2,
+    { name: 'sca', type: 'slider', initial: scini, min: 0, max: 6, step: scstep,
       fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale:'}
   ];
 }
