@@ -31,12 +31,8 @@ function map_3D(x, y) {
     return [sc * Math.cos(a) * X, sc * Math.sin(a) * X, sc * Y];
 }
 
-function cart2pol(p) {
-    return [Math.atan2(p[1],p[0]), Math.acos(p[2]/sc)];
-}
-
-function cart2pol2(p) {
-    return [Math.atan2(p[1],p[0]), Math.acos(p[2]/vec3.length(p))]
+function cart2pol(p, f=sc) {
+    return [Math.atan2(p[1],p[0]), Math.acos(p[2]/f)];
 }
 
 function vertex(_v) {
@@ -114,7 +110,7 @@ function edge3(_p1, _p2) {
     }
     pla = plane.fromPoints(plane.create(), m, v, w);
     c = vec3.scale(vec3.create(), pla, pla[3]);
-    p = cart2pol2(c)
+    p = cart2pol(c, Math.abs(pla[3]))
     vmc = vec3.subtract(vec3.create(), v, c)
     wmc = vec3.subtract(vec3.create(), w, c)
     r = vec3.length(vmc)
