@@ -2,9 +2,7 @@ const jscad = require('@jscad/modeling')
 const { colorize } = jscad.colors
 const { cube, sphere, cylinder, circle } = jscad.primitives
 const { rotate, translate } = jscad.transforms
-const { degToRad } = jscad.utils
-const { add, normalize, length, scale, dot } = jscad.maths.vec3
-const { vec2 } = jscad.maths
+const { vec2, vec3 } = jscad.maths
 const { extrudeRotate } = require('@jscad/modeling').extrusions
 const { subtract } = require('@jscad/modeling').booleans
 
@@ -18,7 +16,6 @@ function getParameterDefinitions() {
   ];
 }
 
-eps = 0.00001
 sc = 10
 er = sc / 200
 sca = 2
@@ -65,19 +62,15 @@ function edge(_v, _w, plan=false) {
     d = [0, 0, 0]
     x = [0, 0, 0]
     jscad.maths.vec3.subtract(d, w, v)
-    add(x, v, w)
-    scale(w, x, 0.5)
-    if (length(d) >= eps) {
-        return colorize([0, 0, 1, 1], 
-            translate(w, 
-                rotate([0, Math.acos(d[2]/length(d)), Math.atan2(d[1], d[0])],
-                    cylinder({radius: er, height: length(d)})
-                )
+    vec3.add(x, v, w)
+    vec3.scale(w, x, 0.5)
+    return colorize([0, 0, 1, 1], 
+        translate(w, 
+            rotate([0, Math.acos(d[2]/vec3.length(d)), Math.atan2(d[1], d[0])],
+                cylinder({radius: er, height: vec3.length(d)})
             )
         )
-    } else {
-        return cube({size: 0.01})
-    }
+    )
 }
 
 function edge2(_p1, _p2) {
@@ -98,7 +91,7 @@ function edge2(_p1, _p2) {
     s12 = Math.acos(Math.sin(ph1)*Math.sin(ph2)+Math.cos(ph1)*Math.cos(ph2)*Math.cos(l12))
     return rotate([0, 0, la1],
         rotate([0, -ph1, 0],
-            rotate([degToRad(90)-al1, 0, 0],
+            rotate([Math.PI/2-al1, 0, 0],
                 colorize([0, 0, 0.7],
                     extrudeRotate({segments: 64, angle: s12},
                         circle({radius: er, center: [sc,0]})
