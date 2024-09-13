@@ -1,5 +1,6 @@
 coords =[[ -0.8660254037844385, 0.5000000000000003 ], [ 1.2246467991473532e-16, -1 ], [ -0.1151363253586247, 0.4653179190751446 ], [ -0.10011854379010833, 0.40462427745664753 ], [ -0.36042675764439047, 0.45664739884393085 ], [ 0.8660254037844387, 0.4999999999999999 ], [ -0.02502963594752705, 0.10115606936416192 ]]
 adj = [[1,6,3,4,2,5],[0,5,6],[0,4,3,5],[5,2,4,0,6],[0,3,2],[1,0,2,3,6],[1,5,3,0]]
+scini = 4
 
 const jscad = require('@jscad/modeling')
 const { colorize } = jscad.colors
@@ -14,14 +15,22 @@ function getParameterDefinitions() {
     { name: 'etype', type: 'int', initial: 3, min: 1, max: 3, step: 1, caption: 'etype:' },
     { name: 'sphere', type: 'checkbox', checked: true, initial: 1, caption: 'show sphere:' },
     { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
-    { name: 'sca', type: 'slider', initial: 4, min: 0, max: 6, step: 0.2, fps: 10,
-      live: true, autostart: false, loop:'reverse', caption: 'scale:'} 
+    { name: 'sca', type: 'slider', initial: scini, min: 0, max: 6, step: 0.2,
+      fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale:'}
   ];
 }
 
 sc = 10
 er = sc / 200
 sca = 2
+
+function _() { return vec3.create() }
+function ang(x,y,d) { return (vec3.dot(y, d) < 0 ? -1 : 1) * vec3.angle(x, d) }
+function colinear(v, w, m) {
+    mmv = vec3.subtract(_(), m, v)
+    wmv = vec3.subtract(_(), w, v)
+    return vec3.dot(mmv, wmv) == 0
+}
 
 function map_3D(x, y) {
     var a = Math.atan2(y, x);
@@ -80,50 +89,40 @@ function edge2(_p1, _p2) {
     // delta sigma_12
     // https://en.wikipedia.org/wiki/Great-circle_distance#Formulae
     s12 = Math.acos(Math.sin(ph1)*Math.sin(ph2)+Math.cos(ph1)*Math.cos(ph2)*Math.cos(l12))
-    return rotate([0, 0, la1],
-        rotate([0, -ph1, 0],
-            rotate([Math.PI/2-al1, 0, 0],
-                colorize([0, 0, 0.7],
-                    extrudeRotate({segments: 64, angle: s12},
-                        circle({radius: er, center: [sc,0]})
-                    )
+    return rotate([0, -ph1, la1],
+        rotate([Math.PI/2-al1, 0, 0],
+            colorize([0, 0, 0.7],
+                extrudeRotate({segments: 64, angle: s12},
+                    circle({radius: er, center: [sc,0]})
                 )
             )
         )
     )
 }
 
-function rotZ(v, a) { return [v[0]*Math.cos(a)-v[1]*Math.sin(a),v[0]*Math.sin(a)+v[1]*Math.cos(a),v[2]] }
-function rotY(v, a) { return [v[0]*Math.cos(a)-v[2]*Math.sin(a),v[1],v[0]*Math.sin(a)+v[2]*Math.cos(a)] }
-function angle(x,y,d) { return (vec3.dot(y, vec3.normalize(vec3.create(), d))<0?-1:1)*Math.acos(vec3.dot(x,vec3.normalize(vec3.create(),d))) }
-
 function edge3(_p1, _p2) {
     v = map_3D(coords[_p1][0], coords[_p1][1])
     w = map_3D(coords[_p2][0], coords[_p2][1])
     m = map_3D((coords[_p1][0]+coords[_p2][0])/2,
                (coords[_p1][1]+coords[_p2][1])/2)
-    mmv = vec3.subtract(vec3.create(), m, v)
-    wmv = vec3.subtract(vec3.create(), w, v)
-    if (vec3.dot(mmv, wmv) == 0) {
+    if (colinear(v, w, m)) {
         return edge2(_p1, _p2);
     }
     pla = plane.fromPoints(plane.create(), m, v, w);
-    c = vec3.scale(vec3.create(), pla, pla[3]);
+    c = vec3.scale(_(), pla, pla[3]);
     p = cart2pol(c, Math.abs(pla[3]))
-    vmc = vec3.subtract(vec3.create(), v, c)
-    wmc = vec3.subtract(vec3.create(), w, c)
+    vmc = vec3.subtract(_(), v, c)
+    wmc = vec3.subtract(_(), w, c)
     r = vec3.length(vmc)
-    x = rotZ(rotY([1,0,0],-p[1]),p[0])
-    y = rotZ(rotY([0,1,0],-p[1]),p[0])
+    x = vec3.rotateZ(_(), vec3.rotateY(_(), [1,0,0], [0,0,0], p[1]), [0,0,0], p[0])
+    y = vec3.rotateZ(_(), vec3.rotateY(_(), [0,1,0], [0,0,0], p[1]), [0,0,0], p[0])
     return [
         translate(c,
-            rotate([0,0,p[0]],
-                rotate([0,p[1],0],
-                    rotate([0,0,angle(x,y,vmc)],
-                        colorize([0,0,1],
-                            extrudeRotate({segments: 64, angle: angle(x,y,wmc)-angle(x,y,vmc)},
-                                circle({radius: er, center: [r,0]})
-                            )
+            rotate([0,p[1],p[0]],
+                rotate([0,0,ang(x,y,vmc)],
+                    colorize([0,0,1],
+                        extrudeRotate({segments: 64, angle: ang(x,y,wmc)-ang(x,y,vmc)},
+                            circle({radius: er, center: [r,0]})
                         )
                     )
                 )
@@ -143,13 +142,13 @@ function main(params) {
         )
     }
 
-    for(i=0; i<adj.length; ++i) {
+    for(i=0; i < adj.length; ++i) {
         // forall_vertices
 
         out.push(vertex(i))
 
-        for(j=0; j<adj[i].length; ++j) {
-            if (i<adj[i][j]) {
+        for(j=0; j < adj[i].length; ++j) {
+            if (i < adj[i][j]) {
                 // forall_edges
 
                 out.push(ef(i, adj[i][j]))
