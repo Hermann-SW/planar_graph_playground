@@ -4,6 +4,188 @@ var exports = {};
 var htmlsvg = exports;
 
 if (true) {
+    var params;
+    var jscad = `
+coords = []
+for(i=0; i<adj.length; ++i)  coords[i]=[coords_[0][i],coords_[1][i]]
+
+const jscad = require('@jscad/modeling')
+const { colorize } = jscad.colors
+const { cube, sphere, cylinder, circle } = jscad.primitives
+const { rotate, translate } = jscad.transforms
+const { vec2, vec3, plane } = jscad.maths
+const { extrudeRotate } = require('@jscad/modeling').extrusions
+const { subtract } = require('@jscad/modeling').booleans
+
+// init scale so that half of vertices are mapped above equator
+sorted = coords.slice()
+sorted.sort(function(a,b){return vec2.length(a)-vec2.length(b)})
+scini = 4 / (vec2.length(sorted[Math.floor((sorted.length-2)/2)]) +
+             vec2.length(sorted[Math.ceil((sorted.length-1)/2)]))
+
+// round scini according slider step
+scstep = 0.2
+scini = Math.round(scini * (1 / scstep)) / (1 / scstep)
+
+function getParameterDefinitions() {
+  return [
+    { name: 'etype', type: 'int', initial: 3, min: 1, max: 3, step: 1, caption: 'etype:' },
+    { name: 'sphere', type: 'checkbox', checked: true, initial: 1, caption: 'show sphere:' },
+    { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
+    { name: 'sca', type: 'slider', initial: scini, min: 0, max: 2*scini, step: scstep,
+      fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale:'}
+  ];
+}
+
+sc = 10
+er = sc / 200
+sca = 2
+
+function _() { return vec3.create() }
+function ang(x,y,d) { return (vec3.dot(y, d) < 0 ? -1 : 1) * vec3.angle(x, d) }
+function colinear(v, w, m) {
+    mmv = vec3.subtract(_(), m, v)
+    wmv = vec3.subtract(_(), w, v)
+    return vec3.dot(mmv, wmv) == 0
+}
+
+function map3D(x, y) {
+    var a = Math.atan2(y, x);
+    var L = sca*vec2.length([x, y]);
+    var X = L -L*(L*L/(4+L*L));
+    var Y = 2*(L*L/(4+L*L))- 1;
+    return [sc * Math.cos(a) * X, sc * Math.sin(a) * X, sc * Y];
+}
+
+function cart2pol(p, f=sc) {
+    return [Math.atan2(p[1],p[0]), Math.acos(p[2]/f)];
+}
+
+function vertex(_v) {
+    p = coords[_v] 
+    v = map3D(p[0],p[1])
+    s = sphere({radius: 3*er, center: v})
+    return colorize([0, 0.7, 0], s)
+}
+
+function edge(_v, _w, plan=false) {
+    if (plan) {
+        v = _v
+        w = _w
+    } else {
+        v = map3D(coords[_v][0], coords[_v][1])
+        w = map3D(coords[_w][0], coords[_w][1])
+    }
+    d = [0, 0, 0]
+    x = [0, 0, 0]
+    jscad.maths.vec3.subtract(d, w, v)
+    vec3.add(x, v, w)
+    vec3.scale(w, x, 0.5)
+    return colorize([0, 0, 1, 1], 
+        translate(w, 
+            rotate([0, Math.acos(d[2]/vec3.length(d)), Math.atan2(d[1], d[0])],
+                cylinder({radius: er, height: vec3.length(d)})
+            )
+        )
+    )
+}
+
+function edge2(_p1, _p2) {
+    v = map3D(coords[_p1][0], coords[_p1][1])
+    w = map3D(coords[_p2][0], coords[_p2][1])
+    p1 = cart2pol(v)
+    p2 = cart2pol(w)
+    // al/la/ph: alpha/lambda/phi | lxy/sxy: delta lambda_xy/sigma_xy
+    // https://en.wikipedia.org/wiki/Great-circle_navigation#Course
+    la1 = p1[0]
+    la2 = p2[0]
+    l12 = la2 - la1
+    ph1 = Math.PI/2 - p1[1]
+    ph2 = Math.PI/2 - p2[1]
+    al1 = Math.atan2(Math.cos(ph2)*Math.sin(l12), Math.cos(ph1)*Math.sin(ph2)-Math.sin(ph1)*Math.cos(ph2)*Math.cos(l12))
+    // delta sigma_12
+    // https://en.wikipedia.org/wiki/Great-circle_distance#Formulae
+    s12 = Math.acos(Math.sin(ph1)*Math.sin(ph2)+Math.cos(ph1)*Math.cos(ph2)*Math.cos(l12))
+    return rotate([0, -ph1, la1],
+        rotate([Math.PI/2-al1, 0, 0],
+            colorize([0, 0, 0.7],
+                extrudeRotate({segments: 64, angle: s12},
+                    circle({radius: er, center: [sc,0]})
+                )
+            )
+        )
+    )
+}
+
+function edge3(_p1, _p2) {
+    v = map3D(coords[_p1][0], coords[_p1][1])
+    w = map3D(coords[_p2][0], coords[_p2][1])
+    m = map3D((coords[_p1][0]+coords[_p2][0])/2,
+               (coords[_p1][1]+coords[_p2][1])/2)
+    if (colinear(v, w, m)) {
+        return edge2(_p1, _p2);
+    }
+    pla = plane.fromPoints(plane.create(), m, v, w);
+    c = vec3.scale(_(), pla, pla[3]);
+    p = cart2pol(c, Math.abs(pla[3]))
+    vmc = vec3.subtract(_(), v, c)
+    wmc = vec3.subtract(_(), w, c)
+    r = vec3.length(vmc)
+    x = vec3.rotateZ(_(), vec3.rotateY(_(), [1,0,0], [0,0,0], p[1]), [0,0,0], p[0])
+    y = vec3.rotateZ(_(), vec3.rotateY(_(), [0,1,0], [0,0,0], p[1]), [0,0,0], p[0])
+    return [
+        translate(c,
+            rotate([0,p[1],p[0]],
+                rotate([0,0,ang(x,y,vmc)],
+                    colorize([0,0,1],
+                        extrudeRotate({segments: 64, angle: ang(x,y,wmc)-ang(x,y,vmc)},
+                            circle({radius: er, center: [r,0]})
+                        )
+                    )
+                )
+            )
+        )
+    ]
+}
+
+function main(params) {
+    out=[]
+
+    sca = params.sca
+    ef = (params.etype == 1) ? edge : (params.etype == 2) ? edge2 : edge3;
+    if (params.sphere) {
+        out.push(colorize([1,1,1],
+            sphere({radius: sc-1, segments: 30}))
+        )
+    }
+
+    for(i=0; i < adj.length; ++i) {
+        // forall_vertices
+
+        out.push(vertex(i))
+
+        for(j=0; j < adj[i].length; ++j) {
+            if (i < adj[i][j]) {
+                // forall_edges
+
+                out.push(ef(i, adj[i][j]))
+
+                if (params.plan) {
+                    out.push(colorize([0,0,0],edge(
+                      [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc],
+                      [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc],
+                      true)))
+                }
+            }
+        }
+    }
+
+    return out
+}
+
+module.exports = { main, getParameterDefinitions }
+`
+
     exports.straight_line_drawing = function (G, coords, pent, length, r, outer, dual) {
         var bx;
         var by;
@@ -115,6 +297,8 @@ if (true) {
         document.write('" stroke="blue" strokeThickness="1" fill="none"/>');
 
         document.write('</svg>');
+        params = "coords_ = " + JSON.stringify(coords) + "\n" +
+                 "adj = " + JSON.stringify(to_adjacency_lists(G)) + "\n";
     };
 
     exports.header = function (selInd, slider, slider2, hidden, check) {
@@ -163,7 +347,7 @@ if (true) {
 
         if (!hidden) {
             document.write('Clicking on an edge redraws with that edge being top right edge. Its vertex closer to mouse pointer becomes top vertex.');
-        document.write("<div><a href=\"https://jscad.app/#https://raw.githubusercontent.com/Hermann-SW/planar_graph_playground/main/sphere_draw.jscad\">stereographic projection</a>&nbsp;&nbsp;");
+        document.write("<div><a href=\"javascript:window.location.href='https:///jscad.app/#data:application/json,'+encodeURIComponent(params+jscad)\">stereographic projection</a>&nbsp;&nbsp;");
             document.write('<label for="myRange">factor: </label><input type="range" min="50" max="120" value="' + slider + '" id="myRange" name="myRangeN" onInput="javascript:doi(' + selInd + ')">');
         }
 
