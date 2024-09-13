@@ -2,13 +2,13 @@ const jscad = require('@jscad/modeling')
 const { colorize } = jscad.colors
 const { cube, sphere, cylinder, circle } = jscad.primitives
 const { rotate, translate } = jscad.transforms
-const { vec2, vec3 } = jscad.maths
+const { vec2, vec3, plane } = jscad.maths
 const { extrudeRotate } = require('@jscad/modeling').extrusions
 const { subtract } = require('@jscad/modeling').booleans
 
 function getParameterDefinitions() {
   return [
-    { name: 'etype', type: 'int', initial: 2, min: 1, max: 2, step: 1, caption: 'etype:' },
+    { name: 'etype', type: 'int', initial: 3, min: 1, max: 3, step: 1, caption: 'etype:' },
     { name: 'sphere', type: 'checkbox', checked: true, initial: 1, caption: 'show sphere:' },
     { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
     { name: 'sca', type: 'slider', initial: 4, min: 0, max: 6, step: 0.2, fps: 10,
@@ -30,6 +30,10 @@ function map_3D(x, y) {
 
 function cart2pol(p) {
     return [Math.atan2(p[1],p[0]), Math.acos(p[2]/sc)];
+}
+
+function cart2pol2(p) {
+    return [Math.atan2(p[1],p[0]), Math.acos(p[2]/vec3.length(p))]
 }
 
 coords =[
@@ -102,11 +106,46 @@ function edge2(_p1, _p2) {
     )
 }
 
+function rotZ(v, a) { return [v[0]*Math.cos(a)-v[1]*Math.sin(a),v[0]*Math.sin(a)+v[1]*Math.cos(a),v[2]] }
+function rotY(v, a) { return [v[0]*Math.cos(a)-v[2]*Math.sin(a),v[1],v[0]*Math.sin(a)+v[2]*Math.cos(a)] }
+function dot3D(v,w) { return v[0]*w[0]+v[1]*w[1]+v[2]*w[2] }
+function angle(x,y,d) { return (dot3D(y, vec3.normalize(vec3.create(), d))<0?-1:1)*Math.acos(dot3D(x,vec3.normalize(vec3.create(),d))) }
+
+function edge3(_p1, _p2) {
+    v = map_3D(coords[_p1][0], coords[_p1][1])
+    w = map_3D(coords[_p2][0], coords[_p2][1])
+    m = map_3D((coords[_p1][0]+coords[_p2][0])/2,
+               (coords[_p1][1]+coords[_p2][1])/2)
+    pla = plane.fromPoints(plane.create(), m, v, w);
+    c = vec3.scale(vec3.create(), pla, pla[3]);
+    p = cart2pol2(c)
+    vmc = vec3.subtract(vec3.create(), v, c)
+    wmc = vec3.subtract(vec3.create(), w, c)
+    r = vec3.length(vmc)
+    x = rotZ(rotY([1,0,0],-p[1]),p[0])
+    y = rotZ(rotY([0,1,0],-p[1]),p[0])
+    return [
+        translate(c,
+            rotate([0,0,p[0]],
+                rotate([0,p[1],0],
+                    rotate([0,0,angle(x,y,vmc)],
+                        colorize([0,0,1],
+                            extrudeRotate({segments: 64, angle: angle(x,y,wmc)-angle(x,y,vmc)},
+                                circle({radius: er, center: [r,0]})
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    ]
+}
+
 function main(params) {
     out=[]
 
     sca = params.sca
-    ef = (params.etype == 1) ? edge : edge2;
+    ef = (params.etype == 1) ? edge : (params.etype == 2) ? edge2 : edge3;
     if (params.sphere) {
         out.push(colorize([1,1,1],
             sphere({radius: sc-1, segments: 30}))
@@ -114,16 +153,22 @@ function main(params) {
     }
 
     for(i=0; i<adj.length; ++i) {
+        // forall_vertices
+
         out.push(vertex(i))
 
         for(j=0; j<adj[i].length; ++j) {
-            out.push(ef(i, adj[i][j]))
+            if (i<adj[i][j]) {
+                // forall_edges
 
-            if (params.plan) {
-                out.push(colorize([0,0,0],edge(
-                  [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc],
-                  [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc],
-                  true)))
+                out.push(ef(i, adj[i][j]))
+
+                if (params.plan) {
+                    out.push(colorize([0,0,0],edge(
+                      [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc],
+                      [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc],
+                      true)))
+                }
             }
         }
     }
