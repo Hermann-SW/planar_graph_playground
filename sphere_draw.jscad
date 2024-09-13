@@ -116,6 +116,11 @@ function edge3(_p1, _p2) {
     w = map_3D(coords[_p2][0], coords[_p2][1])
     m = map_3D((coords[_p1][0]+coords[_p2][0])/2,
                (coords[_p1][1]+coords[_p2][1])/2)
+    mmv = vec3.subtract(vec3.create(), m, v)
+    wmv = vec3.subtract(vec3.create(), w, v)
+    if (dot3D(mmv, wmv) == 0) {
+        return edge2(_p1, _p2);
+    }
     pla = plane.fromPoints(plane.create(), m, v, w);
     c = vec3.scale(vec3.create(), pla, pla[3]);
     p = cart2pol2(c)
