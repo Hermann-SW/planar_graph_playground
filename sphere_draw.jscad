@@ -95,8 +95,7 @@ function edge2(_p1, _p2) {
 
 function rotZ(v, a) { return [v[0]*Math.cos(a)-v[1]*Math.sin(a),v[0]*Math.sin(a)+v[1]*Math.cos(a),v[2]] }
 function rotY(v, a) { return [v[0]*Math.cos(a)-v[2]*Math.sin(a),v[1],v[0]*Math.sin(a)+v[2]*Math.cos(a)] }
-function dot3D(v,w) { return v[0]*w[0]+v[1]*w[1]+v[2]*w[2] }
-function angle(x,y,d) { return (dot3D(y, vec3.normalize(vec3.create(), d))<0?-1:1)*Math.acos(dot3D(x,vec3.normalize(vec3.create(),d))) }
+function angle(x,y,d) { return (vec3.dot(y, vec3.normalize(vec3.create(), d))<0?-1:1)*Math.acos(vec3.dot(x,vec3.normalize(vec3.create(),d))) }
 
 function edge3(_p1, _p2) {
     v = map_3D(coords[_p1][0], coords[_p1][1])
@@ -105,7 +104,7 @@ function edge3(_p1, _p2) {
                (coords[_p1][1]+coords[_p2][1])/2)
     mmv = vec3.subtract(vec3.create(), m, v)
     wmv = vec3.subtract(vec3.create(), w, v)
-    if (dot3D(mmv, wmv) == 0) {
+    if (vec3.dot(mmv, wmv) == 0) {
         return edge2(_p1, _p2);
     }
     pla = plane.fromPoints(plane.create(), m, v, w);
