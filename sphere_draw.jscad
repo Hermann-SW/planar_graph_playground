@@ -9,10 +9,13 @@ const { vec2, vec3, plane } = jscad.maths
 const { extrudeRotate } = require('@jscad/modeling').extrusions
 const { subtract } = require('@jscad/modeling').booleans
 
+// init scale so that half of vertices are mapped above equator
 sorted = coords.slice()
 sorted.sort(function(a,b){return vec2.length(a)-vec2.length(b)})
 scini = 4 / (vec2.length(sorted[Math.floor((sorted.length-2)/2)]) +
              vec2.length(sorted[Math.ceil((sorted.length-1)/2)]))
+
+// round scini according slider step=0.2
 scini = Math.round(5 * scini) / 5
 
 function getParameterDefinitions() {
