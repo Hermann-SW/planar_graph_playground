@@ -1,6 +1,5 @@
 coords =[[ -0.8660254037844385, 0.5000000000000003 ], [ 1.2246467991473532e-16, -1 ], [ -0.1151363253586247, 0.4653179190751446 ], [ -0.10011854379010833, 0.40462427745664753 ], [ -0.36042675764439047, 0.45664739884393085 ], [ 0.8660254037844387, 0.4999999999999999 ], [ -0.02502963594752705, 0.10115606936416192 ]]
 adj = [[1,6,3,4,2,5],[0,5,6],[0,4,3,5],[5,2,4,0,6],[0,3,2],[1,0,2,3,6],[1,5,3,0]]
-scini = 4
 
 const jscad = require('@jscad/modeling')
 const { colorize } = jscad.colors
@@ -9,6 +8,12 @@ const { rotate, translate } = jscad.transforms
 const { vec2, vec3, plane } = jscad.maths
 const { extrudeRotate } = require('@jscad/modeling').extrusions
 const { subtract } = require('@jscad/modeling').booleans
+
+sorted = coords.slice()
+sorted.sort(function(a,b){return vec2.length(a)-vec2.length(b)})
+scini = 4 / (vec2.length(sorted[Math.floor((sorted.length-2)/2)]) +
+             vec2.length(sorted[Math.ceil((sorted.length-1)/2)]))
+scini = Math.round(5 * scini) / 5
 
 function getParameterDefinitions() {
   return [
@@ -32,11 +37,11 @@ function colinear(v, w, m) {
     return vec3.dot(mmv, wmv) == 0
 }
 
-function map_3D(x, y) {
+function map3D(x, y) {
     var a = Math.atan2(y, x);
-    var l = sca*vec2.length([x, y]);
-    var X = l -l*(l*l/(4+l*l));
-    var Y = 2*(l*l/(4+l*l))- 1;
+    var L = sca*vec2.length([x, y]);
+    var X = L -L*(L*L/(4+L*L));
+    var Y = 2*(L*L/(4+L*L))- 1;
     return [sc * Math.cos(a) * X, sc * Math.sin(a) * X, sc * Y];
 }
 
@@ -46,7 +51,7 @@ function cart2pol(p, f=sc) {
 
 function vertex(_v) {
     p = coords[_v] 
-    v = map_3D(p[0],p[1])
+    v = map3D(p[0],p[1])
     s = sphere({radius: 3*er, center: v})
     return colorize([0, 0.7, 0], s)
 }
@@ -56,8 +61,8 @@ function edge(_v, _w, plan=false) {
         v = _v
         w = _w
     } else {
-        v = map_3D(coords[_v][0], coords[_v][1])
-        w = map_3D(coords[_w][0], coords[_w][1])
+        v = map3D(coords[_v][0], coords[_v][1])
+        w = map3D(coords[_w][0], coords[_w][1])
     }
     d = [0, 0, 0]
     x = [0, 0, 0]
@@ -74,8 +79,8 @@ function edge(_v, _w, plan=false) {
 }
 
 function edge2(_p1, _p2) {
-    v = map_3D(coords[_p1][0], coords[_p1][1])
-    w = map_3D(coords[_p2][0], coords[_p2][1])
+    v = map3D(coords[_p1][0], coords[_p1][1])
+    w = map3D(coords[_p2][0], coords[_p2][1])
     p1 = cart2pol(v)
     p2 = cart2pol(w)
     // al/la/ph: alpha/lambda/phi | lxy/sxy: delta lambda_xy/sigma_xy
@@ -101,9 +106,9 @@ function edge2(_p1, _p2) {
 }
 
 function edge3(_p1, _p2) {
-    v = map_3D(coords[_p1][0], coords[_p1][1])
-    w = map_3D(coords[_p2][0], coords[_p2][1])
-    m = map_3D((coords[_p1][0]+coords[_p2][0])/2,
+    v = map3D(coords[_p1][0], coords[_p1][1])
+    w = map3D(coords[_p2][0], coords[_p2][1])
+    m = map3D((coords[_p1][0]+coords[_p2][0])/2,
                (coords[_p1][1]+coords[_p2][1])/2)
     if (colinear(v, w, m)) {
         return edge2(_p1, _p2);
