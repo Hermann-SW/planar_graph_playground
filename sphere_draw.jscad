@@ -9,7 +9,7 @@ const { subtract } = require('@jscad/modeling').booleans
 function getParameterDefinitions() {
   return [
     { name: 'etype', type: 'int', initial: 2, min: 1, max: 2, step: 1, caption: 'etype:' },
-    { name: 'white', type: 'checkbox', checked: true, initial: 1, caption: 'surface of sphere:' },
+    { name: 'sphere', type: 'checkbox', checked: true, initial: 1, caption: 'show sphere:' },
     { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
     { name: 'sca', type: 'slider', initial: 4, min: 0, max: 6, step: 0.2, fps: 10,
       live: true, autostart: false, loop:'reverse', caption: 'scale:'} 
@@ -103,19 +103,19 @@ function edge2(_p1, _p2) {
 }
 
 function main(params) {
-    sca = params.sca
-  
-    white = (!params.white) ? [] : [
-        colorize([1,1,1],
-            sphere({radius: sc-1, segments: 30})
-        )
-    ]
-
     out=[]
-    ef = edge2;
-    if (params.etype == 1)  ef = edge;
+
+    sca = params.sca
+    ef = (params.etype == 1) ? edge : edge2;
+    if (params.sphere) {
+        out.push(colorize([1,1,1],
+            sphere({radius: sc-1, segments: 30}))
+        )
+    }
 
     for(i=0; i<adj.length; ++i) {
+        out.push(vertex(i))
+
         for(j=0; j<adj[i].length; ++j) {
             out.push(ef(i, adj[i][j]))
 
@@ -127,9 +127,8 @@ function main(params) {
             }
         }
     }
-    for(i=0; i<adj.length; ++i) { out.push(vertex(i)) }
 
-    return [out, white]
+    return out
 }
 
 module.exports = { main, getParameterDefinitions }
