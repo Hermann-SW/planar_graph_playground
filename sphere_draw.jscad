@@ -11,7 +11,8 @@ const { subtract } = require('@jscad/modeling').booleans
 function getParameterDefinitions() {
   return [
     { name: 'etype', type: 'int', initial: 2, min: 1, max: 2, step: 1, caption: 'etype:' },
-    { name: 'white', type: 'checkbox', checked: true, initial: '20', caption: 'surface of sphere:' },
+    { name: 'white', type: 'checkbox', checked: true, initial: 1, caption: 'surface of sphere:' },
+    { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
     { name: 'sca', type: 'slider', initial: 4, min: 0, max: 6, step: 0.2, fps: 10,
       live: true, autostart: false, loop:'reverse', caption: 'scale:'} 
   ];
@@ -53,9 +54,14 @@ function vertex(_v) {
     return colorize([0, 0.7, 0], s)
 }
 
-function edge(_v, _w) {
-    v = map_3D(coords[_v][0], coords[_v][1])
-    w = map_3D(coords[_w][0], coords[_w][1])
+function edge(_v, _w, plan=false) {
+    if (plan) {
+        v = _v
+        w = _w
+    } else {
+        v = map_3D(coords[_v][0], coords[_v][1])
+        w = map_3D(coords[_w][0], coords[_w][1])
+    }
     d = [0, 0, 0]
     x = [0, 0, 0]
     jscad.maths.vec3.subtract(d, w, v)
@@ -119,6 +125,13 @@ function main(params) {
     for(i=0; i<adj.length; ++i) {
         for(j=0; j<adj[i].length; ++j) {
             out.push(ef(i, adj[i][j]))
+
+            if (params.plan) {
+                out.push(colorize([0,0,0],edge(
+                  [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc],
+                  [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc],
+                  true)))
+            }
         }
     }
     for(i=0; i<adj.length; ++i) { out.push(vertex(i)) }
