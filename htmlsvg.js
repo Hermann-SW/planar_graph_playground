@@ -6,9 +6,6 @@ var htmlsvg = exports;
 if (true) {
     var params;
     var jscad = `
-coords = []
-for(i=0; i<adj.length; ++i)  coords[i]=[coords_[0][i],coords_[1][i]]
-
 const jscad = require('@jscad/modeling')
 const { colorize } = jscad.colors
 const { cube, sphere, cylinder, circle } = jscad.primitives
@@ -61,12 +58,17 @@ function cart2pol(p, f=sc) {
     return [Math.atan2(p[1],p[0]), Math.acos(p[2]/f)];
 }
 
+let cachedSphere = sphere({radius:3*er})
+
 function vertex(_v) {
     p = coords[_v] 
     v = map3D(p[0],p[1])
-    s = sphere({radius: 3*er, center: v})
+//    s = sphere({radius: 3*er, center: v})
+    s = translate(v, cachedSphere)
     return colorize([0, 0.7, 0], s)
 }
+
+let edgeCylinder = cylinder({radius:er, height:1})
 
 function edge(_v, _w, plan=false) {
     if (plan) {
@@ -84,7 +86,8 @@ function edge(_v, _w, plan=false) {
     return colorize([0, 0, 1, 1], 
         translate(w, 
             rotate([0, Math.acos(d[2]/vec3.length(d)), Math.atan2(d[1], d[0])],
-                cylinder({radius: er, height: vec3.length(d)})
+//                cylinder({radius: er, height: vec3.length(d)})
+                jscad.transforms.scale([1, 1, vec3.length(d)], edgeCylinder)
             )
         )
     )
@@ -108,11 +111,12 @@ function edge2(_p1, _p2) {
     s12 = Math.acos(Math.sin(ph1)*Math.sin(ph2)+Math.cos(ph1)*Math.cos(ph2)*Math.cos(l12))
     return rotate([0, -ph1, la1],
         rotate([Math.PI/2-al1, 0, 0],
-            colorize([0, 0, 0.7],
-                extrudeRotate({segments: 64, angle: s12},
-                    circle({radius: er, center: [sc,0]})
-                )
-            )
+//            colorize([0, 0, 0.7],
+//                extrudeRotate({segments: 64, angle: s12},
+//                    circle({radius: er, center: [sc,0]})
+//                )
+//            )
+            makeArc2(sc, s12, 64)
         )
     )
 }
@@ -137,15 +141,50 @@ function edge3(_p1, _p2) {
         translate(c,
             rotate([0,p[1],p[0]],
                 rotate([0,0,ang(x,y,vmc)],
-                    colorize([0,0,1],
-                        extrudeRotate({segments: 64, angle: ang(x,y,wmc)-ang(x,y,vmc)},
-                            circle({radius: er, center: [r,0]})
-                        )
-                    )
+//                    colorize([0,0,1],
+//                        extrudeRotate({segments: 64, angle: ang(x,y,wmc)-ang(x,y,vmc)},
+//                            circle({radius: er, center: [r,0]})
+//                        )
+//                    )
+                    makeArc2(r, ang(x,y,wmc)-ang(x,y,vmc), 64)
                 )
             )
         )
     ]
+}
+
+// cool "makeArc2()" replaces "extrudeRotate()", from hrgdavor@gmail.com
+//
+let cachedCylinder = rotate([-Math.PI/2,0,0],cylinder({radius:er, height:1, center:[0,0,0.5]}))
+
+function makeArc2(radius, angle, segments=64) {
+    let correction = 0
+    if(angle < 0){
+        correction = angle
+        angle *= -1
+    }
+    // match how jscad calculates segments
+    let stepA = Math.PI/(segments)*2
+    let steps = Math.ceil(angle / stepA)
+    stepA = angle / steps
+  
+    let offset = 0, next=0
+    let out = []
+    while(offset < angle){
+        next += stepA
+        if(next > angle) next=angle
+        let len = (next-offset) * radius
+        let x = Math.cos(offset) * radius
+        let y = Math.sin(offset) * radius
+        let part = colorize([0,0,1],translate([x,y,0],rotate([0,0,(next-(next-offset)/2)],
+            jscad.transforms.scale([1,len,1], cachedCylinder)
+        )))
+    
+        out.push( correction ? rotate([0,0,correction], part):part)
+        offset = next
+    }
+    if(!out.length) { alert("plaese report this problem"); return [] }
+    return out
 }
 
 function main(params) {
@@ -297,7 +336,10 @@ module.exports = { main, getParameterDefinitions }
         document.write('" stroke="blue" strokeThickness="1" fill="none"/>');
 
         document.write('</svg>');
-        params = "coords_ = " + JSON.stringify(coords) + "\n" +
+
+        var coords_ = []
+        for(var i=0; i<coords[0].length; ++i)  coords_[i]=[coords[0][i],coords[1][i]]
+        params = "coords = " + JSON.stringify(coords_) + "\n" +
                  "adj = " + JSON.stringify(to_adjacency_lists(G)) + "\n";
     };
 

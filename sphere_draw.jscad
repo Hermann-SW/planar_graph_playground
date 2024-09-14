@@ -1,4 +1,4 @@
-coords =[[ -0.8660254037844385, 0.5000000000000003 ], [ 1.2246467991473532e-16, -1 ], [ -0.1151363253586247, 0.4653179190751446 ], [ -0.10011854379010833, 0.40462427745664753 ], [ -0.36042675764439047, 0.45664739884393085 ], [ 0.8660254037844387, 0.4999999999999999 ], [ -0.02502963594752705, 0.10115606936416192 ]]
+coords = [[1.2246467991473532e-16,-1],[0.8660254037844387,0.4999999999999999],[-0.34540897607587423,-0.33236994219653165],[-0.3003556313703254,-0.2890173410404623],[-0.21525486914873318,-0.5404624277456647],[-0.8660254037844385,0.5000000000000003],[-0.07508890784258128,-0.07225433526011554]]
 adj = [[1,6,3,4,2,5],[0,5,6],[0,4,3,5],[5,2,4,0,6],[0,3,2],[1,0,2,3,6],[1,5,3,0]]
 
 const jscad = require('@jscad/modeling')
@@ -24,7 +24,7 @@ function getParameterDefinitions() {
     { name: 'etype', type: 'int', initial: 3, min: 1, max: 3, step: 1, caption: 'etype:' },
     { name: 'sphere', type: 'checkbox', checked: true, initial: 1, caption: 'show sphere:' },
     { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
-    { name: 'sca', type: 'slider', initial: scini, min: 0, max: 6, step: scstep,
+    { name: 'sca', type: 'slider', initial: scini, min: 0, max: 2*scini, step: scstep,
       fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale:'}
   ];
 }
@@ -53,12 +53,17 @@ function cart2pol(p, f=sc) {
     return [Math.atan2(p[1],p[0]), Math.acos(p[2]/f)];
 }
 
+let cachedSphere = sphere({radius:3*er})
+
 function vertex(_v) {
     p = coords[_v] 
     v = map3D(p[0],p[1])
-    s = sphere({radius: 3*er, center: v})
+//    s = sphere({radius: 3*er, center: v})
+    s = translate(v, cachedSphere)
     return colorize([0, 0.7, 0], s)
 }
+
+let edgeCylinder = cylinder({radius:er, height:1})
 
 function edge(_v, _w, plan=false) {
     if (plan) {
@@ -76,7 +81,8 @@ function edge(_v, _w, plan=false) {
     return colorize([0, 0, 1, 1], 
         translate(w, 
             rotate([0, Math.acos(d[2]/vec3.length(d)), Math.atan2(d[1], d[0])],
-                cylinder({radius: er, height: vec3.length(d)})
+//                cylinder({radius: er, height: vec3.length(d)})
+                jscad.transforms.scale([1, 1, vec3.length(d)], edgeCylinder)
             )
         )
     )
@@ -100,11 +106,12 @@ function edge2(_p1, _p2) {
     s12 = Math.acos(Math.sin(ph1)*Math.sin(ph2)+Math.cos(ph1)*Math.cos(ph2)*Math.cos(l12))
     return rotate([0, -ph1, la1],
         rotate([Math.PI/2-al1, 0, 0],
-            colorize([0, 0, 0.7],
-                extrudeRotate({segments: 64, angle: s12},
-                    circle({radius: er, center: [sc,0]})
-                )
-            )
+//            colorize([0, 0, 0.7],
+//                extrudeRotate({segments: 64, angle: s12},
+//                    circle({radius: er, center: [sc,0]})
+//                )
+//            )
+            makeArc2(sc, s12, 64)
         )
     )
 }
@@ -129,15 +136,50 @@ function edge3(_p1, _p2) {
         translate(c,
             rotate([0,p[1],p[0]],
                 rotate([0,0,ang(x,y,vmc)],
-                    colorize([0,0,1],
-                        extrudeRotate({segments: 64, angle: ang(x,y,wmc)-ang(x,y,vmc)},
-                            circle({radius: er, center: [r,0]})
-                        )
-                    )
+//                    colorize([0,0,1],
+//                        extrudeRotate({segments: 64, angle: ang(x,y,wmc)-ang(x,y,vmc)},
+//                            circle({radius: er, center: [r,0]})
+//                        )
+//                    )
+                    makeArc2(r, ang(x,y,wmc)-ang(x,y,vmc), 64)
                 )
             )
         )
     ]
+}
+
+// cool "makeArc2()" replaces "extrudeRotate()", from hrgdavor@gmail.com
+//
+let cachedCylinder = rotate([-Math.PI/2,0,0],cylinder({radius:er, height:1, center:[0,0,0.5]}))
+
+function makeArc2(radius, angle, segments=64) {
+    let correction = 0
+    if(angle < 0){
+        correction = angle
+        angle *= -1
+    }
+    // match how jscad calculates segments
+    let stepA = Math.PI/(segments)*2
+    let steps = Math.ceil(angle / stepA)
+    stepA = angle / steps
+  
+    let offset = 0, next=0
+    let out = []
+    while(offset < angle){
+        next += stepA
+        if(next > angle) next=angle
+        let len = (next-offset) * radius
+        let x = Math.cos(offset) * radius
+        let y = Math.sin(offset) * radius
+        let part = colorize([0,0,1],translate([x,y,0],rotate([0,0,(next-(next-offset)/2)],
+            jscad.transforms.scale([1,len,1], cachedCylinder)
+        )))
+    
+        out.push( correction ? rotate([0,0,correction], part):part)
+        offset = next
+    }
+    if(!out.length) { alert("plaese report this problem"); return [] }
+    return out
 }
 
 function main(params) {
