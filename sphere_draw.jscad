@@ -14,6 +14,7 @@ sorted = coords.slice()
 sorted.sort(function(a,b){return vec2.length(a)-vec2.length(b)})
 scini = 4 / (vec2.length(sorted[Math.floor((sorted.length-2)/2)]) +
              vec2.length(sorted[Math.ceil((sorted.length-1)/2)]))
+scini -= 2
 
 // round scini according slider step
 scstep = 0.2
@@ -25,7 +26,7 @@ function getParameterDefinitions() {
     { name: 'sphere', type: 'checkbox', checked: true, initial: 1, caption: 'show sphere:' },
     { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
     { name: 'sca', type: 'slider', initial: scini, min: 0, max: 2*scini, step: scstep,
-      fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale:'}
+      fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale (+2):'}
   ];
 }
 
@@ -185,7 +186,7 @@ function makeArc2(radius, angle, segments=64) {
 function main(params) {
     out=[]
 
-    sca = params.sca
+    sca = params.sca + 2
     ef = (params.etype == 1) ? edge : (params.etype == 2) ? edge2 : edge3;
     if (params.sphere) {
         out.push(colorize([1,1,1],
