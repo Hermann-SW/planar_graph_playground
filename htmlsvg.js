@@ -410,7 +410,7 @@ module.exports = { main, getParameterDefinitions }
 
         if (!hidden) {
             document.write('Clicking on an edge redraws with that edge being top right edge. Its vertex closer to mouse pointer becomes top vertex.');
-        document.write("<div><button onclick=\"javascript:window.open('https:///jscad.app/#data:application/json,'+encodeURIComponent(params+jscad),'_spherical_embedding')\">stereographic projection</button>&nbsp;&nbsp;");
+        document.write("<div><button onclick=\"javascript:window.open('https:///jscad.app/#data:application/json,'+encodeURIComponent(params+jscad+'// '+Date.now()+'\n'),'_spherical_embedding')\">stereographic projection</button>&nbsp;&nbsp;");
             document.write('<label for="myRange">factor: </label><input type="range" min="50" max="120" value="' + slider + '" id="myRange" name="myRangeN" onInput="javascript:doi(' + selInd + ')">');
         }
 
