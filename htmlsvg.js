@@ -30,7 +30,7 @@ function getParameterDefinitions() {
     { name: 'etype', type: 'int', initial: 3, min: 1, max: 3, step: 1, caption: 'etype:' },
     { name: 'sphere', type: 'checkbox', checked: true, initial: 1, caption: 'show sphere:' },
     { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
-    { name: 'sca', type: 'slider', initial: scini, min: 0, max: 2*scini, step: scstep,
+    { name: 'sca', type: 'slider', initial: scini, min: 0, max: 2*scini+2, step: scstep,
       fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale (+2):'}
   ];
 }
