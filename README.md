@@ -89,6 +89,22 @@ Just learned how to setup Github Pages, and how to add submodule. After few minu
 Peek screenrecorder animated .gif showcasing initial application:  
 ![Initial demo](res/Peek_2022-04-07_04-28.gif)
 
+Clicking "stereographic projection" button opens JSCAD stereographic projection of current graph in a named browser tab:  
+![res/stereographic_projection.button.gif](res/stereographic_projection.button.gif)
+
+JSCAD application allows to select three edge types:  
+1. straight line  
+2. great circle arc
+3. spherical circle arc (needed for stereographic projection)
+
+Bottom black planar graph (in z=-1 plane) can be scaled with (animation) slider.  
+Scale factor determines the stereographic mapping.  
+Initial scale factor is computed so that half of the vertices get mapped above the equator:  
+![res/stereographic_projection.jscad_animation.gif](res/stereographic_projection.jscad_animation.gif)
+
+First maximal planar graph on 7 vertices mp7 demonstrates that stereographic (north pole) projection is crossing free, while selecting great circle arcs as edges (etype=2) shows an edge crossing (for these vertex coordinates):  
+![res/stereographic_projection.mp7.png](res/stereographic_projection.mp7.png)
+
 ### new edge representation allows for better edge selection
 
 Latest commits made edge selection different. Now you just cick on an edge,
