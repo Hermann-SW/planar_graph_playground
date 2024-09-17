@@ -146,6 +146,21 @@ Try it out:
 https://jscad.app/#https://raw.githubusercontent.com/Hermann-SW/planar_graph_playground/main/convex_face_straight_line_drawing.jscad
 ![res/convex_face_straight_line_drawing.JSCAD.png](res/convex_face_straight_line_drawing.JSCAD.png)
 
+### 3Dprint of slightly changed JSCAD model
+
+This little change replacing cylinder with cuboid for the edges  
+```
+< let edgeCylinder = cylinder({radius:er, height:1})
+---
+> let edgeCylinder = cuboid({size:[er,er,1],center:[2.5*er,0,0]})
+```
+and moving edges down to bottom of vertex spheres (and recoloring for better view) makes better 3Dprint:  
+![res/convex_face_straight_line_drawing.JSCAD.3Dprint.png](res/convex_face_straight_line_drawing.JSCAD.3Dprint.png)  
+I just exported with JSCAD as STL, sliced with Prusaslicer and 3Dprinted.  
+
+Flat dodecahedron (C20) next to its 3D toothpick version:  
+![res/convex_face_straight_line_drawing.JSCAD.3Dprint.photo_10pc.png](res/convex_face_straight_line_drawing.JSCAD.3Dprint.photo_10pc.png)
+
 ## Executing JavaScript with C #include statements using rjs tool
 
 Since the shown JavaScript files are for browser, they do not have module 
