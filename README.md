@@ -124,6 +124,27 @@ Initial scale factor is computed so that half of the vertices get mapped above t
 First maximal planar graph on 7 vertices mp7 demonstrates that stereographic (north pole) projection is crossing free, while selecting great circle arcs as edges (etype=2) shows an edge crossing (for these vertex coordinates):  
 ![res/stereographic_projection.mp7.png](res/stereographic_projection.mp7.png)
 
+## Running planar_graph_playground inside JSCAD
+
+I extracted all needed code from all scripts used in index.html but htmlsvg.js as basis for implementation:  
+```
+pi@raspberrypi5:~/planar_graph_playground $ for f in `grep script index.html | cut -f2 -d\" | grep -v htmlsvg`
+> do
+> cat $f
+> done |
+> gcc -E -x c - |
+> grep -v "^#" > cfsld.js
+pi@raspberrypi5:~/planar_graph_playground $
+```
+Then added parts of above stereographic projection JSCAD script and glued together.  
+Two animation sliders allow to
+- switch between 10 graphs
+- change Tutte embedding scaling factor  
+
+
+Try it out:  
+https://jscad.app/#https://raw.githubusercontent.com/Hermann-SW/planar_graph_playground/main/convex_face_straight_line_drawing.jscad
+![res/convex_face_straight_line_drawing.JSCAD.png](res/convex_face_straight_line_drawing.JSCAD.png)
 
 ## Executing JavaScript with C #include statements using rjs tool
 
