@@ -32,7 +32,7 @@ if (true) {
             });
         }
 
-        for (v = 0; v < n; v += 1) {
+        forall_vertices(G, function(v) {
             if (face.includes(v)) {
                 X[v][v] = 1;
                 Y[v][v] = 1;
@@ -46,7 +46,7 @@ if (true) {
                     Y[v][w] = 1.0 / degree(Emb, v);
                 });
             }
-        }
+        });
         return [linear.solve(X, x), linear.solve(Y, y)];
     };
 }
