@@ -56,7 +56,7 @@ Just ```forall_edges(G, f)``` as example ...
 Function ```tutte(Emb, face, factor)``` computes x/y coordinates for convex planar straight line drawings of embedding ```Emb```, with array ```face``` vertices on the outer face.  
 ![from Goos Kant PhD](res/Goos_Kant_PhD.snippet.png)
 
-The fullerenes C20, C30 and C40 available in fullerenes.js are slight modifications of each other, modifying only one pentagon face by inserting a new pentagon and connecting to new middle vertices of outer pentaggon edges. The animation demonstrates that local changes in a Tutte embedding have effects on all other vertex coordinates besides the outer face fixated vertices:  
+The fullerenes C20, C30 and C40 available in fullerenes.js are slight modifications of each other. Modifying only one pentagon face by inserting a new pentagon and connecting to new middle vertices of outer pentaggon edges. The animation demonstrates that local changes in a Tutte embedding have effects on all other vertex coordinates besides the outer face fixated vertex coordinates:  
 ![res/Tutte.C20_30_40.gif](res/Tutte.C20_30_40.gif)
 
 ## fullerenes.js
