@@ -11,14 +11,24 @@ var sel = (
     ? process.argv[2]
     : "graphs/C30.a"
 );
+var dual = false;
+var arcs = true;
+
+if (process.argv.length > 3) {
+    dual = process.argv[3].includes("d");
+    arcs = !process.argv[3].includes("n");
+}
+var G;
 
 function doi(x) {
     var e;
     var L;
-    var G;
 
     L = parse2file(x);
     G = from_adjacency_list(L);
+    if (dual) {
+        G = dual_graph(G);
+    }
 
     assert.assert(is_embedding(G));
 
@@ -113,6 +123,7 @@ function doit(G, v, e) {
         : []
     ), false);
 
+  if (arcs) {
     last_face = -1;
     planar_face_traversal(G, {begin_face: function () {
         last_face += 1;
@@ -124,6 +135,7 @@ function doit(G, v, e) {
         deg = ps.r2d(Math.atan2(coords[1][v] - coords[1][w], coords[0][w] - coords[0][v]));
         console.log("15 15 " + rgb[last_face % rgb.length] + " " + ps.frm(deg) + " " + ps.frm(cx) + " " + ps.frm(cy) + " parrow");
     }});
+  }
 
     console.log("showpage");
 }
