@@ -274,10 +274,7 @@ Simple example nodejs script generating PostScript output (C30 fullerene for now
     $ rjs node.convex_face_straight_line_drawing.js > C30.ps
     $ 
 
-[C30.ps](C30.ps) laser printouts, linewidth 1(left) which is checked in line thickness, and linewidth 2/0(right top/bottom).  
-![res/20220421_155813.part.16pc.jpg](res/20220421_155813.part.16pc.jpg)
-
-Demo got enhanced in showing edge numbers as edge lables:  
+[C30.ps](C30.ps) shows edge numbers as edge lables:  
 ![res/postscript_edge_labels.png](res/postscript_edge_labels.png)
 
 
