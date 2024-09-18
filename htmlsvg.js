@@ -342,7 +342,7 @@ module.exports = { main, getParameterDefinitions }
 
         var coords_ = []
         for(var i=0; i<coords[0].length; ++i)  coords_[i]=[coords[0][i],coords[1][i]]
-        params = "\"use strict\";\n" +
+        params = "\"use strict\"\n" +
                  "const coords = " + JSON.stringify(coords_) + "\n" +
                  "const adj = " + JSON.stringify(to_adjacency_lists(G)) + "\n";
     };
