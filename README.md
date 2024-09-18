@@ -61,7 +61,9 @@ The fullerenes C20, C30 and C40 available in fullerenes.js are slight modificati
 
 ## fullerenes.js
 
-Sample fullerenes C20, C30, ..., C70 adjacency lists.
+Sample fullerenes C20, C30, ..., C70 adjacency lists.  
+A maximal planar graph on 7 vertices mp7 was added for stereographic projections.  
+And two 100 vertices planar adjacency lists (I100.1 and 100).
 
 ## htmlsvg.js
 
