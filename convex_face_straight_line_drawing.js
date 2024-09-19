@@ -34,8 +34,8 @@ function doi(x) {
     assert.assert(is_embedding(G));
 
     e = (
-        (n_edges(G) > 9)
-        ? 9
+        (n_edges(G) > 16)
+        ? 16
         : any_edge(G)
     );
 
