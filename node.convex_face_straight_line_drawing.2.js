@@ -12,11 +12,11 @@ var sel = (
     : "graphs/C30.a"
 );
 var dual = false;
-var arcs = true;
+var arrows = true;
 
 if (process.argv.length > 3) {
     dual = process.argv[3].includes("d");
-    arcs = !process.argv[3].includes("n");
+    arrows = !process.argv[3].includes("n");
 }
 var G;
 
@@ -27,6 +27,8 @@ function doi(x) {
     L = parse2file(x);
     G = from_adjacency_list(L);
     if (dual) {
+        assert.assert(is_embedding(G));
+
         G = dual_graph(G);
     }
 
@@ -123,7 +125,7 @@ function doit(G, v, e) {
         : []
     ), false);
 
-  if (arcs) {
+  if (arrows) {
     last_face = -1;
     planar_face_traversal(G, {begin_face: function () {
         last_face += 1;
