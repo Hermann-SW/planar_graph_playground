@@ -13,10 +13,12 @@ var sel = (
 );
 var dual = false;
 var arrows = true;
+var print = false;
 
 if (process.argv.length > 3) {
     dual = process.argv[3].includes("d");
     arrows = !process.argv[3].includes("n");
+    print = process.argv[3].includes("p");
 }
 var G;
 
@@ -41,6 +43,10 @@ function doi(x) {
     );
 
     doit(G, source(G, e), e);
+
+    if (print) {
+        print_graph(G);
+    }
 }
 
 function doit(G, v, e) {
