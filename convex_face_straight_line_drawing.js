@@ -1,8 +1,6 @@
 "use strict";
 
 var G;
-var K4 = [[1, 3, 2], [2, 3, 0], [0, 3, 1], [0, 1, 2]];
-var K4noemb = [[3, 1, 2], [2, 0, 3], [0, 3, 1], [0, 1, 2]];
 var coords;
 
 function scr(xy, length, r) {
@@ -22,23 +20,29 @@ function clck(e, evt, size, r) {
 }
 
 function doi(x) {
+    var check = document.getElementById("myCheckbox").checked;
     var e;
 
     G = from_adjacency_list(F[x]);
-    //G = from_adjacency_list(K4noemb);
+
+    if (check) {
+        assert.assert(is_embedding(G));
+
+        G = dual_graph(G);
+    }
 
     assert.assert(is_embedding(G));
 
     e = (
-        (n_edges(G) > 16)
-        ? 16
+        (n_edges(G) > 9)
+        ? 9
         : any_edge(G)
     );
 
     doit(G, source(G, e), e);
 }
 
-function doit(F, v, e) {
+function doit(H, v, e) {
     var slider = document.getElementById("myRange").value;
     var slider2 = document.getElementById("myRange2").value;
     var selInd = document.forms[0].elements[0].selectedIndex;
@@ -56,20 +60,13 @@ function doit(F, v, e) {
     var dy;
     var w;
 
-    var H = (
-        check
-        ? dual_graph(F)
-        : F
-    );
-
-    var visited = filled_array(n_edges(G), 2, false);
+    var visited = filled_array(n_edges(H), 2, false);
     var face = [];
 
     traverse_face(H, visited, v, e, ind(H, v, e), {next_vertex: function (v) {
         face.push(v);
     }});
     assert.assert(face.length > 0);
-
     coords = tutte.convex_face_coordinates(H, face, slider / 100.0);
 
     forall_edges(H, function (e) {

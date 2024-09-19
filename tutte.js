@@ -32,7 +32,7 @@ if (true) {
             });
         }
 
-        forall_vertices(G, function(v) {
+        forall_vertices(Emb, function(v) {
             if (face.includes(v)) {
                 X[v][v] = 1;
                 Y[v][v] = 1;
