@@ -12,6 +12,7 @@ var sel = (
     ? process.argv[2]
     : "graphs/C30.a"
 );
+var G;
 
 var do_pent = process.env.ARGV0.includes("pent");
 
@@ -31,7 +32,6 @@ if (process.argv.length > 4) {
 function doi(x, dual) {
     var e;
     var L;
-    var G;
 
     L = parse2file(x);
     G = from_adjacency_list(L);
