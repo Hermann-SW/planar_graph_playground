@@ -408,11 +408,10 @@ module.exports = { main, getParameterDefinitions }
             hidden
             ? "cuboid surface shortest path"
             : "convex face planar straight line drawing"
-        ) + '" tool"');
+        ) + '" tool');
         document.write('</form></div>');
 
         if (!hidden) {
-            document.write('Clicking on an edge redraws with that edge being top right edge. Its vertex closer to mouse pointer becomes top vertex.');
         document.write("<div><button onclick=\"javascript:window.open('https:///jscad.app/#data:application/json,'+encodeURIComponent(params+jscad+Date.now()),'_stereographic_projection')\">stereographic projection</button>&nbsp;&nbsp;");
             document.write('<label for="myRange">factor: </label><input type="range" min="50" max="120" value="' + slider + '" id="myRange" name="myRangeN" onInput="javascript:doi(' + selInd + ')">');
         }
@@ -426,7 +425,8 @@ module.exports = { main, getParameterDefinitions }
                 : ""
             ) + '>');
         }
-        document.write("</div><p>");
+        document.write("&nbsp;&nbsp;<button onclick=\"javascript:window.open('https://github.com/Hermann-SW/planar_graph_playground?tab=readme-ov-file#new-edge-representation-allows-for-better-edge-selection','_help')\">help</button>");
+        document.write("</div><br clear=\"all\">");
     };
 
 }
