@@ -57,10 +57,8 @@ function cart2pol(p, f=sc) {
 
 let cachedSphere = sphere({radius:3*er})
 
-function vertex(_v) {
-    const p = coords[_v] 
-    const v = map3D(p[0],p[1])
-//    s = sphere({radius: 3*er, center: v})
+function vertex(_v, plan=false) {
+    const v = plan ? _v : map3D(coords[_v][0],coords[_v][1])
     const s = translate(v, cachedSphere)
     return colorize([0, 0.7, 0], s)
 }
@@ -85,7 +83,6 @@ function edge(_v, _w, plan=false) {
     return colorize([0, 0, 1, 1], 
         translate(w, 
             rotate([0, Math.acos(d[2]/vec3.length(d)), Math.atan2(d[1], d[0])],
-//                cylinder({radius: er, height: vec3.length(d)})
                 jscad.transforms.scale([1, 1, vec3.length(d)], edgeCylinder)
             )
         )
@@ -110,11 +107,6 @@ function edge2(_p1, _p2) {
     const s12 = Math.acos(Math.sin(ph1)*Math.sin(ph2)+Math.cos(ph1)*Math.cos(ph2)*Math.cos(l12))
     return rotate([0, -ph1, la1],
         rotate([Math.PI/2-al1, 0, 0],
-//            colorize([0, 0, 0.7],
-//                extrudeRotate({segments: 64, angle: s12},
-//                    circle({radius: er, center: [sc,0]})
-//                )
-//            )
             makeArc2(sc, s12, 64)
         )
     )
@@ -140,11 +132,6 @@ function edge3(_p1, _p2) {
         translate(c,
             rotate([0,p[1],p[0]],
                 rotate([0,0,ang(x,y,vmc)],
-//                    colorize([0,0,1],
-//                        extrudeRotate({segments: 64, angle: ang(x,y,wmc)-ang(x,y,vmc)},
-//                            circle({radius: er, center: [r,0]})
-//                        )
-//                    )
                     makeArc2(r, ang(x,y,wmc)-ang(x,y,vmc), 64)
                 )
             )
@@ -202,6 +189,13 @@ function main(params) {
 
         out.push(vertex(i))
 
+        if (params.plan && params.etype==1) {
+            out.push(colorize([0.7,0,0],vertex(
+              [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc], true)))
+        }
+
+        out.push(colorize([1,1,0],vertex([0,0,sc], true)))
+
         for(var j=0; j < adj[i].length; ++j) {
             if (i < adj[i][j]) {
                 // forall_edges
@@ -209,10 +203,23 @@ function main(params) {
                 out.push(ef(i, adj[i][j]))
 
                 if (params.plan) {
+                  if (params.etype % 2 == 1) {
                     out.push(colorize([0,0,0],edge(
                       [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc],
                       [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc],
                       true)))
+                  }
+                  if (params.etype == 1) {
+                    const p = map3D(coords[i][0], coords[i][1])
+                    const q = map3D(coords[adj[i][j]][0], coords[adj[i][j]][1])
+                    const d = vec3.subtract(_(), q, p)
+                    for(var k=1; k<8; ++k) {
+                      const m = vec3.add(_(), p, vec3.scale(_(), d, k/8))
+                      const D = vec3.subtract(_(), [0,0,sc], m)
+                      const P = vec3.subtract(_(), [0,0,sc], vec3.scale(_(), D, (2*sc)/(D[2])))
+                      out.push(colorize([0,0,0.7],vertex(P, true)))
+                    }
+                  }
                 }
             }
         }
