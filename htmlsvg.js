@@ -126,6 +126,9 @@ function edge3(_p1, _p2) {
     }
     const pla = plane.fromPoints(plane.create(), m, v, w);
     const c = vec3.scale(_(), pla, pla[3]);
+    if (pla[3] == 0) {
+        return edge2(_p1, _p2);
+    }
     const p = cart2pol(c, Math.abs(pla[3]))
     const vmc = vec3.subtract(_(), v, c)
     const wmc = vec3.subtract(_(), w, c)
@@ -173,7 +176,7 @@ function makeArc2(radius, angle, segments=64) {
         out.push( correction ? rotate([0,0,correction], part):part)
         offset = next
     }
-    if(!out.length) { alert("plaese report this problem"); return [] }
+    if(!out.length) { throw("makeArc2(",radius,",",angle,",",segments,") problem"); }
     return out
 }
 
