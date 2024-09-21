@@ -51,6 +51,10 @@ function cart2pol(p, f=sc) {
     return [Math.atan2(p[1],p[0]), Math.acos(p[2]/f)]
 }
 
+function pol2cart(p, f=sc) {
+    return [Math.cos(p[0])*f*Math.sin(p[1]), Math.sin(p[0])*f*Math.sin(p[1]), Math.cos(p[1])*f]
+}
+
 let cachedSphere = sphere({radius:3*er})
 
 function vertex(_v, plan=false) {
@@ -62,22 +66,15 @@ function vertex(_v, plan=false) {
 let edgeCylinder = cylinder({radius:er, height:1})
 
 function edge(_v, _w, plan=false) {
-    var v
-    var w
-    if (plan) {
-        v = _v
-        w = _w
-    } else {
-        v = map3D(coords[_v][0], coords[_v][1])
-        w = map3D(coords[_w][0], coords[_w][1])
-    }
+    const v = plan ? _v : map3D(coords[_v][0], coords[_v][1])
+    const w = plan ? _w : map3D(coords[_w][0], coords[_w][1])
     var d = [0, 0, 0]
     var x = [0, 0, 0]
     jscad.maths.vec3.subtract(d, w, v)
     vec3.add(x, v, w)
-    vec3.scale(w, x, 0.5)
+    vec3.scale(x, x, 0.5)
     return colorize([0, 0, 1, 1], 
-        translate(w, 
+        translate(x, 
             rotate([0, Math.acos(d[2]/vec3.length(d)), Math.atan2(d[1], d[0])],
                 jscad.transforms.scale([1, 1, vec3.length(d)], edgeCylinder)
             )
@@ -185,7 +182,7 @@ function main(params) {
 
         out.push(vertex(i))
 
-        if (params.plan && params.etype==1) {
+        if (params.plan) {
             out.push(colorize([0.7,0,0],vertex(
                 [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc], true)))
         }
@@ -197,12 +194,10 @@ function main(params) {
                 out.push(ef(i, adj[i][j]))
 
                 if (params.plan) {
-                    if (params.etype % 2 == 1) {
-                        out.push(colorize([0,0,0],edge(
-                            [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc],
-                            [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc],
-                            true)))
-                    }
+                    out.push(colorize([0,0,0],edge(
+                        [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc],
+                        [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc],
+                        true)))
                     if (params.etype == 1) {
                         const p = map3D(coords[i][0], coords[i][1])
                         const q = map3D(coords[adj[i][j]][0], coords[adj[i][j]][1])
@@ -211,6 +206,19 @@ function main(params) {
                             const m = vec3.add(_(), p, vec3.scale(_(), d, k/8))
                             const D = vec3.subtract(_(), [0,0,sc], m)
                             const P = vec3.subtract(_(), [0,0,sc], vec3.scale(_(), D, (2*sc)/D[2]))
+                            out.push(colorize([0,0,0.7], vertex(P, true)))
+                        }
+                    }
+                    if (params.etype == 2) {
+                        const p = map3D(coords[i][0], coords[i][1])
+                        const q = map3D(coords[adj[i][j]][0], coords[adj[i][j]][1])
+                        const d = vec3.subtract(_(), q, p)
+                        for(var k=1; k<8; ++k) {
+                            const m = vec3.add(_(), p, vec3.scale(_(), d, k/8))
+                            const D = vec3.subtract(_(), [0,0,sc],
+			                  vec3.scale(_(), vec3.normalize(_(), m), sc))
+                            const P = vec3.subtract(_(), [0,0,sc],
+			                  vec3.scale(_(), D, (2*sc)/D[2]))
                             out.push(colorize([0,0,0.7], vertex(P, true)))
                         }
                     }
