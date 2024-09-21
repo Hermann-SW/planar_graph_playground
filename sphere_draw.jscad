@@ -38,11 +38,6 @@ const N = [0, 0, sc]  // north pole
 
 function _() { return vec3.create() }
 function ang(x,y,d) { return (vec3.dot(y, d) < 0 ? -1 : 1) * vec3.angle(x, d) }
-function colinear(v, w, m) {
-    const mmv = vec3.subtract(_(), m, v)
-    const wmv = vec3.subtract(_(), w, v)
-    return vec3.dot(mmv, wmv) == 0
-}
 
 function map3D(x, y) {
     const a = Math.atan2(y, x);
@@ -116,9 +111,6 @@ function edge2(_p1, _p2) {
 function edge3(_p1, _p2) {
     const v = map3D(coords[_p1][0], coords[_p1][1])
     const w = map3D(coords[_p2][0], coords[_p2][1])
-    if (colinear(v, w, N)) {
-        return edge2(_p1, _p2);
-    }
     const pla = plane.fromPoints(plane.create(), N, v, w);
     const c = vec3.scale(_(), pla, pla[3]);
     if (pla[3] == 0) {
