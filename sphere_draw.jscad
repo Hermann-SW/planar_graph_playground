@@ -34,6 +34,7 @@ function getParameterDefinitions() {
 var sc = 10
 var er = sc / 200
 var sca = 2
+const N = [0, 0, sc]  // north pole
 
 function _() { return vec3.create() }
 function ang(x,y,d) { return (vec3.dot(y, d) < 0 ? -1 : 1) * vec3.angle(x, d) }
@@ -115,12 +116,10 @@ function edge2(_p1, _p2) {
 function edge3(_p1, _p2) {
     const v = map3D(coords[_p1][0], coords[_p1][1])
     const w = map3D(coords[_p2][0], coords[_p2][1])
-    const m = map3D((coords[_p1][0]+coords[_p2][0])/2,
-                    (coords[_p1][1]+coords[_p2][1])/2)
-    if (colinear(v, w, m)) {
+    if (colinear(v, w, N)) {
         return edge2(_p1, _p2);
     }
-    const pla = plane.fromPoints(plane.create(), m, v, w);
+    const pla = plane.fromPoints(plane.create(), N, v, w);
     const c = vec3.scale(_(), pla, pla[3]);
     if (pla[3] == 0) {
         return edge2(_p1, _p2);
@@ -197,7 +196,7 @@ function main(params) {
               [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc], true)))
         }
 
-        out.push(colorize([1,1,0],vertex([0,0,sc], true)))
+        out.push(colorize([1,1,0], vertex(N, true)))
 
         for(var j=0; j < adj[i].length; ++j) {
             if (i < adj[i][j]) {
