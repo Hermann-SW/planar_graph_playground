@@ -32,7 +32,7 @@ function getParameterDefinitions() {
     { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
     { name: 'sca', type: 'slider', initial: scini, min: 0, max: 2*scini+2, step: scstep,
       fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale (+2):'}
-  ];
+  ]
 }
 
 var sc = 10
@@ -44,15 +44,15 @@ function _() { return vec3.create() }
 function ang(x,y,d) { return (vec3.dot(y, d) < 0 ? -1 : 1) * vec3.angle(x, d) }
 
 function map3D(x, y) {
-    const a = Math.atan2(y, x);
-    const L = sca*vec2.length([x, y]);
-    const X = L -L*(L*L/(4+L*L));
-    const Y = 2*(L*L/(4+L*L))- 1;
-    return [sc * Math.cos(a) * X, sc * Math.sin(a) * X, sc * Y];
+    const a = Math.atan2(y, x)
+    const L = sca*vec2.length([x, y])
+    const X = L -L*(L*L/(4+L*L))
+    const Y = 2*(L*L/(4+L*L))- 1
+    return [sc * Math.cos(a) * X, sc * Math.sin(a) * X, sc * Y]
 }
 
 function cart2pol(p, f=sc) {
-    return [Math.atan2(p[1],p[0]), Math.acos(p[2]/f)];
+    return [Math.atan2(p[1],p[0]), Math.acos(p[2]/f)]
 }
 
 let cachedSphere = sphere({radius:3*er})
@@ -115,10 +115,10 @@ function edge2(_p1, _p2) {
 function edge3(_p1, _p2) {
     const v = map3D(coords[_p1][0], coords[_p1][1])
     const w = map3D(coords[_p2][0], coords[_p2][1])
-    const pla = plane.fromPoints(plane.create(), N, v, w);
-    const c = vec3.scale(_(), pla, pla[3]);
+    const pla = plane.fromPoints(plane.create(), N, v, w)
+    const c = vec3.scale(_(), pla, pla[3])
     if (pla[3] == 0) {
-        return edge2(_p1, _p2);
+        return edge2(_p1, _p2)
     }
     const p = cart2pol(c, Math.abs(pla[3]))
     const vmc = vec3.subtract(_(), v, c)
@@ -167,7 +167,7 @@ function makeArc2(radius, angle, segments=64) {
         out.push( correction ? rotate([0,0,correction], part):part)
         offset = next
     }
-    if(!out.length) { throw("makeArc2(",radius,",",angle,",",segments,") problem"); }
+    if(!out.length) { throw("makeArc2(",radius,",",angle,",",segments,") problem") }
     return out
 }
 
@@ -175,12 +175,14 @@ function main(params) {
     var out=[]
 
     sca = params.sca + 2
-    const ef = (params.etype == 1) ? edge : (params.etype == 2) ? edge2 : edge3;
+    const ef = (params.etype == 1) ? edge : (params.etype == 2) ? edge2 : edge3
     if (params.sphere) {
         out.push(colorize([1,1,1],
             sphere({radius: sc-1, segments: 30}))
         )
     }
+
+    out.push(colorize([1,1,0], vertex(N, true)))
 
     for(var i=0; i < adj.length; ++i) {
         // forall_vertices
@@ -189,10 +191,8 @@ function main(params) {
 
         if (params.plan && params.etype==1) {
             out.push(colorize([0.7,0,0],vertex(
-              [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc], true)))
+                [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc], true)))
         }
-
-        out.push(colorize([1,1,0], vertex(N, true)))
 
         for(var j=0; j < adj[i].length; ++j) {
             if (i < adj[i][j]) {
@@ -201,23 +201,23 @@ function main(params) {
                 out.push(ef(i, adj[i][j]))
 
                 if (params.plan) {
-                  if (params.etype % 2 == 1) {
-                    out.push(colorize([0,0,0],edge(
-                      [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc],
-                      [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc],
-                      true)))
-                  }
-                  if (params.etype == 1) {
-                    const p = map3D(coords[i][0], coords[i][1])
-                    const q = map3D(coords[adj[i][j]][0], coords[adj[i][j]][1])
-                    const d = vec3.subtract(_(), q, p)
-                    for(var k=1; k<8; ++k) {
-                      const m = vec3.add(_(), p, vec3.scale(_(), d, k/8))
-                      const D = vec3.subtract(_(), [0,0,sc], m)
-                      const P = vec3.subtract(_(), [0,0,sc], vec3.scale(_(), D, (2*sc)/(D[2])))
-                      out.push(colorize([0,0,0.7],vertex(P, true)))
+                    if (params.etype % 2 == 1) {
+                        out.push(colorize([0,0,0],edge(
+                            [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc],
+                            [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc],
+                            true)))
                     }
-                  }
+                    if (params.etype == 1) {
+                        const p = map3D(coords[i][0], coords[i][1])
+                        const q = map3D(coords[adj[i][j]][0], coords[adj[i][j]][1])
+                        const d = vec3.subtract(_(), q, p)
+                        for(var k=1; k<8; ++k) {
+                            const m = vec3.add(_(), p, vec3.scale(_(), d, k/8))
+                            const D = vec3.subtract(_(), [0,0,sc], m)
+                            const P = vec3.subtract(_(), [0,0,sc], vec3.scale(_(), D, (2*sc)/D[2]))
+                            out.push(colorize([0,0,0.7], vertex(P, true)))
+                        }
+                    }
                 }
             }
         }
