@@ -5,7 +5,7 @@ const adj = [[1,6,3,4,2,5],[0,5,6],[0,4,3,5],[5,2,4,0,6],[0,3,2],[1,0,2,3,6],[1,
 const jscad = require('@jscad/modeling')
 const { colorize } = jscad.colors
 const { cube, sphere, cylinder, circle } = jscad.primitives
-const { rotate, translate } = jscad.transforms
+const { rotate, translate, scale } = jscad.transforms
 const { vec2, vec3, plane } = jscad.maths
 const { extrudeRotate } = require('@jscad/modeling').extrusions
 const { subtract } = require('@jscad/modeling').booleans
@@ -20,6 +20,7 @@ scini -= 2
 // round scini according slider step
 const scstep = 0.2
 scini = Math.round(scini * (1 / scstep)) / (1 / scstep)
+const emax = (adj.reduce((sum, a) => sum + a.length, 0)) / 2 - 1
 
 function getParameterDefinitions() {
   return [
@@ -27,7 +28,9 @@ function getParameterDefinitions() {
     { name: 'sphere', type: 'checkbox', checked: true, initial: 1, caption: 'show sphere:' },
     { name: 'plan', type: 'checkbox', checked: true, initial: 1, caption: 'show planar:' },
     { name: 'sca', type: 'slider', initial: scini, min: 0, max: 2*scini+2, step: scstep,
-      fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale (+2):'}
+      fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale (+2):'},
+    { name: 'e', type: 'slider', initial: 0, min: 0, max: emax, step: 1,
+      fps: 10, live: true, autostart: false, loop:'reverse', caption: 'e:'}
   ]
 }
 
@@ -35,9 +38,15 @@ var sc = 10
 var er = sc / 200
 var sca = 2
 const N = [0, 0, sc]  // north pole
+const rmax = 1000
 
 function _() { return vec3.create() }
 function ang(x,y,d) { return (vec3.dot(y, d) < 0 ? -1 : 1) * vec3.angle(x, d) }
+function colinear(v, w, m) {
+    const mmv = vec3.subtract(_(), m, v)
+    const wmv = vec3.subtract(_(), w, v)
+    return Math.abs(vec3.angle(mmv, wmv)) < 1e-9
+}
 
 function map3D(x, y) {
     const a = Math.atan2(y, x)
@@ -57,9 +66,9 @@ function pol2cart(p, f=sc) {
 
 let cachedSphere = sphere({radius:3*er})
 
-function vertex(_v, plan=false) {
+function vertex(_v, plan=false, sf=1) {
     const v = plan ? _v : map3D(coords[_v][0],coords[_v][1])
-    const s = translate(v, cachedSphere)
+    const s = translate(v, scale([sf,sf,sf],cachedSphere))
     return colorize([0, 0.7, 0], s)
 }
 
@@ -164,8 +173,27 @@ function makeArc2(radius, angle, segments=64) {
     return out
 }
 
+function circleCenter(A,B,C)
+{
+    var yDelta_a = B[1] - A[1]
+    var xDelta_a = B[0] - A[0]
+    var yDelta_b = C[1] - B[1]
+    var xDelta_b = C[0] - B[0]
+
+    var center = [0,0,-sc,0]
+
+    var aSlope = yDelta_a / xDelta_a
+    var bSlope = yDelta_b / xDelta_b
+
+    center[0] = (aSlope*bSlope*(A[1] - C[1]) + bSlope*(A[0] + B[0]) - aSlope*(B[0]+C[0]) )/(2* (bSlope-aSlope) )
+    center[1] = -1*(center[0] - (A[0]+B[0])/2)/aSlope +  (A[1]+B[1])/2
+    center[3] = vec2.length(vec2.subtract(_(), A, center))
+    return center
+}
+
 function main(params) {
     var out=[]
+    var e = 0
 
     sca = params.sca + 2
     const ef = (params.etype == 1) ? edge : (params.etype == 2) ? edge2 : edge3
@@ -221,8 +249,30 @@ function main(params) {
 			                  vec3.scale(_(), D, (2*sc)/D[2]))
                             out.push(colorize([0,0,0.7], vertex(P, true)))
                         }
+                        if (e == params.e) {
+                            const V = [sca*sc*coords[i][0], sca*sc*coords[i][1], -sc]
+                            const W = [sca*sc*coords[adj[i][j]][0], sca*sc*coords[adj[i][j]][1], -sc]
+                            const m = vec3.add(_(), p, vec3.scale(_(), d, 0.5))
+                            const D = vec3.subtract(_(), [0,0,sc],
+                                                    vec3.scale(_(), vec3.normalize(_(), m), sc))
+                            const P = vec3.subtract(_(), [0,0,sc],
+			                              vec3.scale(_(), D, (2*sc)/D[2]))
+                            out.push(colorize([1,1,0], vertex(V, true, 2)))
+                            out.push(colorize([1,1,0], vertex(W, true, 2)))
+                            out.push(colorize([1,1,0], vertex(P, true, 2)))
+
+                            if (!colinear(V, W, P)) {
+                                const R = circleCenter(V, W, P)
+                                if (R[3] < rmax && R[3] != NaN) {
+                                    out.push(colorize([1,1,0], translate([0,0,-sc],
+                                             circle({center: R, radius: R[3]}))))
+                                }
+                            }
+                        }
                     }
                 }
+
+                e += 1
             }
         }
     }
