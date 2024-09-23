@@ -269,7 +269,7 @@ function main(params) {
                                 const R = circleCenter(V, W, P)
                                 if (R[3] < rmax && R[3] != NaN) {
                                     out.push(colorize([1,1,0], translate([0,0,-sc],
-                                             circle({center: R, radius: R[3]}))))
+                                             circle({center: R, radius: R[3], segments: 120}))))
                                 }
                             }
                         }
