@@ -30,7 +30,7 @@ function getParameterDefinitions() {
     { name: 'sca', type: 'slider', initial: scini, min: 0, max: 2*scini+2, step: scstep,
       fps: 10, live: true, autostart: false, loop:'reverse', caption: 'scale (+2):'},
     { name: 'e', type: 'slider', initial: 0, min: 0, max: emax, step: 1,
-      fps: 10, live: true, autostart: false, loop:'reverse', caption: 'e:'}
+      fps: 1, live: true, autostart: false, loop:'reverse', caption: 'e:'}
   ]
 }
 
