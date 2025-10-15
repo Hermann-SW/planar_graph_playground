@@ -2,6 +2,7 @@
 #define _HOME_PI_PLANAR_GRAPH_PLAYGROUND_CPP_UNDIRECTED_GRAPH_HPP_
 // Copyright: https://mit-license.org/
 #include <iostream>
+#include <array>
 #include <vector>
 #include <algorithm>
 #include <functional>
