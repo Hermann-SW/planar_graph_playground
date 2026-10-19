@@ -338,9 +338,9 @@ Below screenshots from:
 ```python spherical_tutte.py graphs/D100.a```
 
 With "Top Half Only" ON:  
-![top_half_only.on.png)(res/top_half_only.on.png)
+![top_half_only.on.png](res/top_half_only.on.png)
 
 With "Top Half Only" OFF:  
-![top_half_only.off.png)(res/top_half_only.off.png)
+![top_half_only.off.png](res/top_half_only.off.png)
 
 
