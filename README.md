@@ -325,3 +325,22 @@ C20 and C60 toothpick polyhedra:
 
 92cm high paper drinking straw C60, hanging 3m high, without any glue:  
 ![res/C60.33pc.jpg](res/C60.33pc.jpg)
+
+### spherical_tutte.py
+
+Generated with Gemini (Argon high thinking level) in long chat.
+
+Usage:  
+- ```python spherical_tutte.py graphs/C60.a```
+- ```python spherical_tutte.py graphs/I100.txt.gz```
+
+Below screenshots from:  
+```python spherical_tutte.py graphs/D100.a```
+
+With "Top Half Only" ON:  
+![top_half_only.on.png)(res/top_half_only.on.png)
+
+With "Top Half Only" OFF:  
+![top_half_only.off.png)(res/top_half_only.off.png)
+
+
