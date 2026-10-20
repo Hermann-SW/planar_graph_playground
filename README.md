@@ -343,7 +343,7 @@ With "Top Half Only" ON:
 With "Top Half Only" OFF:  
 ![top_half_only.off.png](res/top_half_only.off.png)
 
-Graph files with ```.gz``` suffix typically contain more than one fullerene graph with the same number of vertices. The ```I*.gz``` files contain all fullerenes on same number of vertices with no neighboring pentagons (independent). This loads the last of the 1849 fullerenes with 70 vertices (the number of available graphs is reported):  
+Graph files with ```.gz``` suffix typically contain more than one fullerene graph with the same number of vertices. The ```I*.gz``` files contain all fullerenes on same number of vertices with no neighboring pentagons (independent). This loads the 1849th of 8149 fullerenes with 70 vertices (the number of available graphs is reported):  
 ```
 pi@raspberrypi5:~/planar_graph_playground $ python spherical_tutte.py graphs/C70.txt.gz 1849
 [Multi-Graph Loader] Loaded graph 1849 of 8149 from 'graphs/C70.txt.gz'
@@ -358,4 +358,4 @@ Loaded graph -> computed n_verts = 70
 [3D Isotropy]    ||Centroid|| = 1.226e-05 | σ1=0.594, σ2=0.575, σ3=0.563
 ```
 
-![top_half_only.on.png](res/top_half_only.on.png)
+![top_half_only.on.png](res/top_half_only.on.1849.png)
