@@ -6,11 +6,11 @@ import numpy as np
 from scipy import sparse
 from scipy.sparse.linalg import spsolve
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Button
+from matplotlib.widgets import Button, Slider, TextBox
 
 
 # =============================================================================
-# 1. Multi-Graph Loaders (.a and .gz) & Dispatcher
+# 1. File Loaders (.a and .gz) & Planar Graph Parser
 # =============================================================================
 def load_graph_file_a(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
@@ -22,10 +22,9 @@ def load_graph_file_a(filepath):
     return n_verts, raw_input
 
 
-def load_graph_file_gz(filepath, target_index=1):
+def load_all_graphs_from_gz(filepath):
     """
-    Parses a multi-graph gzip file separated by '0' lines.
-    Extracts the `target_index`-th graph (1-based index).
+    Parses all graphs from a multi-graph '.gz' writegraph3d file into a list.
     """
     all_graphs = []
     current_graph = []
@@ -47,32 +46,10 @@ def load_graph_file_gz(filepath, target_index=1):
     if current_graph:
         all_graphs.append(current_graph)
 
-    total_graphs = len(all_graphs)
-    if total_graphs == 0:
+    if not all_graphs:
         raise ValueError(f"No valid graphs found in {filepath}")
 
-    if target_index < 1 or target_index > total_graphs:
-        print(
-            f"Error: Graph index {target_index} out of range for '{filepath}' "
-            f"(file contains {total_graphs} graphs, valid range: 1..{total_graphs}).",
-            file=sys.stderr,
-        )
-        sys.exit(1)
-
-    raw_input = all_graphs[target_index - 1]
-    n_verts = max(v for row in raw_input for v in row) + 1
-    print(
-        f"[Multi-Graph Loader] Loaded graph {target_index} of {total_graphs} from '{filepath}'",
-        flush=True,
-    )
-    return n_verts, raw_input
-
-
-def load_graph_file(filepath, graph_index=1):
-    if filepath.endswith(".gz") or filepath.endswith(".gzip"):
-        return load_graph_file_gz(filepath, target_index=graph_index)
-    else:
-        return load_graph_file_a(filepath)
+    return all_graphs
 
 
 def parse_planar_graph_input(n_verts, data):
@@ -577,217 +554,14 @@ def sample_great_circle_arc(x_u, x_v, num_points=40):
     return (np.sin((1.0 - t) * omega) * x_u + np.sin(t * omega) * x_v) / np.sin(omega)
 
 
-# =============================================================================
-# 5. Interactive 3D Matplotlib Viewer with Live "Top Half Only" Camera Culling
-# =============================================================================
-def get_camera_view_vector(ax):
-    elev_rad = np.radians(ax.elev)
-    azim_rad = np.radians(ax.azim)
-    return np.array([
-        np.cos(elev_rad) * np.cos(azim_rad),
-        np.cos(elev_rad) * np.sin(azim_rad),
-        np.sin(elev_rad),
-    ])
-
-
-def compute_horizon_ring(v_cam, num_points=120):
-    ref = np.array([1.0, 0.0, 0.0]) if abs(v_cam[0]) < 0.9 else np.array([0.0, 1.0, 0.0])
-    e1 = np.cross(v_cam, ref)
-    e1 /= np.linalg.norm(e1)
-    e2 = np.cross(v_cam, e1)
-    t = np.linspace(0.0, 2.0 * np.pi, num_points)[:, None]
-    return np.cos(t) * e1 + np.sin(t) * e2
-
-
-def plot_spherical_graph_matplotlib(
-    X, edges, title="Crossing-Free Spherical Tutte Embedding", annotate_vertices=True
-):
-    fig = plt.figure(figsize=(10, 9.5), dpi=110)
-    ax = fig.add_axes([0.02, 0.09, 0.96, 0.85], projection="3d")
-
-    u = np.linspace(0, 2 * np.pi, 48)
-    v = np.linspace(0, np.pi, 24)
-    xs = np.outer(np.cos(u), np.sin(v))
-    ys = np.outer(np.sin(u), np.sin(v))
-    zs = np.outer(np.ones_like(u), np.cos(v))
-    ax.plot_surface(xs, ys, zs, color="#e0f2fe", alpha=0.15, edgecolor="none")
-    ax.plot_wireframe(xs, ys, zs, color="#94a3b8", alpha=0.12, linewidth=0.5, rstride=4, cstride=4)
-
-    full_arcs = [sample_great_circle_arc(X[u_i], X[v_i], num_points=40) for u_i, v_i in edges]
-    edge_lines = []
-    for idx, arc in enumerate(full_arcs):
-        (line,) = ax.plot(
-            arc[:, 0], arc[:, 1], arc[:, 2],
-            color="#0284c7", linewidth=1.8, alpha=0.88,
-            label="Great-Circle Edges" if idx == 0 else None,
-        )
-        edge_lines.append(line)
-
-    v_cam_init = get_camera_view_vector(ax)
-    hr = compute_horizon_ring(v_cam_init)
-    (horizon_line,) = ax.plot(
-        hr[:, 0], hr[:, 1], hr[:, 2],
-        "--", color="#475569", linewidth=1.2, alpha=0.6, visible=False,
-        label="Horizon Rim ($\\mathbf{x}\\cdot\\mathbf{v}_{\\mathrm{cam}}=0$)",
-    )
-
-    (vertex_markers,) = ax.plot(
-        X[:, 0], X[:, 1], X[:, 2],
-        linestyle="none", marker="o", markersize=7.5,
-        markerfacecolor="#dc2626", markeredgecolor="white", markeredgewidth=0.9,
-        label="Vertices on $S^2$", zorder=5,
-    )
-
-    text_artists = []
-    if annotate_vertices:
-        for idx, (vx, vy, vz) in enumerate(X):
-            txt = ax.text(
-                vx * 1.08, vy * 1.08, vz * 1.08, str(idx),
-                fontsize=8.5, color="#0f172a", fontweight="bold", ha="center", va="center",
-            )
-            text_artists.append(txt)
-
-    centroid = np.mean(X, axis=0)
-    ax.scatter(
-        [centroid[0]], [centroid[1]], [centroid[2]],
-        c="#eab308", s=120, marker="*", edgecolors="#1e293b", linewidths=1.0,
-        label=f"Centroid (||μ|| = {np.linalg.norm(centroid):.2e})",
-    )
-
-    state = {
-        "top_half_only": False,
-        "clip_straddling": True,
-        "last_angles": (ax.elev, ax.azim),
-    }
-
-    def update_visibility():
-        if not state["top_half_only"]:
-            vertex_markers.set_data_3d(X[:, 0], X[:, 1], X[:, 2])
-            for txt in text_artists:
-                txt.set_visible(True)
-            for line, arc in zip(edge_lines, full_arcs):
-                line.set_data_3d(arc[:, 0], arc[:, 1], arc[:, 2])
-                line.set_linestyle("-")
-                line.set_alpha(0.88)
-                line.set_visible(True)
-            horizon_line.set_visible(False)
-            return
-
-        v_cam = get_camera_view_vector(ax)
-        dots = X @ v_cam
-        in_top = dots >= 0.0
-
-        hr_pts = compute_horizon_ring(v_cam)
-        horizon_line.set_data_3d(hr_pts[:, 0], hr_pts[:, 1], hr_pts[:, 2])
-        horizon_line.set_visible(True)
-
-        X_top = X[in_top]
-        vertex_markers.set_data_3d(X_top[:, 0], X_top[:, 1], X_top[:, 2])
-        for idx, txt in enumerate(text_artists):
-            txt.set_visible(bool(in_top[idx]))
-
-        for idx, (u_i, v_i) in enumerate(edges):
-            line = edge_lines[idx]
-            u_top, v_top = in_top[u_i], in_top[v_i]
-
-            if u_top and v_top:
-                arc = full_arcs[idx]
-                line.set_data_3d(arc[:, 0], arc[:, 1], arc[:, 2])
-                line.set_linestyle("-")
-                line.set_alpha(0.92)
-                line.set_visible(True)
-            elif not u_top and not v_top:
-                line.set_visible(False)
-            else:
-                if not state["clip_straddling"]:
-                    line.set_visible(False)
-                else:
-                    front_v = u_i if u_top else v_i
-                    back_v = v_i if u_top else u_i
-                    d_front, d_back = dots[front_v], dots[back_v]
-                    s = d_front / (d_front - d_back)
-                    p_hor = (1.0 - s) * X[front_v] + s * X[back_v]
-                    p_hor /= np.linalg.norm(p_hor)
-
-                    clipped_arc = sample_great_circle_arc(X[front_v], p_hor, num_points=20)
-                    line.set_data_3d(clipped_arc[:, 0], clipped_arc[:, 1], clipped_arc[:, 2])
-                    line.set_linestyle("--")
-                    line.set_alpha(0.55)
-                    line.set_visible(True)
-
-    ax_btn_top = fig.add_axes([0.18, 0.02, 0.30, 0.045])
-    ax_btn_bnd = fig.add_axes([0.52, 0.02, 0.32, 0.045])
-    btn_top = Button(ax_btn_top, "Top Half Only: OFF (Key 't')", color="#f1f5f9", hovercolor="#e2e8f0")
-    btn_bnd = Button(ax_btn_bnd, "Boundary Edges: Clip (Key 'b')", color="#f1f5f9", hovercolor="#e2e8f0")
-
-    def toggle_top_half(event=None):
-        state["top_half_only"] = not state["top_half_only"]
-        status = "ON" if state["top_half_only"] else "OFF"
-        btn_top.label.set_text(f"Top Half Only: {status} (Key 't')")
-        btn_top.color = "#bae6fd" if state["top_half_only"] else "#f1f5f9"
-        update_visibility()
-        fig.canvas.draw_idle()
-
-    def toggle_boundary_mode(event=None):
-        state["clip_straddling"] = not state["clip_straddling"]
-        mode_str = "Clip" if state["clip_straddling"] else "Hide"
-        btn_bnd.label.set_text(f"Boundary Edges: {mode_str} (Key 'b')")
-        if state["top_half_only"]:
-            update_visibility()
-            fig.canvas.draw_idle()
-
-    def on_mouse_motion(event):
-        if state["top_half_only"]:
-            curr_angles = (ax.elev, ax.azim)
-            if curr_angles != state["last_angles"]:
-                state["last_angles"] = curr_angles
-                update_visibility()
-                fig.canvas.draw_idle()
-
-    def on_key_press(event):
-        if event.key == "t":
-            toggle_top_half()
-        elif event.key == "b":
-            toggle_boundary_mode()
-
-    btn_top.on_clicked(toggle_top_half)
-    btn_bnd.on_clicked(toggle_boundary_mode)
-    fig.canvas.mpl_connect("motion_notify_event", on_mouse_motion)
-    fig.canvas.mpl_connect("button_release_event", on_mouse_motion)
-    fig.canvas.mpl_connect("key_press_event", on_key_press)
-
-    ax.set_xlim([-1.1, 1.1])
-    ax.set_ylim([-1.1, 1.1])
-    ax.set_zlim([-1.1, 1.1])
-    ax.set_box_aspect((1, 1, 1))
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-    ax.set_title(title, fontsize=12, fontweight="bold", pad=12)
-    ax.legend(loc="upper right")
-    plt.show()
-
-
-# =============================================================================
-# 6. CLI Entry Point with Multi-Graph Index Support
-# =============================================================================
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print(f"Usage: python {sys.argv[0]} <path_to_graph_file (.a or .gz)> [graph_index]")
-        print(f"Examples:")
-        print(f"  python {sys.argv[0]} graphs/C24.a")
-        print(f"  python {sys.argv[0]} graphs/C36.txt.gz 5")
-        sys.exit(1)
-
-    filepath = sys.argv[1]
-    graph_idx = int(sys.argv[2]) if len(sys.argv) >= 3 else 1
-
-    if filepath.endswith(".gz") or filepath.endswith(".gzip"):
-        n_verts, raw_input = load_graph_file_gz(filepath, target_index=graph_idx)
-    else:
-        n_verts, raw_input = load_graph_file_a(filepath)
-
-    print(f"Loaded graph -> computed n_verts = {n_verts}", flush=True)
+def solve_full_spherical_embedding(raw_input, label=""):
+    """
+    Runs the complete Stage 1 -> Stage 3 spherical Tutte pipeline on `raw_input`
+    and returns `(n_verts, edges, faces, adj, X_eq)`.
+    """
+    n_verts = max(v for row in raw_input for v in row) + 1
+    if label:
+        print(f"\n=== Computing Spherical Embedding for {label} (n_verts={n_verts}) ===", flush=True)
 
     edges, faces, adj = parse_planar_graph_input(n_verts, raw_input)
     print("-" * 80, flush=True)
@@ -840,30 +614,512 @@ if __name__ == "__main__":
     tutte_res = verify_tutte_barycentric_equilibrium(X_eq, adj, weights)
     singular_vals = np.linalg.svd(X_eq / np.sqrt(n_verts), compute_uv=False)
 
-    dots = np.clip(np.sum(X_eq[[e[0] for e in edges]] * X_eq[[e[1] for e in edges]], axis=1), -1.0, 1.0)
+    dots = np.clip(
+        np.sum(X_eq[[e[0] for e in edges]] * X_eq[[e[1] for e in edges]], axis=1),
+        -1.0,
+        1.0,
+    )
     arc_deg = np.degrees(np.arccos(dots))
 
     min_corner_str = (
-        f"{np.min(eq_corner_dets):+.3e}" if len(eq_corner_dets) > 0 else "N/A (pure triangulation)"
+        f"{np.min(eq_corner_dets):+.3e}"
+        if len(eq_corner_dets) > 0
+        else "N/A (pure triangulation)"
     )
     print(
         f"[Stage 2 Equil]  Crossings = {eq_crossings} | "
         f"Min Star det = {np.min(eq_star_dets):+.3e} | "
         f"Min Corner det = {min_corner_str} ({iters} steps)"
     )
-    print(f"[Face Convexity] Strictly Convex Faces = {convex_faces}/{len(faces)} | Max Interior Angle = {max_angle_deg:.2f}° (< 180°)")
-    print(f"[Stage 3 Tutte]  Min Weight w_ij = {min_weight:+.4e} (>0) | Barycentric Residual = {tutte_res:.3e}")
-    print(f"[Edge Lengths]   Min = {np.min(arc_deg):.2f}°, Max = {np.max(arc_deg):.2f}°, Mean = {np.mean(arc_deg):.2f}°")
-    print(f"[3D Isotropy]    ||Centroid|| = {np.linalg.norm(np.mean(X_eq, axis=0)):.3e} | "
-          f"σ1={singular_vals[0]:.3f}, σ2={singular_vals[1]:.3f}, σ3={singular_vals[2]:.3f}", flush=True)
+    print(
+        f"[Face Convexity] Strictly Convex Faces = {convex_faces}/{len(faces)} | "
+        f"Max Interior Angle = {max_angle_deg:.2f}° (< 180°)"
+    )
+    print(
+        f"[Stage 3 Tutte]  Min Weight w_ij = {min_weight:+.4e} (>0) | "
+        f"Barycentric Residual = {tutte_res:.3e}"
+    )
+    print(
+        f"[Edge Lengths]   Min = {np.min(arc_deg):.2f}°, "
+        f"Max = {np.max(arc_deg):.2f}°, Mean = {np.mean(arc_deg):.2f}°"
+    )
+    print(
+        f"[3D Isotropy]    ||Centroid|| = {np.linalg.norm(np.mean(X_eq, axis=0)):.3e} | "
+        f"σ1={singular_vals[0]:.3f}, σ2={singular_vals[1]:.3f}, σ3={singular_vals[2]:.3f}",
+        flush=True,
+    )
 
     assert eq_crossings == 0, f"Found crossings: {crossing_list}"
     assert convex_faces == len(faces), f"Non-convex faces detected: {non_convex_list}"
     assert min_weight > 0.0, f"Non-positive Tutte weight detected: {min_weight}"
 
-    graph_name = f"{os.path.basename(filepath)} [Graph #{graph_idx}]"
+    return n_verts, edges, faces, adj, X_eq
+
+
+# =============================================================================
+# 5. Interactive 3D Matplotlib Viewer (+ Multi-Graph .gz Slider/TextBox/+/- UI)
+# =============================================================================
+def get_camera_view_vector(ax):
+    elev_rad = np.radians(ax.elev)
+    azim_rad = np.radians(ax.azim)
+    return np.array([
+        np.cos(elev_rad) * np.cos(azim_rad),
+        np.cos(elev_rad) * np.sin(azim_rad),
+        np.sin(elev_rad),
+    ])
+
+
+def compute_horizon_ring(v_cam, num_points=120):
+    ref = np.array([1.0, 0.0, 0.0]) if abs(v_cam[0]) < 0.9 else np.array([0.0, 1.0, 0.0])
+    e1 = np.cross(v_cam, ref)
+    e1 /= np.linalg.norm(e1)
+    e2 = np.cross(v_cam, e1)
+    t = np.linspace(0.0, 2.0 * np.pi, num_points)[:, None]
+    return np.cos(t) * e1 + np.sin(t) * e2
+
+
+def plot_spherical_graph_matplotlib(
+    X_init,
+    edges_init,
+    faces_init,
+    filepath,
+    annotate_vertices=True,
+    is_gz=False,
+    all_gz_graphs=None,
+    initial_graph_idx=1,
+):
+    fig = plt.figure(figsize=(10.5, 9.8), dpi=110)
+    # Leave extra bottom margin when `.gz` controls are shown
+    bottom_margin = 0.14 if is_gz else 0.09
+    ax = fig.add_axes([0.02, bottom_margin, 0.96, 0.92 - bottom_margin], projection="3d")
+
+    u = np.linspace(0, 2 * np.pi, 48)
+    v = np.linspace(0, np.pi, 24)
+    xs = np.outer(np.cos(u), np.sin(v))
+    ys = np.outer(np.sin(u), np.sin(v))
+    zs = np.outer(np.ones_like(u), np.cos(v))
+    ax.plot_surface(xs, ys, zs, color="#e0f2fe", alpha=0.15, edgecolor="none")
+    ax.plot_wireframe(xs, ys, zs, color="#94a3b8", alpha=0.12, linewidth=0.5, rstride=4, cstride=4)
+
+    # Mutable graph geometry state so switching graphs updates artists in-place
+    g_state = {
+        "X": X_init,
+        "edges": edges_init,
+        "faces": faces_init,
+        "full_arcs": [
+            sample_great_circle_arc(X_init[u_i], X_init[v_i], num_points=40)
+            for u_i, v_i in edges_init
+        ],
+        "current_idx": initial_graph_idx,
+        "total_graphs": len(all_gz_graphs) if (is_gz and all_gz_graphs is not None) else 1,
+        "cache": {initial_graph_idx: (len(X_init), edges_init, faces_init, X_init)},
+        "updating_widgets": False,
+        "slider_dragging": False,
+    }
+
+    edge_lines = []
+    for idx, arc in enumerate(g_state["full_arcs"]):
+        (line,) = ax.plot(
+            arc[:, 0], arc[:, 1], arc[:, 2],
+            color="#0284c7", linewidth=1.8, alpha=0.88,
+            label="Great-Circle Edges" if idx == 0 else None,
+        )
+        edge_lines.append(line)
+
+    v_cam_init = get_camera_view_vector(ax)
+    hr = compute_horizon_ring(v_cam_init)
+    (horizon_line,) = ax.plot(
+        hr[:, 0], hr[:, 1], hr[:, 2],
+        "--", color="#475569", linewidth=1.2, alpha=0.6, visible=False,
+        label="Horizon Rim ($\\mathbf{x}\\cdot\\mathbf{v}_{\\mathrm{cam}}=0$)",
+    )
+
+    (vertex_markers,) = ax.plot(
+        X_init[:, 0], X_init[:, 1], X_init[:, 2],
+        linestyle="none", marker="o", markersize=7.5,
+        markerfacecolor="#dc2626", markeredgecolor="white", markeredgewidth=0.9,
+        label="Vertices on $S^2$", zorder=5,
+    )
+
+    text_artists = []
+    if annotate_vertices:
+        for idx, (vx, vy, vz) in enumerate(X_init):
+            txt = ax.text(
+                vx * 1.08, vy * 1.08, vz * 1.08, str(idx),
+                fontsize=8.5, color="#0f172a", fontweight="bold", ha="center", va="center",
+            )
+            text_artists.append(txt)
+
+    centroid = np.mean(X_init, axis=0)
+    (centroid_marker,) = ax.plot(
+        [centroid[0]], [centroid[1]], [centroid[2]],
+        linestyle="none", marker="*", markersize=12,
+        markerfacecolor="#eab308", markeredgecolor="#1e293b", markeredgewidth=1.0,
+        label=f"Centroid (||μ|| = {np.linalg.norm(centroid):.2e})", zorder=6,
+    )
+
+    view_state = {
+        "top_half_only": False,
+        "clip_straddling": True,
+        "last_angles": (ax.elev, ax.azim),
+    }
+
+    base_name = os.path.basename(filepath)
+
+    def make_title_str():
+        X_c = g_state["X"]
+        E_c = g_state["edges"]
+        F_c = g_state["faces"]
+        if is_gz:
+            return (
+                f"Strictly Convex Spherical Tutte — {base_name} "
+                f"[Graph {g_state['current_idx']}/{g_state['total_graphs']}] "
+                f"(|V|={len(X_c)}, |E|={len(E_c)}, |F|={len(F_c)})"
+            )
+        return (
+            f"Strictly Convex Spherical Tutte — {base_name} "
+            f"(|V|={len(X_c)}, |E|={len(E_c)}, |F|={len(F_c)})"
+        )
+
+    def update_visibility():
+        X = g_state["X"]
+        edges = g_state["edges"]
+        full_arcs = g_state["full_arcs"]
+
+        if not view_state["top_half_only"]:
+            vertex_markers.set_data_3d(X[:, 0], X[:, 1], X[:, 2])
+            for idx, txt in enumerate(text_artists):
+                if idx < len(X):
+                    txt.set_position_3d((X[idx, 0] * 1.08, X[idx, 1] * 1.08, X[idx, 2] * 1.08))
+                    txt.set_visible(True)
+                else:
+                    txt.set_visible(False)
+            for idx, line in enumerate(edge_lines):
+                if idx < len(full_arcs):
+                    arc = full_arcs[idx]
+                    line.set_data_3d(arc[:, 0], arc[:, 1], arc[:, 2])
+                    line.set_linestyle("-")
+                    line.set_alpha(0.88)
+                    line.set_visible(True)
+                else:
+                    line.set_visible(False)
+            horizon_line.set_visible(False)
+            return
+
+        v_cam = get_camera_view_vector(ax)
+        dots = X @ v_cam
+        in_top = dots >= 0.0
+
+        hr_pts = compute_horizon_ring(v_cam)
+        horizon_line.set_data_3d(hr_pts[:, 0], hr_pts[:, 1], hr_pts[:, 2])
+        horizon_line.set_visible(True)
+
+        X_top = X[in_top]
+        vertex_markers.set_data_3d(X_top[:, 0], X_top[:, 1], X_top[:, 2])
+        for idx, txt in enumerate(text_artists):
+            if idx < len(X):
+                txt.set_position_3d((X[idx, 0] * 1.08, X[idx, 1] * 1.08, X[idx, 2] * 1.08))
+                txt.set_visible(bool(in_top[idx]))
+            else:
+                txt.set_visible(False)
+
+        for idx, line in enumerate(edge_lines):
+            if idx >= len(edges):
+                line.set_visible(False)
+                continue
+
+            u_i, v_i = edges[idx]
+            u_top, v_top = in_top[u_i], in_top[v_i]
+
+            if u_top and v_top:
+                arc = full_arcs[idx]
+                line.set_data_3d(arc[:, 0], arc[:, 1], arc[:, 2])
+                line.set_linestyle("-")
+                line.set_alpha(0.92)
+                line.set_visible(True)
+            elif not u_top and not v_top:
+                line.set_visible(False)
+            else:
+                if not view_state["clip_straddling"]:
+                    line.set_visible(False)
+                else:
+                    front_v = u_i if u_top else v_i
+                    back_v = v_i if u_top else u_i
+                    d_front, d_back = dots[front_v], dots[back_v]
+                    s = d_front / (d_front - d_back)
+                    p_hor = (1.0 - s) * X[front_v] + s * X[back_v]
+                    p_hor /= np.linalg.norm(p_hor)
+
+                    clipped_arc = sample_great_circle_arc(X[front_v], p_hor, num_points=20)
+                    line.set_data_3d(clipped_arc[:, 0], clipped_arc[:, 1], clipped_arc[:, 2])
+                    line.set_linestyle("--")
+                    line.set_alpha(0.55)
+                    line.set_visible(True)
+
+    # Row 1 Buttons: Top Half Only & Boundary Mode
+    row1_y = 0.08 if is_gz else 0.02
+    ax_btn_top = fig.add_axes([0.18, row1_y, 0.30, 0.042])
+    ax_btn_bnd = fig.add_axes([0.52, row1_y, 0.32, 0.042])
+    btn_top = Button(ax_btn_top, "Top Half Only: OFF (Key 't')", color="#f1f5f9", hovercolor="#e2e8f0")
+    btn_bnd = Button(ax_btn_bnd, "Boundary Edges: Clip (Key 'b')", color="#f1f5f9", hovercolor="#e2e8f0")
+
+    def toggle_top_half(event=None):
+        view_state["top_half_only"] = not view_state["top_half_only"]
+        status = "ON" if view_state["top_half_only"] else "OFF"
+        btn_top.label.set_text(f"Top Half Only: {status} (Key 't')")
+        btn_top.color = "#bae6fd" if view_state["top_half_only"] else "#f1f5f9"
+        update_visibility()
+        fig.canvas.draw_idle()
+
+    def toggle_boundary_mode(event=None):
+        view_state["clip_straddling"] = not view_state["clip_straddling"]
+        mode_str = "Clip" if view_state["clip_straddling"] else "Hide"
+        btn_bnd.label.set_text(f"Boundary Edges: {mode_str} (Key 'b')")
+        if view_state["top_half_only"]:
+            update_visibility()
+            fig.canvas.draw_idle()
+
+    btn_top.on_clicked(toggle_top_half)
+    btn_bnd.on_clicked(toggle_boundary_mode)
+
+    # Row 2 Controls (Only when a "*.gz" file is loaded): Slider, TextBox, '-' and '+' Buttons
+    gz_widgets = {}
+    if is_gz and all_gz_graphs is not None:
+        total_g = g_state["total_graphs"]
+
+        ax_slider = fig.add_axes([0.10, 0.02, 0.50, 0.038])
+        ax_text = fig.add_axes([0.70, 0.02, 0.09, 0.038])
+        ax_minus = fig.add_axes([0.81, 0.02, 0.045, 0.038])
+        ax_plus = fig.add_axes([0.865, 0.02, 0.045, 0.038])
+
+        slider_gz = Slider(
+            ax=ax_slider,
+            label=f"Graph (1..{total_g}) ",
+            valmin=1,
+            valmax=max(1, total_g),
+            valinit=initial_graph_idx,
+            valstep=1,
+            color="#0284c7",
+        )
+        textbox_gz = TextBox(ax_text, "Go to: ", initial=str(initial_graph_idx))
+        btn_minus = Button(ax_minus, "-", color="#f1f5f9", hovercolor="#e2e8f0")
+        btn_plus = Button(ax_plus, "+", color="#f1f5f9", hovercolor="#e2e8f0")
+
+        gz_widgets["slider"] = slider_gz
+        gz_widgets["textbox"] = textbox_gz
+        gz_widgets["minus"] = btn_minus
+        gz_widgets["plus"] = btn_plus
+
+        def update_minus_plus_colors():
+            idx = g_state["current_idx"]
+            btn_minus.color = "#e2e8f0" if idx <= 1 else "#f1f5f9"
+            btn_plus.color = "#e2e8f0" if idx >= total_g else "#f1f5f9"
+
+        update_minus_plus_colors()
+
+        def load_and_display_graph(target_idx):
+            target_idx = int(target_idx)
+            if target_idx < 1 or target_idx > total_g:
+                print(
+                    f"[UI Warning] Graph index {target_idx} out of range (1..{total_g}).",
+                    flush=True,
+                )
+                g_state["updating_widgets"] = True
+                textbox_gz.set_val(str(g_state["current_idx"]))
+                slider_gz.set_val(g_state["current_idx"])
+                g_state["updating_widgets"] = False
+                return
+
+            if target_idx == g_state["current_idx"]:
+                return
+
+            # Show computing status in window title while solving
+            ax.set_title(
+                f"Computing Graph #{target_idx}/{total_g} from {base_name} ...",
+                fontsize=12, fontweight="bold", color="#b45309", pad=12,
+            )
+            fig.canvas.draw()
+            fig.canvas.flush_events()
+
+            if target_idx in g_state["cache"]:
+                n_v, edges_new, faces_new, X_new = g_state["cache"][target_idx]
+            else:
+                raw_g = all_gz_graphs[target_idx - 1]
+                n_v, edges_new, faces_new, _, X_new = solve_full_spherical_embedding(
+                    raw_g, label=f"{base_name} [Graph #{target_idx}/{total_g}]"
+                )
+                g_state["cache"][target_idx] = (n_v, edges_new, faces_new, X_new)
+
+            # Expand artist pools if the new graph has more vertices or edges
+            while len(edge_lines) < len(edges_new):
+                (new_line,) = ax.plot([], [], [], color="#0284c7", linewidth=1.8, alpha=0.88)
+                edge_lines.append(new_line)
+
+            if annotate_vertices:
+                while len(text_artists) < len(X_new):
+                    new_txt = ax.text(
+                        0.0, 0.0, 0.0, str(len(text_artists)),
+                        fontsize=8.5, color="#0f172a", fontweight="bold", ha="center", va="center",
+                    )
+                    text_artists.append(new_txt)
+
+            g_state["X"] = X_new
+            g_state["edges"] = edges_new
+            g_state["faces"] = faces_new
+            g_state["full_arcs"] = [
+                sample_great_circle_arc(X_new[u_i], X_new[v_i], num_points=40)
+                for u_i, v_i in edges_new
+            ]
+            g_state["current_idx"] = target_idx
+
+            c_new = np.mean(X_new, axis=0)
+            centroid_marker.set_data_3d([c_new[0]], [c_new[1]], [c_new[2]])
+
+            # Synchronize Slider and TextBox without triggering recursive callbacks
+            g_state["updating_widgets"] = True
+            if int(round(slider_gz.val)) != target_idx:
+                slider_gz.set_val(target_idx)
+            if textbox_gz.text.strip() != str(target_idx):
+                textbox_gz.set_val(str(target_idx))
+            g_state["updating_widgets"] = False
+
+            update_minus_plus_colors()
+            ax.set_title(make_title_str(), fontsize=12, fontweight="bold", color="#0f172a", pad=12)
+            update_visibility()
+            fig.canvas.draw_idle()
+
+        def on_slider_change(val):
+            if g_state["updating_widgets"]:
+                return
+            idx = int(round(val))
+            # While dragging across 1812 isomers, update the text box live and solve on release
+            g_state["updating_widgets"] = True
+            textbox_gz.set_val(str(idx))
+            g_state["updating_widgets"] = False
+            if not g_state["slider_dragging"]:
+                load_and_display_graph(idx)
+
+        def on_mouse_press_slider(event):
+            if event.inaxes == ax_slider:
+                g_state["slider_dragging"] = True
+
+        def on_mouse_release_slider(event):
+            if g_state["slider_dragging"]:
+                g_state["slider_dragging"] = False
+                load_and_display_graph(int(round(slider_gz.val)))
+
+        def on_textbox_submit(text):
+            if g_state["updating_widgets"]:
+                return
+            try:
+                val = int(text.strip())
+            except ValueError:
+                g_state["updating_widgets"] = True
+                textbox_gz.set_val(str(g_state["current_idx"]))
+                g_state["updating_widgets"] = False
+                return
+            load_and_display_graph(val)
+
+        def on_minus_clicked(event):
+            if g_state["current_idx"] > 1:
+                load_and_display_graph(g_state["current_idx"] - 1)
+
+        def on_plus_clicked(event):
+            if g_state["current_idx"] < total_g:
+                load_and_display_graph(g_state["current_idx"] + 1)
+
+        slider_gz.on_changed(on_slider_change)
+        textbox_gz.on_submit(on_textbox_submit)
+        btn_minus.on_clicked(on_minus_clicked)
+        btn_plus.on_clicked(on_plus_clicked)
+        fig.canvas.mpl_connect("button_press_event", on_mouse_press_slider)
+        fig.canvas.mpl_connect("button_release_event", on_mouse_release_slider)
+
+    def on_mouse_motion(event):
+        if view_state["top_half_only"]:
+            curr_angles = (ax.elev, ax.azim)
+            if curr_angles != view_state["last_angles"]:
+                view_state["last_angles"] = curr_angles
+                update_visibility()
+                fig.canvas.draw_idle()
+
+    def on_key_press(event):
+        # Ignore shortcuts while typing in the TextBox
+        if is_gz and "textbox" in gz_widgets and gz_widgets["textbox"].capturekeystrokes:
+            return
+        if event.key == "t":
+            toggle_top_half()
+        elif event.key == "b":
+            toggle_boundary_mode()
+
+    fig.canvas.mpl_connect("motion_notify_event", on_mouse_motion)
+    fig.canvas.mpl_connect("button_release_event", on_mouse_motion)
+    fig.canvas.mpl_connect("key_press_event", on_key_press)
+
+    ax.set_xlim([-1.1, 1.1])
+    ax.set_ylim([-1.1, 1.1])
+    ax.set_zlim([-1.1, 1.1])
+    ax.set_box_aspect((1, 1, 1))
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.set_zlabel("Z")
+    ax.set_title(make_title_str(), fontsize=12, fontweight="bold", color="#0f172a", pad=12)
+    ax.legend(loc="upper right")
+    plt.show()
+
+
+# =============================================================================
+# 6. CLI Entry Point
+# =============================================================================
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print(f"Usage: python {sys.argv[0]} <path_to_graph_file (.a or .gz)> [graph_index]")
+        print(f"Examples:")
+        print(f"  python {sys.argv[0]} graphs/C24.a")
+        print(f"  python {sys.argv[0]} graphs/C36.txt.gz 5")
+        sys.exit(1)
+
+    filepath = sys.argv[1]
+    graph_idx = int(sys.argv[2]) if len(sys.argv) >= 3 else 1
+
+    is_gz_file = filepath.endswith(".gz") or filepath.endswith(".gzip")
+    if not is_gz_file and not (filepath.endswith(".a") or filepath.endswith(".txt")):
+        with open(filepath, "rb") as f_check:
+            is_gz_file = f_check.read(2) == b"\x1f\x8b"
+
+    if is_gz_file:
+        all_gz_graphs = load_all_graphs_from_gz(filepath)
+        total_graphs = len(all_gz_graphs)
+        if graph_idx < 1 or graph_idx > total_graphs:
+            print(
+                f"Error: Graph index {graph_idx} out of range for '{filepath}' "
+                f"(file contains {total_graphs} graphs, valid range: 1..{total_graphs}).",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        raw_input = all_gz_graphs[graph_idx - 1]
+        print(
+            f"[Multi-Graph Loader] Loaded graph {graph_idx} of {total_graphs} from '{filepath}'",
+            flush=True,
+        )
+    else:
+        all_gz_graphs = None
+        _, raw_input = load_graph_file_a(filepath)
+
+    base_label = (
+        f"{os.path.basename(filepath)} [Graph #{graph_idx}/{len(all_gz_graphs)}]"
+        if is_gz_file
+        else os.path.basename(filepath)
+    )
+    n_verts, edges, faces, adj, X_eq = solve_full_spherical_embedding(raw_input, label=base_label)
+
     plot_spherical_graph_matplotlib(
         X_eq,
         edges,
-        title=f"Strictly Convex Spherical Tutte Embedding — {graph_name} (|V|={n_verts}, |E|={len(edges)}, |F|={len(faces)})",
+        faces,
+        filepath=filepath,
+        annotate_vertices=True,
+        is_gz=is_gz_file,
+        all_gz_graphs=all_gz_graphs,
+        initial_graph_idx=graph_idx,
     )
