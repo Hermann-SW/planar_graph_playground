@@ -343,4 +343,19 @@ With "Top Half Only" ON:
 With "Top Half Only" OFF:  
 ![top_half_only.off.png](res/top_half_only.off.png)
 
+Graph files with ```.gz``` suffix typically contain more than one fullerene graph with the same number of vertices. The ```I*.gz``` files contain all fullerenes on same number of vertices with no neighboring pentagons (independent). This loads the last of the 1849 fullerenes with 70 vertices (the number of available graphs is reported):  
+```
+pi@raspberrypi5:~/planar_graph_playground $ python spherical_tutte.py graphs/C70.txt.gz 1849
+[Multi-Graph Loader] Loaded graph 1849 of 8149 from 'graphs/C70.txt.gz'
+Loaded graph -> computed n_verts = 70
+[Input Auto-Detect] Planar Rotation System: |V|=70, |E|=105, |F|=37 faces (sizes: [5, 6])
+--------------------------------------------------------------------------------
+[Stage 1 Init]   Crossings = 0 | Min Star det = +2.338e-03
+[Stage 2 Equil]  Crossings = 0 | Min Star det = +8.649e-02 | Min Corner det = +8.292e-02 (1150 steps)
+[Face Convexity] Strictly Convex Faces = 37/37 | Max Interior Angle = 136.94° (< 180°)
+[Stage 3 Tutte]  Min Weight w_ij = +2.6960e-01 (>0) | Barycentric Residual = 4.041e-16
+[Edge Lengths]   Min = 18.25°, Max = 24.28°, Mean = 21.59°
+[3D Isotropy]    ||Centroid|| = 1.226e-05 | σ1=0.594, σ2=0.575, σ3=0.563
+```
 
+![top_half_only.on.png](res/top_half_only.on.png)

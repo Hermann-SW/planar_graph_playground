@@ -1,9 +1,3 @@
-# generated with Gemini (Argon high thinking level) in long chat
-#
-# Usage:
-#   python spherical_tutte.py graphs/C60.a
-#   python spherical_tutte.py graphs/I100.txt.gz
-#
 import ast
 import gzip
 import os
@@ -16,7 +10,7 @@ from matplotlib.widgets import Button
 
 
 # =============================================================================
-# 1. File Loaders (.a and .gz) & Dispatcher
+# 1. Multi-Graph Loaders (.a and .gz) & Dispatcher
 # =============================================================================
 def load_graph_file_a(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
@@ -28,8 +22,14 @@ def load_graph_file_a(filepath):
     return n_verts, raw_input
 
 
-def load_graph_file_gz(filepath):
-    raw_input = []
+def load_graph_file_gz(filepath, target_index=1):
+    """
+    Parses a multi-graph gzip file separated by '0' lines.
+    Extracts the `target_index`-th graph (1-based index).
+    """
+    all_graphs = []
+    current_graph = []
+
     with gzip.open(filepath, "rt", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -37,27 +37,42 @@ def load_graph_file_gz(filepath):
                 continue
             parts = line.split()
             if parts[0] == "0":
-                break
+                if current_graph:
+                    all_graphs.append(current_graph)
+                    current_graph = []
+                continue
             nbrs_0based = [int(tok) - 1 for tok in parts[4:]]
-            raw_input.append(nbrs_0based)
-    if not raw_input:
-        raise ValueError(f"No valid vertex lines found in {filepath}")
+            current_graph.append(nbrs_0based)
+
+    if current_graph:
+        all_graphs.append(current_graph)
+
+    total_graphs = len(all_graphs)
+    if total_graphs == 0:
+        raise ValueError(f"No valid graphs found in {filepath}")
+
+    if target_index < 1 or target_index > total_graphs:
+        print(
+            f"Error: Graph index {target_index} out of range for '{filepath}' "
+            f"(file contains {total_graphs} graphs, valid range: 1..{total_graphs}).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    raw_input = all_graphs[target_index - 1]
     n_verts = max(v for row in raw_input for v in row) + 1
+    print(
+        f"[Multi-Graph Loader] Loaded graph {target_index} of {total_graphs} from '{filepath}'",
+        flush=True,
+    )
     return n_verts, raw_input
 
 
-def load_graph_file(filepath):
+def load_graph_file(filepath, graph_index=1):
     if filepath.endswith(".gz") or filepath.endswith(".gzip"):
-        return load_graph_file_gz(filepath)
-    elif filepath.endswith(".a") or filepath.endswith(".txt"):
-        return load_graph_file_a(filepath)
+        return load_graph_file_gz(filepath, target_index=graph_index)
     else:
-        with open(filepath, "rb") as f:
-            magic = f.read(2)
-        if magic == b"\x1f\x8b":
-            return load_graph_file_gz(filepath)
-        else:
-            return load_graph_file_a(filepath)
+        return load_graph_file_a(filepath)
 
 
 def parse_planar_graph_input(n_verts, data):
@@ -272,7 +287,7 @@ def gnomonic_polygon_tutte_init(n_verts, edges, faces, adj, radius=1.8):
 
 
 # =============================================================================
-# 3. Stage 2: Barrier-Spring Solver (Safe for Pure Triangulations)
+# 3. Stage 2: Barrier-Spring Solver
 # =============================================================================
 def optimize_spherical_barrier_equilibrium(
     X_aug_init,
@@ -754,16 +769,25 @@ def plot_spherical_graph_matplotlib(
 
 
 # =============================================================================
-# 6. CLI Entry Point
+# 6. CLI Entry Point with Multi-Graph Index Support
 # =============================================================================
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print(f"Usage: python {sys.argv[0]} <path_to_graph_file (.a or .gz)>")
+        print(f"Usage: python {sys.argv[0]} <path_to_graph_file (.a or .gz)> [graph_index]")
+        print(f"Examples:")
+        print(f"  python {sys.argv[0]} graphs/C24.a")
+        print(f"  python {sys.argv[0]} graphs/C36.txt.gz 5")
         sys.exit(1)
 
     filepath = sys.argv[1]
-    n_verts, raw_input = load_graph_file(filepath)
-    print(f"Loaded '{filepath}' -> computed n_verts = {n_verts}", flush=True)
+    graph_idx = int(sys.argv[2]) if len(sys.argv) >= 3 else 1
+
+    if filepath.endswith(".gz") or filepath.endswith(".gzip"):
+        n_verts, raw_input = load_graph_file_gz(filepath, target_index=graph_idx)
+    else:
+        n_verts, raw_input = load_graph_file_a(filepath)
+
+    print(f"Loaded graph -> computed n_verts = {n_verts}", flush=True)
 
     edges, faces, adj = parse_planar_graph_input(n_verts, raw_input)
     print("-" * 80, flush=True)
@@ -837,7 +861,7 @@ if __name__ == "__main__":
     assert convex_faces == len(faces), f"Non-convex faces detected: {non_convex_list}"
     assert min_weight > 0.0, f"Non-positive Tutte weight detected: {min_weight}"
 
-    graph_name = os.path.basename(filepath)
+    graph_name = f"{os.path.basename(filepath)} [Graph #{graph_idx}]"
     plot_spherical_graph_matplotlib(
         X_eq,
         edges,
