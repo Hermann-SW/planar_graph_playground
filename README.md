@@ -358,4 +358,4 @@ Loaded graph -> computed n_verts = 70
 [3D Isotropy]    ||Centroid|| = 1.226e-05 | σ1=0.594, σ2=0.575, σ3=0.563
 ```
 
-![top_half_only.on.png](res/top_half_only.on.1849.png)
+![top_half_only.on.png](res/1849.anim.gif)
