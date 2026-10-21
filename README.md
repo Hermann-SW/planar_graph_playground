@@ -369,8 +369,10 @@ All my 22 prompts that made Gemini create the currently 1307 lines of code from 
 [spherical_tutte.md](spherical_tutte.md)
 
 
-Wow — I asked Gemini for options of running [spherical_tutte.py](spherical_tutte.py) in your browser. Lots of options, server side and client side. My app has problems server side, so it work client side in YOUR browser! Initial download of webassembly, numpy, scipi, matplotlib, ... takes some seconds. But then 1812 fullerenes on 60 atoms are loaded as well, which can be selected by the bottom slider. My favorite settings  
+Wow — I asked Gemini for options of running [spherical_tutte.py](spherical_tutte.py) in your browser. Lots of options, server side and client side. My app has problems server side, so it works client side in YOUR browser! Initial downloads of webassembly, numpy, scipi, matplotlib, ... take some seconds. But then 1812 fullerenes on 60 atoms are loaded as well, which can be selected by the bottom slider. My favorite settings  
 * Top Half Only: On
 * Pentagons: On
-* Node Labels: Off
+* Node Labels: Off  
 https://stamm-wilbrandt.de/spherical_tutte.py/
+
+![spherical_tutte.py.in_browser.jpg](res/spherical_tutte.py.in_browser.jpg)
