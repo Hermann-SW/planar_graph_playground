@@ -559,11 +559,6 @@ def sample_great_circle_arc(x_u, x_v, num_points=40):
 # 5. Curved Spherical Pentagon Tessellation & Horizon Clipping Helpers
 # =============================================================================
 def tessellate_spherical_triangle(A, B, C, n_sub=6):
-    """
-    Subdivides a spherical triangle (A, B, C) on the unit sphere S^2 into
-    `n_sub^2` curved micro-triangles whose vertices all have distance 1.0
-    from the origin (||p|| = 1).
-    """
     grid = {}
     for i in range(n_sub + 1):
         for j in range(n_sub + 1 - i):
@@ -574,9 +569,7 @@ def tessellate_spherical_triangle(A, B, C, n_sub=6):
     tris = []
     for i in range(n_sub):
         for j in range(n_sub - i):
-            # Upright sub-triangle
             tris.append([grid[(i, j)], grid[(i + 1, j)], grid[(i, j + 1)]])
-            # Inverted sub-triangle
             if i + j + 2 <= n_sub:
                 tris.append([grid[(i + 1, j)], grid[(i + 1, j + 1)], grid[(i, j + 1)]])
 
@@ -584,11 +577,6 @@ def tessellate_spherical_triangle(A, B, C, n_sub=6):
 
 
 def build_spherical_pentagon_meshes(X, faces, n_sub=6):
-    """
-    Extracts all pentagon faces (|f| == 5) and builds a curved spherical triangle
-    mesh on S^2 for each pentagon by splitting around its spherical centroid.
-    Returns a list of dicts: `{"verts": f, "tris": (5 * n_sub^2, 3, 3) array}`.
-    """
     pentagon_meshes = []
     for f in faces:
         if len(f) != 5:
@@ -611,18 +599,10 @@ def build_spherical_pentagon_meshes(X, faces, n_sub=6):
 
 
 def clip_spherical_triangles_to_horizon(tris, v_cam):
-    """
-    Clips an array of spherical micro-triangles `tris` (shape: M, 3, 3) against
-    the screen-facing hemisphere `p . v_cam >= 0`:
-      - Triangles completely in front (`d >= 0` for all 3 vertices) are kept as-is.
-      - Triangles completely in back (`d < 0` for all 3 vertices) are discarded.
-      - Triangles straddling the horizon (`p . v_cam = 0`) are Sutherland-Hodgman
-        clipped and their horizon intersection points are normalized onto S^2.
-    """
     if len(tris) == 0:
         return []
 
-    dots = np.einsum("mij,j->mi", tris, v_cam)  # shape: (M, 3)
+    dots = np.einsum("mij,j->mi", tris, v_cam)
     in_front = dots >= 0.0
     front_counts = np.sum(in_front, axis=1)
 
@@ -660,10 +640,6 @@ def clip_spherical_triangles_to_horizon(tris, v_cam):
 
 
 def solve_full_spherical_embedding(raw_input, label=""):
-    """
-    Runs the complete Stage 1 -> Stage 3 spherical Tutte pipeline on `raw_input`
-    and returns `(n_verts, edges, oriented_faces, adj, X_eq)`.
-    """
     n_verts = max(v for row in raw_input for v in row) + 1
     if label:
         print(f"\n=== Computing Spherical Embedding for {label} (n_verts={n_verts}) ===", flush=True)
@@ -762,7 +738,7 @@ def solve_full_spherical_embedding(raw_input, label=""):
 
 
 # =============================================================================
-# 6. Interactive 3D Matplotlib Viewer (+ Curved Pentagons & Multi-Graph UI)
+# 6. Interactive 3D Matplotlib Viewer (+ Pentagons, Node Labels & Multi-Graph UI)
 # =============================================================================
 def get_camera_view_vector(ax):
     elev_rad = np.radians(ax.elev)
@@ -793,7 +769,7 @@ def plot_spherical_graph_matplotlib(
     all_gz_graphs=None,
     initial_graph_idx=1,
 ):
-    fig = plt.figure(figsize=(10.5, 9.8), dpi=110)
+    fig = plt.figure(figsize=(10.8, 9.8), dpi=110)
     bottom_margin = 0.14 if is_gz else 0.09
     ax = fig.add_axes([0.02, bottom_margin, 0.96, 0.92 - bottom_margin], projection="3d")
 
@@ -861,13 +837,13 @@ def plot_spherical_graph_matplotlib(
     )
 
     text_artists = []
-    if annotate_vertices:
-        for idx, (vx, vy, vz) in enumerate(X_init):
-            txt = ax.text(
-                vx * 1.08, vy * 1.08, vz * 1.08, str(idx),
-                fontsize=8.5, color="#0f172a", fontweight="bold", ha="center", va="center",
-            )
-            text_artists.append(txt)
+    for idx, (vx, vy, vz) in enumerate(X_init):
+        txt = ax.text(
+            vx * 1.08, vy * 1.08, vz * 1.08, str(idx),
+            fontsize=8.5, color="#0f172a", fontweight="bold", ha="center", va="center",
+            visible=bool(annotate_vertices),
+        )
+        text_artists.append(txt)
 
     centroid = np.mean(X_init, axis=0)
     (centroid_marker,) = ax.plot(
@@ -880,7 +856,8 @@ def plot_spherical_graph_matplotlib(
     view_state = {
         "top_half_only": False,
         "clip_straddling": True,
-        "show_pentagons": False,  # Disabled by default
+        "show_pentagons": False,               # Disabled by default
+        "show_labels": bool(annotate_vertices), # Selected (ON) by default
         "last_angles": (ax.elev, ax.azim),
     }
 
@@ -909,7 +886,6 @@ def plot_spherical_graph_matplotlib(
             return
 
         if not view_state["top_half_only"]:
-            # Draw all pentagons (front and back hemispheres)
             all_tris = np.vstack([pm["tris"] for pm in pent_meshes])
             pentagon_collection.set_verts(all_tris)
             pentagon_collection.set_facecolor("#94a3b8")
@@ -918,7 +894,6 @@ def plot_spherical_graph_matplotlib(
             pentagon_collection.set_visible(True)
             return
 
-        # Top Half Only is ON: decide per pentagon based on its 5 corner vertices
         if v_cam is None:
             v_cam = get_camera_view_vector(ax)
         if in_top is None:
@@ -930,21 +905,17 @@ def plot_spherical_graph_matplotlib(
             n_front = sum(1 for v_i in f_verts if in_top[v_i])
 
             if n_front == 5:
-                # All 5 vertices in top half -> draw full curved pentagon
                 tris_to_draw.extend(list(pm["tris"]))
             elif n_front == 0:
-                # All 5 vertices in back half -> draw only if any interior cap pokes through in Clip mode
                 if view_state["clip_straddling"]:
                     clipped = clip_spherical_triangles_to_horizon(pm["tris"], v_cam)
                     if clipped:
                         tris_to_draw.extend(clipped)
             else:
-                # Straddling pentagon (some vertices in top half, some in back half)
                 if view_state["clip_straddling"]:
                     clipped = clip_spherical_triangles_to_horizon(pm["tris"], v_cam)
                     if clipped:
                         tris_to_draw.extend(clipped)
-                # If Boundary: Hide is active, straddling pentagons are not drawn
 
         if len(tris_to_draw) > 0:
             pentagon_collection.set_verts(tris_to_draw)
@@ -960,11 +931,12 @@ def plot_spherical_graph_matplotlib(
         X = g_state["X"]
         edges = g_state["edges"]
         full_arcs = g_state["full_arcs"]
+        show_lbls = view_state["show_labels"]
 
         if not view_state["top_half_only"]:
             vertex_markers.set_data_3d(X[:, 0], X[:, 1], X[:, 2])
             for idx, txt in enumerate(text_artists):
-                if idx < len(X):
+                if idx < len(X) and show_lbls:
                     txt.set_position_3d((X[idx, 0] * 1.08, X[idx, 1] * 1.08, X[idx, 2] * 1.08))
                     txt.set_visible(True)
                 else:
@@ -993,7 +965,7 @@ def plot_spherical_graph_matplotlib(
         X_top = X[in_top]
         vertex_markers.set_data_3d(X_top[:, 0], X_top[:, 1], X_top[:, 2])
         for idx, txt in enumerate(text_artists):
-            if idx < len(X):
+            if idx < len(X) and show_lbls:
                 txt.set_position_3d((X[idx, 0] * 1.08, X[idx, 1] * 1.08, X[idx, 2] * 1.08))
                 txt.set_visible(bool(in_top[idx]))
             else:
@@ -1034,15 +1006,19 @@ def plot_spherical_graph_matplotlib(
 
         update_pentagons_display(v_cam=v_cam, in_top=in_top)
 
-    # Row 1 Buttons: Top Half Only, Boundary: Clip/Hide, and Pentagons: OFF/ON
+    # Row 1 Buttons: Top Half Only, Boundary: Clip/Hide, Pentagons: OFF/ON, Node labels: ON/OFF
     row1_y = 0.08 if is_gz else 0.02
-    ax_btn_top = fig.add_axes([0.07, row1_y, 0.27, 0.042])
-    ax_btn_bnd = fig.add_axes([0.365, row1_y, 0.27, 0.042])
-    ax_btn_pnt = fig.add_axes([0.66, row1_y, 0.27, 0.042])
+    ax_btn_top = fig.add_axes([0.03, row1_y, 0.225, 0.042])
+    ax_btn_bnd = fig.add_axes([0.27, row1_y, 0.22, 0.042])
+    ax_btn_pnt = fig.add_axes([0.505, row1_y, 0.22, 0.042])
+    ax_btn_lbl = fig.add_axes([0.74, row1_y, 0.23, 0.042])
 
     btn_top = Button(ax_btn_top, "Top Half Only: OFF (Key 't')", color="#f1f5f9", hovercolor="#e2e8f0")
     btn_bnd = Button(ax_btn_bnd, "Boundary: Clip (Key 'b')", color="#f1f5f9", hovercolor="#e2e8f0")
     btn_pnt = Button(ax_btn_pnt, "Pentagons: OFF (Key 'p')", color="#f1f5f9", hovercolor="#e2e8f0")
+    lbl_init_str = "ON" if view_state["show_labels"] else "OFF"
+    lbl_init_col = "#bae6fd" if view_state["show_labels"] else "#f1f5f9"
+    btn_lbl = Button(ax_btn_lbl, f"Node labels: {lbl_init_str} (Key 'n')", color=lbl_init_col, hovercolor="#e2e8f0")
 
     def toggle_top_half(event=None):
         view_state["top_half_only"] = not view_state["top_half_only"]
@@ -1068,9 +1044,18 @@ def plot_spherical_graph_matplotlib(
         update_visibility()
         fig.canvas.draw_idle()
 
+    def toggle_node_labels(event=None):
+        view_state["show_labels"] = not view_state["show_labels"]
+        status = "ON" if view_state["show_labels"] else "OFF"
+        btn_lbl.label.set_text(f"Node labels: {status} (Key 'n')")
+        btn_lbl.color = "#bae6fd" if view_state["show_labels"] else "#f1f5f9"
+        update_visibility()
+        fig.canvas.draw_idle()
+
     btn_top.on_clicked(toggle_top_half)
     btn_bnd.on_clicked(toggle_boundary_mode)
     btn_pnt.on_clicked(toggle_pentagons)
+    btn_lbl.on_clicked(toggle_node_labels)
 
     # Row 2 Controls (Only when a "*.gz" file is loaded): Slider, TextBox, '-' and '+' Buttons
     gz_widgets = {}
@@ -1150,13 +1135,13 @@ def plot_spherical_graph_matplotlib(
                 (new_line,) = ax.plot([], [], [], color="#0284c7", linewidth=1.8, alpha=0.88)
                 edge_lines.append(new_line)
 
-            if annotate_vertices:
-                while len(text_artists) < len(X_new):
-                    new_txt = ax.text(
-                        0.0, 0.0, 0.0, str(len(text_artists)),
-                        fontsize=8.5, color="#0f172a", fontweight="bold", ha="center", va="center",
-                    )
-                    text_artists.append(new_txt)
+            while len(text_artists) < len(X_new):
+                new_txt = ax.text(
+                    0.0, 0.0, 0.0, str(len(text_artists)),
+                    fontsize=8.5, color="#0f172a", fontweight="bold", ha="center", va="center",
+                    visible=view_state["show_labels"],
+                )
+                text_artists.append(new_txt)
 
             g_state["X"] = X_new
             g_state["edges"] = edges_new
@@ -1246,6 +1231,8 @@ def plot_spherical_graph_matplotlib(
             toggle_boundary_mode()
         elif event.key == "p":
             toggle_pentagons()
+        elif event.key == "n":
+            toggle_node_labels()
 
     fig.canvas.mpl_connect("motion_notify_event", on_mouse_motion)
     fig.canvas.mpl_connect("button_release_event", on_mouse_motion)
