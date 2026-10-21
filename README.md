@@ -359,3 +359,11 @@ Loaded graph -> computed n_verts = 70
 ```
 
 ![top_half_only.on.png](res/1849.anim.gif)
+
+
+Two new buttons in action ("Node Labels" off, "Pentagons" on):  
+![res/spherical_tutte.4.png](res/spherical_tutte.4.png)
+
+
+All my 22 prompts that made Gemini create the currently 1307 lines of code from scratch (until recently I worked with free gemini.google.com, now I use "Google AI Pro (5 TB)" with University student exclusive offer; I am [studying Mathematics at Heidelberg University in my 60s](https://stamm-wilbrandt.de/en/)):  
+[spherical_tutte.md](spherical_tutte.md)
