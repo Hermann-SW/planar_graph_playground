@@ -367,3 +367,10 @@ Two new buttons in action ("Node Labels" off, "Pentagons" on):
 
 All my 22 prompts that made Gemini create the currently 1307 lines of code from scratch (until recently I worked with free gemini.google.com, now I use "Google AI Pro (5 TB)" with University student exclusive offer; I am [studying Mathematics at Heidelberg University in my 60s](https://stamm-wilbrandt.de/en/)):  
 [spherical_tutte.md](spherical_tutte.md)
+
+
+Wow — I asked Gemini for options of running [spherical_tutte.py](spherical_tutte.py) in your browser. Lots of options, server side and client side. My app has problems server side, so it work client side in YOUR browser! Initial download of webassembly, numpy, scipi, matplotlib, ... takes some seconds. But then 1812 fullerenes on 60 atoms are loaded as well, which can be selected by the bottom slider. My favorite settings  
+* Top Half Only: On
+* Pentagons: On
+* Node Labels: Off
+https://stamm-wilbrandt.de/spherical_tutte.py/
