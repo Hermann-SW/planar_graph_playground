@@ -69,8 +69,9 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^^^^^^^^^
 AssertionError: Non-convex faces detected: [(16, 3, 230.44546608024046)]
 hermann@8840hs:~/planar_graph_playground$ 
+```
 15) good. Can you implement a 2nd file input function and decide which to use on suffix, ".a" current and ".gz" the new format. Examples for both below. ".a" is 0-based, the last 3colmns in .gz show vertex numbers 1-based
-
+```
 hermann@8840hs:~/planar_graph_playground$ cat graphs/C24.a
 [[11,12,1],[0,2,18],[1,17,3],[2,4,19],[3,16,5],[4,6,20],[5,15,7],[6,8,21],[7,14,9],[8,10,22],[9,13,11],[10,0,23],[0,13,17],[12,10,14],[13,8,15],[14,6,16],[15,4,17],[16,2,12],[1,19,23],[18,3,20],[19,5,21],[20,7,22],[21,9,23],[22,11,18]]
 hermann@8840hs:~/planar_graph_playground$ zcat graphs/C24.txt.gz 
