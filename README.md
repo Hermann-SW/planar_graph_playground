@@ -373,6 +373,6 @@ Wow — I asked Gemini for options of running [spherical_tutte.py](spherical_tut
 * Top Half Only: On
 * Pentagons: On
 * Node Labels: Off  
-https://stamm-wilbrandt.de/spherical_tutte.py/
+https://stamm-wilbrandt.de/spherical_tutte.py/?graph=2
 
 ![spherical_tutte.py.in_browser.jpg](res/spherical_tutte.py.in_browser.jpg)
