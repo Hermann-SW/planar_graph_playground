@@ -1,21 +1,311 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spherical Tutte Embedding — C60 (1812 Isomers in WASM)</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --accent: #0284c7;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .toolbar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .toolbar h1 {
+      font-size: 1.05rem;
+      margin: 0;
+      margin-right: auto;
+      color: var(--text);
+    }
+    .toolbar label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-badge {
+      font-size: 0.82rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 600;
+    }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+    #plot-target {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px;
+      min-height: 760px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #console-log {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      padding: 12px;
+      border-radius: 8px;
+      height: 680px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin: 0;
+    }
+    .hint {
+      font-size: 0.8rem;
+      color: #475569;
+      background: #f1f5f9;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
 <body>
 
-<script src="assert.js"> </script>
-<script src="util.js"> </script>
-<script src="gauss-jordan.js"> </script>
-<script src="undirected_graph.js"> </script>
-<script src="tutte.js"> </script>
-<script src="htmlsvg.js"> </script>
-<script src="fullerenes.js"> </script>
+  <div class="toolbar">
+    <h1>Spherical Tutte 3D Embedding (WASM)</h1>
+    <label>
+      Load Graph (.a or .gz):
+      <input type="file" id="file-input" accept=".a,.gz,.txt" disabled />
+    </label>
+    <span id="status" class="status-badge">Loading Pyodide & SciPy...</span>
+  </div>
 
-<div><form id="myForm"> <select id="frm" size="1""> <option selected value="mp7">mp7</option> </select> </form> </div>
-<div><label for="myRange">factor: </label><input type="range" min="50" max="120" value="100" id="myRange"></div>
-<div><label for="myRange2">size: </label><input type="range" min="500" max="1800" value="800" id="myRange2"></div>
-<div><label for="myCheckbox">dual: </label><input type="checkbox" id="myCheckbox" onChange="javaScript:alert(42)"></div>
+  <div class="main-grid">
+    <div id="plot-target"></div>
+    <div class="side-panel">
+      <div class="hint">
+        <strong>Interactive Controls:</strong> Drag on the 3D sphere to rotate. Use the Matplotlib slider / <code>Go to:</code> box / <code>-</code> <code>+</code> buttons at the bottom to browse all 1,812 <strong>C60</strong> isomers, or press <code>t</code>, <code>b</code>, <code>p</code>, <code>n</code> after clicking the canvas.
+      </div>
+      <pre id="console-log">Initializing WebAssembly Python runtime...
+</pre>
+    </div>
+  </div>
 
-<script src="convex_face_straight_line_drawing.js"> </script>
+  <script>
+    const statusEl = document.getElementById("status");
+    const logEl = document.getElementById("console-log");
+    const fileInput = document.getElementById("file-input");
 
+    const GITHUB_C60_URL =
+      "https://raw.githubusercontent.com/Hermann-SW/planar_graph_playground/refs/heads/main/graphs/C60.txt.gz";
+
+    function appendLog(msg) {
+      logEl.textContent += msg + "\n";
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // Direct Pyodide's Matplotlib HTML5 canvas to mount inside #plot-target
+    document.pyodideMplTarget = document.getElementById("plot-target");
+
+    let pyodide = null;
+
+    async function fetchC60Bytes() {
+      const candidates = ["graphs/C60.txt.gz", "C60.txt.gz", GITHUB_C60_URL];
+      for (const url of candidates) {
+        try {
+          const resp = await fetch(url);
+          if (resp.ok) {
+            appendLog(`[Startup] Loaded C60.txt.gz from: ${url}`);
+            const buf = await resp.arrayBuffer();
+            return new Uint8Array(buf);
+          }
+        } catch (_) {
+          // Try next candidate
+        }
+      }
+      throw new Error("Could not fetch C60.txt.gz locally or from GitHub.");
+    }
+
+    async function initApp() {
+      try {
+        pyodide = await loadPyodide({
+          stdout: (text) => appendLog(text),
+          stderr: (text) => appendLog("[stderr] " + text),
+        });
+
+        statusEl.textContent = "Loading numpy, scipy, matplotlib...";
+        await pyodide.loadPackage(["numpy", "scipy", "matplotlib"]);
+
+        statusEl.textContent = "Fetching spherical_tutte.py...";
+        const response = await fetch("spherical_tutte.py");
+        if (!response.ok) {
+          throw new Error("Could not fetch spherical_tutte.py (run via python3 -m http.server)");
+        }
+        const scriptText = await response.text();
+        pyodide.FS.writeFile("/spherical_tutte.py", scriptText);
+
+        statusEl.textContent = "Fetching C60.txt.gz (64 KB, 1812 graphs)...";
+        const c60Bytes = await fetchC60Bytes();
+        pyodide.FS.writeFile("/C60.txt.gz", c60Bytes);
+
+        await pyodide.runPythonAsync(`
+import sys
+import gzip
+sys.path.insert(0, "/")
+import matplotlib
+matplotlib.use("module://matplotlib_pyodide.wasm_backend")
+import matplotlib.pyplot as plt
+import spherical_tutte as st
+
+# Make load_all_graphs_from_gz resilient in case the browser's fetch()
+# transparently decompressed the .gz stream over HTTP
+_orig_load_gz = st.load_all_graphs_from_gz
+
+def _browser_safe_load_gz(filepath):
+    with open(filepath, "rb") as f_chk:
+        magic = f_chk.read(2)
+    if magic == b"\\x1f\\x8b":
+        return _orig_load_gz(filepath)
+    # Fallback if browser auto-decompressed the gzip payload
+    all_graphs = []
+    current_graph = []
+    with open(filepath, "rt", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith(">>"):
+                continue
+            parts = line.split()
+            if parts[0] == "0":
+                if current_graph:
+                    all_graphs.append(current_graph)
+                    current_graph = []
+                continue
+            nbrs_0based = [int(tok) - 1 for tok in parts[4:]]
+            current_graph.append(nbrs_0based)
+    if current_graph:
+        all_graphs.append(current_graph)
+    return all_graphs
+
+st.load_all_graphs_from_gz = _browser_safe_load_gz
+
+def launch_from_browser(filepath, graph_idx=1):
+    plt.close("all")
+    import js
+    js.document.getElementById("plot-target").innerHTML = ""
+
+    is_gz_file = filepath.endswith(".gz") or filepath.endswith(".gzip")
+    if not is_gz_file and not (filepath.endswith(".a") or filepath.endswith(".txt")):
+        with open(filepath, "rb") as f_check:
+            is_gz_file = f_check.read(2) == b"\\x1f\\x8b"
+
+    if is_gz_file:
+        all_gz_graphs = st.load_all_graphs_from_gz(filepath)
+        total_graphs = len(all_gz_graphs)
+        graph_idx = max(1, min(int(graph_idx), total_graphs))
+        raw_input = all_gz_graphs[graph_idx - 1]
+        print(
+            f"[Multi-Graph Loader] Loaded graph {graph_idx} of {total_graphs} from '{filepath}'",
+            flush=True,
+        )
+    else:
+        all_gz_graphs = None
+        _, raw_input = st.load_graph_file_a(filepath)
+
+    base_name = filepath.split("/")[-1]
+    base_label = (
+        f"{base_name} [Graph #{graph_idx}/{len(all_gz_graphs)}]"
+        if is_gz_file
+        else base_name
+    )
+    n_verts, edges, faces, adj, X_eq = st.solve_full_spherical_embedding(
+        raw_input, label=base_label
+    )
+    st.plot_spherical_graph_matplotlib(
+        X_eq,
+        edges,
+        faces,
+        filepath=filepath,
+        annotate_vertices=True,
+        is_gz=is_gz_file,
+        all_gz_graphs=all_gz_graphs,
+        initial_graph_idx=graph_idx,
+    )
+        `);
+
+        fileInput.disabled = false;
+
+        // Allow optional ?graph=1812 query parameter in the URL
+        const params = new URLSearchParams(window.location.search);
+        const startIdx = parseInt(params.get("graph") || "1", 10) || 1;
+
+        statusEl.textContent = `Computing C60.txt.gz [Graph #${startIdx}/1812]...`;
+        await pyodide.runPythonAsync(`launch_from_browser("/C60.txt.gz", ${startIdx})`);
+
+        statusEl.textContent = "Ready — C60.txt.gz (1812 graphs)";
+      } catch (err) {
+        statusEl.textContent = "Initialization Error";
+        appendLog("ERROR: " + err.message);
+      }
+    }
+
+    fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file || !pyodide) return;
+
+      statusEl.textContent = `Loading ${file.name}...`;
+      const buffer = await file.arrayBuffer();
+      const uint8View = new Uint8Array(buffer);
+      const vfsPath = "/" + file.name;
+      pyodide.FS.writeFile(vfsPath, uint8View);
+
+      setTimeout(async () => {
+        try {
+          statusEl.textContent = `Solving ${file.name}...`;
+          const launchFn = pyodide.globals.get("launch_from_browser");
+          launchFn(vfsPath, 1);
+          launchFn.destroy();
+          statusEl.textContent = `Loaded: ${file.name}`;
+        } catch (err) {
+          statusEl.textContent = "Error solving graph";
+          appendLog("ERROR: " + err.message);
+        }
+      }, 30);
+    });
+
+    initApp();
+  </script>
 </body>
 </html>
