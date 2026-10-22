@@ -368,6 +368,7 @@ Two new buttons in action ("Node Labels" off, "Pentagons" on):
 All my 22 prompts that made Gemini create the currently 1307 lines of code from scratch (until recently I worked with free gemini.google.com, now I use "Google AI Pro (5 TB)" with University student exclusive offer; I am [studying Mathematics at Heidelberg University in my 60s](https://stamm-wilbrandt.de/en/)):  
 [spherical_tutte.md](spherical_tutte.md)
 
+----
 
 Wow — I asked Gemini for options of running [spherical_tutte.py](spherical_tutte.py) in your browser. Lots of options, server side and client side. My app has problems server side, so it works client side in YOUR browser! Initial downloads of webassembly, numpy, scipi, matplotlib, ... take some seconds. But then 1812 fullerenes on 60 atoms are loaded as well, which can be selected by the bottom slider. My favorite settings  
 * Top Half Only: On
@@ -388,7 +389,7 @@ import ast
 4) crazy! Is it possible to make it start with 64KB file C60.txt.gz containing 1812 graphs?
 https://github.com/Hermann-SW/planar_graph_playground/raw/refs/heads/main/graphs/C60.txt.gz  
 
-And the link above is the result, with unchanged Python file on my webserver:
+And the link above is the result, with unchanged [spherical_tutte.py](spherical_tutte.py) and new [index.html](index.html) on my webserver:
 ```
 -chrootsh-4.2$ find httpdocs/spherical_tutte.py
 httpdocs/spherical_tutte.py
