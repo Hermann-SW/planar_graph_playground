@@ -389,7 +389,7 @@ import ast
 4) crazy! Is it possible to make it start with 64KB file C60.txt.gz containing 1812 graphs?
 https://github.com/Hermann-SW/planar_graph_playground/raw/refs/heads/main/graphs/C60.txt.gz  
 
-And the link above is the result, with unchanged [spherical_tutte.py](spherical_tutte.py) and new [index.html](index.html) on my webserver:
+And the link above is the result, with unchanged [spherical_tutte.py](spherical_tutte.py) and new [index.html](index.html) on https://stamm-wilbrandt.de
 ```
 -chrootsh-4.2$ find httpdocs/spherical_tutte.py
 httpdocs/spherical_tutte.py
