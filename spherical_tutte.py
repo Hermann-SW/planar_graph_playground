@@ -1,3 +1,5 @@
+# https://github.com/Hermann-SW/planar_graph_playground/blob/main/README.md#spherical_tuttepy
+#
 import ast
 import gzip
 import os
