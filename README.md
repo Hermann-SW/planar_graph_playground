@@ -375,4 +375,22 @@ Wow — I asked Gemini for options of running [spherical_tutte.py](spherical_tut
 * Node Labels: Off  
 https://stamm-wilbrandt.de/spherical_tutte.py/?graph=2
 
+Making Python code run in browser took only 3 additional prompts in separate chat with Gemini:  
+1) which options exist to make a Pytghon app using numpy+scipi+matplotlib+mpl_toolkits.mplot3d available to run in browser?
+2) Option 2 has problems, see screenshot
+3) crazy! Is it possible to make it start with 64KB file C60.txt.gz containing 1812 graphs?
+https://github.com/Hermann-SW/planar_graph_playground/raw/refs/heads/main/graphs/C60.txt.gz  
+
+And the link above is the result, with unchanged Python file on my webserver:
+```
+-chrootsh-4.2$ cd spherical_tutte.py/
+-chrootsh-4.2$ find .
+.
+./graphs
+./graphs/C60.txt.gz
+./spherical_tutte.py
+./index.html
+-chrootsh-4.2$ 
+```
+
 ![spherical_tutte.py.in_browser.jpg](res/spherical_tutte.py.in_browser.jpg)
