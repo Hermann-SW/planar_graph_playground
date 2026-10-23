@@ -803,7 +803,7 @@ def plot_spherical_graph_matplotlib(
         "slider_dragging": False,
     }
 
-    # Curved spherical pentagon collection (disabled by default)
+    # Curved spherical pentagon collection (enabled by default)
     pentagon_collection = Poly3DCollection(
         [],
         facecolors="#94a3b8",
@@ -858,7 +858,7 @@ def plot_spherical_graph_matplotlib(
     view_state = {
         "top_half_only": False,
         "clip_straddling": True,
-        "show_pentagons": False,               # Disabled by default
+        "show_pentagons": True,                 # Enabled by default
         "show_labels": bool(annotate_vertices), # Selected (ON) by default
         "last_angles": (ax.elev, ax.azim),
     }
@@ -1008,7 +1008,7 @@ def plot_spherical_graph_matplotlib(
 
         update_pentagons_display(v_cam=v_cam, in_top=in_top)
 
-    # Row 1 Buttons: Top Half Only, Boundary: Clip/Hide, Pentagons: OFF/ON, Node labels: ON/OFF
+    # Row 1 Buttons: Top Half Only, Boundary: Clip/Hide, Pentagons: ON/OFF, Node labels: ON/OFF
     row1_y = 0.08 if is_gz else 0.02
     ax_btn_top = fig.add_axes([0.03, row1_y, 0.225, 0.042])
     ax_btn_bnd = fig.add_axes([0.27, row1_y, 0.22, 0.042])
@@ -1017,7 +1017,9 @@ def plot_spherical_graph_matplotlib(
 
     btn_top = Button(ax_btn_top, "Top Half Only: OFF (Key 't')", color="#f1f5f9", hovercolor="#e2e8f0")
     btn_bnd = Button(ax_btn_bnd, "Boundary: Clip (Key 'b')", color="#f1f5f9", hovercolor="#e2e8f0")
-    btn_pnt = Button(ax_btn_pnt, "Pentagons: OFF (Key 'p')", color="#f1f5f9", hovercolor="#e2e8f0")
+    pnt_init_str = "ON" if view_state["show_pentagons"] else "OFF"
+    pnt_init_col = "#cbd5e1" if view_state["show_pentagons"] else "#f1f5f9"
+    btn_pnt = Button(ax_btn_pnt, f"Pentagons: {pnt_init_str} (Key 'p')", color=pnt_init_col, hovercolor="#e2e8f0")
     lbl_init_str = "ON" if view_state["show_labels"] else "OFF"
     lbl_init_col = "#bae6fd" if view_state["show_labels"] else "#f1f5f9"
     btn_lbl = Button(ax_btn_lbl, f"Node labels: {lbl_init_str} (Key 'n')", color=lbl_init_col, hovercolor="#e2e8f0")
@@ -1249,6 +1251,8 @@ def plot_spherical_graph_matplotlib(
     ax.set_zlabel("Z")
     ax.set_title(make_title_str(), fontsize=12, fontweight="bold", color="#0f172a", pad=12)
     ax.legend(loc="upper right")
+
+    update_visibility()
     plt.show()
 
 

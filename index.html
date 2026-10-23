@@ -173,7 +173,7 @@
         await pyodide.loadPackage(["numpy", "scipy", "matplotlib"]);
 
         statusEl.textContent = "Fetching spherical_tutte.py...";
-        const response = await fetch("spherical_tutte.py");
+        const response = await fetch("spherical_tutte.py", { cache: "no-store" });
         if (!response.ok) {
           throw new Error("Could not fetch spherical_tutte.py (run via python3 -m http.server)");
         }
